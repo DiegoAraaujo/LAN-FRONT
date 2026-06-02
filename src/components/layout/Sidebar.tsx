@@ -91,7 +91,7 @@ export const Sidebar = () => {
         </button>
         <SidebarContent pathname={pathname} onNav={closeSidebar} />
       </aside>
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-surface border-t border-border flex justify-around py-2">
+      {/* <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-surface border-t border-border flex justify-around py-2">
         {NAV_KEYS.slice(0, 5).map(({ key, href, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
           return (
@@ -101,7 +101,7 @@ export const Sidebar = () => {
             </Link>
           )
         })}
-      </nav>
+      </nav> */}
     </>
   )
 }
