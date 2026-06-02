@@ -7,6 +7,7 @@ import { ActivitiesFilterBar } from "@/features/activities/components/Activities
 import { ActivityTableRow } from "@/features/activities/components/ActivityTableRow";
 import { ActivityMobileCard } from "@/features/activities/components/ActivityMobileCard";
 import { AppointmentEditModal } from "@/features/appointments/components/AppointmentEditModal";
+import { MarkAsPaidModal } from "@/features/appointments/components/MarkAsPaidModal";
 import { useAppointments } from "@/features/appointments/hooks/useAppointments";
 import { useDeleteAppointment } from "@/features/appointments/hooks/useDeleteAppointment";
 import { useUpdateAppointment } from "@/features/appointments/hooks/useUpdateAppointment";
@@ -39,10 +40,16 @@ const ActivitiesPage = () => {
   >();
   const [page, setPage] = useState(1);
   const [editTarget, setEditTarget] = useState<Appointment | null>(null);
+  const [markPaidTarget, setMarkPaidTarget] = useState<Appointment | null>(
+    null,
+  );
 
   const debounced = useDebounce(search, 300);
   const deleteMutation = useDeleteAppointment();
-  const updateMutation = useUpdateAppointment(() => setEditTarget(null));
+  const updateMutation = useUpdateAppointment(() => {
+    setEditTarget(null);
+    setMarkPaidTarget(null);
+  });
 
   const { data, isLoading } = useAppointments({
     search: debounced || undefined,
@@ -67,10 +74,11 @@ const ActivitiesPage = () => {
     setPage(1);
   };
 
-  const handleMarkPaid = (appointment: Appointment) => {
+  const handleConfirmMarkPaid = (method: PaymentMethod) => {
+    if (!markPaidTarget) return;
     updateMutation.mutate({
-      id: appointment.id,
-      data: { paymentStatus: "PAID", paymentMethod: "OTHER" },
+      id: markPaidTarget.id,
+      data: { paymentStatus: "PAID", paymentMethod: method },
     });
   };
 
@@ -187,7 +195,7 @@ const ActivitiesPage = () => {
                       index={i}
                       onDelete={() => deleteMutation.mutate(a.id)}
                       onEdit={() => setEditTarget(a)}
-                      onMarkPaid={() => handleMarkPaid(a)}
+                      onMarkPaid={() => setMarkPaidTarget(a)}
                     />
                   ))
                 )}
@@ -224,11 +232,18 @@ const ActivitiesPage = () => {
               appointment={a}
               onDelete={() => deleteMutation.mutate(a.id)}
               onEdit={() => setEditTarget(a)}
-              onMarkPaid={() => handleMarkPaid(a)}
+              onMarkPaid={() => setMarkPaidTarget(a)}
             />
           ))
         )}
       </div>
+
+      <MarkAsPaidModal
+        open={!!markPaidTarget}
+        onClose={() => setMarkPaidTarget(null)}
+        onConfirm={handleConfirmMarkPaid}
+        isLoading={updateMutation.isPending}
+      />
 
       <AppointmentEditModal
         open={!!editTarget}
