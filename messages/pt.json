@@ -175,6 +175,8 @@
     "servicesProvided": "Serviços Prestados",
     "addItem": "Adicionar Item",
     "selectService": "Selecione o serviço…",
+    "markAsPaid": "Marcar como Pago",
+    "selectPaymentMethod": "Selecione a forma de pagamento para confirmar.",
     "selectProfessional": "Selecione o profissional…",
     "selectServiceFirst": "Selecione um serviço primeiro",
     "loadingProfessionals": "Carregando…",
