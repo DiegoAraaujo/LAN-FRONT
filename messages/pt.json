@@ -175,6 +175,8 @@
     "servicesProvided": "Serviços Prestados",
     "addItem": "Adicionar Item",
     "selectService": "Selecione o serviço…",
+    "markAsPaid": "Quitar",
+    "selectPaymentMethod": "Selecione a forma de pagamento para confirmar.",
     "selectProfessional": "Selecione o profissional…",
     "selectServiceFirst": "Selecione um serviço primeiro",
     "loadingProfessionals": "Carregando…",
@@ -231,7 +233,7 @@
     "of": "de",
     "paidBadge": "Pago",
     "pendingBadge": "Pendente",
-    "markAsPaid": "Marcar como Pago",
+    "markAsPaid": "Confirmar Pagamento",
     "editAppointment": "Editar",
     "deleteAppointment": "Excluir"
   },
