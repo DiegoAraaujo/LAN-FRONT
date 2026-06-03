@@ -17,6 +17,7 @@ import type {
   PaymentMethod,
   PaymentStatus,
 } from "@/features/appointments/api/appointments.api";
+import { ActivityDetailModal } from "@/features/activities/components/ActivityDetailModal";
 
 const LIMIT = 10;
 
@@ -43,6 +44,7 @@ const ActivitiesPage = () => {
   const [markPaidTarget, setMarkPaidTarget] = useState<Appointment | null>(
     null,
   );
+  const [detailTarget, setDetailTarget] = useState<Appointment | null>(null);
 
   const debounced = useDebounce(search, 300);
   const deleteMutation = useDeleteAppointment();
@@ -111,7 +113,6 @@ const ActivitiesPage = () => {
   return (
     <div className="p-5 sm:p-8 flex flex-col gap-5">
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
-
       <ActivitiesFilterBar
         search={search}
         month={month}
@@ -136,7 +137,6 @@ const ActivitiesPage = () => {
         onReset={resetFilters}
         hasFilters={hasFilters}
       />
-
       <div className="grid grid-cols-2 gap-4">
         <Card className="p-5">
           <div className="text-xs text-text-light mb-2">
@@ -154,7 +154,6 @@ const ActivitiesPage = () => {
           </div>
         </Card>
       </div>
-
       <Card className="hidden sm:block">
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <h3 className="font-semibold text-sm">{t("appointmentList")}</h3>
@@ -202,6 +201,7 @@ const ActivitiesPage = () => {
                       onDelete={() => deleteMutation.mutate(a.id)}
                       onEdit={() => setEditTarget(a)}
                       onMarkPaid={() => setMarkPaidTarget(a)}
+                      onViewDetail={() => setDetailTarget(a)}
                     />
                   ))
                 )}
@@ -209,15 +209,7 @@ const ActivitiesPage = () => {
             </table>
           </div>
         )}
-
-        <div className="px-5 py-3 flex items-center justify-between border-t border-border bg-bg2">
-          <span className="text-xs text-text-light">
-            {t("showing")} {appointments.length} {t("of")} {total}
-          </span>
-          {pagination}
-        </div>
       </Card>
-
       <div className="sm:hidden flex flex-col gap-3">
         {isLoading ? (
           <div className="text-center py-10 text-sm text-text-light">
@@ -235,14 +227,32 @@ const ActivitiesPage = () => {
               onDelete={() => deleteMutation.mutate(a.id)}
               onEdit={() => setEditTarget(a)}
               onMarkPaid={() => setMarkPaidTarget(a)}
+              onViewDetail={() => setDetailTarget(a)}
             />
           ))
         )}
-
-        <div className="sm:hidden flex justify-center py-3 border-t border-border bg-bg2">
-          {pagination}
-        </div>
       </div>
+
+      <div className="px-5 py-3 flex items-center sm:justify-between border border-border bg-bg2 rounded-xl flex-col sm:flex-row items gap-2">
+        <span className="text-xs text-text-light">
+          {t("showing")} {appointments.length} {t("of")} {total}
+        </span>
+        {pagination}
+      </div>
+
+      <ActivityDetailModal
+        open={!!detailTarget}
+        appointment={detailTarget}
+        onClose={() => setDetailTarget(null)}
+        onEdit={() => {
+          setEditTarget(detailTarget);
+          setDetailTarget(null);
+        }}
+        onMarkPaid={() => {
+          setMarkPaidTarget(detailTarget);
+          setDetailTarget(null);
+        }}
+      />
 
       <MarkAsPaidModal
         open={!!markPaidTarget}
@@ -250,7 +260,6 @@ const ActivitiesPage = () => {
         onConfirm={handleConfirmMarkPaid}
         isLoading={updateMutation.isPending}
       />
-
       <AppointmentEditModal
         open={!!editTarget}
         appointment={editTarget}
