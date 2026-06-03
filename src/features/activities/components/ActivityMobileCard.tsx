@@ -57,7 +57,7 @@ export const ActivityMobileCard = ({
       {a.items.map((item, j) => (
         <div
           key={j}
-          className="flex justify-between py-1.5 border-b border-divider last:border-0 text-xs"
+          className="flex justify-between py-1.5 text-xs"
         >
           <span className="text-text-muted">
             {item.serviceName} · {item.professionalName}
