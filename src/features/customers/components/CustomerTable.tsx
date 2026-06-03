@@ -91,16 +91,6 @@ export const CustomerTable = ({
           </table>
         </div>
       )}
-      <div className="px-5 py-3 flex items-center justify-between border-t border-border bg-bg2">
-        <span className="text-xs text-text-light">
-          {t("showing")} {customers.length} {t("of")} {total}
-        </span>
-        <Pagination
-          current={page}
-          total={totalPages}
-          onPageChange={onPageChange}
-        />
-      </div>
     </Card>
   );
 };
