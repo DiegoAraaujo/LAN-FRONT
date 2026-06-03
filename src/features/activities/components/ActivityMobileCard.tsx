@@ -80,7 +80,7 @@ export const ActivityMobileCard = ({
           <Button
             variant="primary"
             size="sm"
-            className="justify-center bg-green-600 border-green-600"
+            className="justify-center bg-green-600 border-green-600 text-white"
             onClick={onMarkPaid}
           >
             <CheckCircle size={13} /> {t("markAsPaid")}
