@@ -35,6 +35,7 @@ const KNOWN_MESSAGES: Record<string, string> = {
   APPOINTMENT_NOT_FOUND:        'Atendimento não encontrado.',
   USER_NOT_FOUND:               'Usuário não encontrado.',
   TOKEN_NOT_FOUND:              'Token não encontrado.',
+  TOO_MANY_REQUESTS: 'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
   TOKEN_INVALID:                'Sessão expirada. Faça login novamente.',
   PROFESSIONAL_SERVICE_MISMATCH:'Este profissional não executa o serviço selecionado.',
   MIN_ITEMS_REQUIRED:           'Adicione ao menos um serviço ao atendimento.',
