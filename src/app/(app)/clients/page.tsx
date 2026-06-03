@@ -1,8 +1,9 @@
 "use client";
+
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { PageHeader } from "@/components/ui/Display";
+import { PageHeader, Pagination } from "@/components/ui/Display";
 import { Button } from "@/components/ui/Button";
 import { CustomerStatsBar } from "@/features/customers/components/CustomerStatsBar";
 import { CustomerSearchBar } from "@/features/customers/components/CustomerSearchBar";
@@ -42,20 +43,28 @@ const CustomersPage = () => {
     page,
     limit: LIMIT,
   });
+
   const { data: dashData } = useCustomersDashboard();
+
   const createMutation = useCreateCustomer(() => setFormOpen(false));
   const updateMutation = useUpdateCustomer(() => setEditTarget(null));
   const deleteMutation = useDeleteCustomer();
   const toggleMutation = useUpdateCustomer();
 
   const customers = data?.data ?? [];
-  const totalPages = data?.meta.totalPages ?? 1;
   const total = data?.meta.total ?? 0;
+  const totalPages = data?.meta.totalPages ?? 1;
+
+  const pagination = (
+    <Pagination current={page} total={totalPages} onPageChange={setPage} />
+  );
 
   const handleSubmit = (formData: CustomerInput) => {
-    if (editTarget)
+    if (editTarget) {
       updateMutation.mutate({ id: editTarget.id, data: formData });
-    else createMutation.mutate(formData);
+    } else {
+      createMutation.mutate(formData);
+    }
   };
 
   const handleToggle = (c: Customer) =>
@@ -93,26 +102,47 @@ const CustomersPage = () => {
         }}
       />
 
-      <CustomerTable
-        customers={customers}
-        total={total}
-        page={page}
-        totalPages={totalPages}
-        isLoading={isLoading}
-        onToggle={handleToggle}
-        onEdit={setEditTarget}
-        onDelete={(id) => deleteMutation.mutate(id)}
-        onPageChange={setPage}
-        onViewDetail={setDetailTarget}
-      />
+      <div className="hidden sm:block">
+        <CustomerTable
+          customers={customers}
+          total={total}
+          page={page}
+          totalPages={totalPages}
+          isLoading={isLoading}
+          onToggle={handleToggle}
+          onEdit={setEditTarget}
+          onDelete={(id) => deleteMutation.mutate(id)}
+          onPageChange={setPage}
+          onViewDetail={setDetailTarget}
+        />
+      </div>
 
-      <CustomerMobileList
-        customers={customers}
-        isLoading={isLoading}
-        onEdit={setEditTarget}
-        onDelete={(id) => deleteMutation.mutate(id)}
-        onViewDetail={setDetailTarget}
-      />
+      <div className="sm:hidden flex flex-col gap-3">
+        {isLoading ? (
+          <div className="text-center py-10 text-sm text-text-light">
+            Carregando…
+          </div>
+        ) : customers.length === 0 ? (
+          <div className="text-center py-10 text-sm text-text-light">
+            {t("noResults")}
+          </div>
+        ) : (
+          <CustomerMobileList
+            customers={customers}
+            isLoading={isLoading}
+            onEdit={setEditTarget}
+            onDelete={(id) => deleteMutation.mutate(id)}
+            onViewDetail={setDetailTarget}
+          />
+        )}
+      </div>
+
+      <div className="px-5 py-3 flex items-center sm:justify-between border border-border bg-bg2 rounded-xl flex-col sm:flex-row items gap-2">
+        <span className="text-xs text-text-light">
+          {t("showing")} {customers.length} {t("of")} {total}
+        </span>
+        {pagination}
+      </div>
 
       <CustomerLoyaltyBanner onClick={() => setLoyaltyOpen(true)} />
 
