@@ -104,6 +104,10 @@ const ActivitiesPage = () => {
     });
   };
 
+  const pagination = (
+    <Pagination current={page} total={totalPages} onPageChange={setPage} />
+  );
+
   return (
     <div className="p-5 sm:p-8 flex flex-col gap-5">
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
@@ -140,6 +144,7 @@ const ActivitiesPage = () => {
           </div>
           <div className="text-2xl sm:text-3xl font-bold">{total}</div>
         </Card>
+
         <Card className="p-5">
           <div className="text-xs text-text-light mb-2">
             {t("pendingCount")}
@@ -177,6 +182,7 @@ const ActivitiesPage = () => {
                   ))}
                 </tr>
               </thead>
+
               <tbody>
                 {appointments.length === 0 ? (
                   <tr>
@@ -208,11 +214,7 @@ const ActivitiesPage = () => {
           <span className="text-xs text-text-light">
             {t("showing")} {appointments.length} {t("of")} {total}
           </span>
-          <Pagination
-            current={page}
-            total={totalPages}
-            onPageChange={setPage}
-          />
+          {pagination}
         </div>
       </Card>
 
@@ -236,6 +238,10 @@ const ActivitiesPage = () => {
             />
           ))
         )}
+
+        <div className="sm:hidden flex justify-center py-3 border-t border-border bg-bg2">
+          {pagination}
+        </div>
       </div>
 
       <MarkAsPaidModal
