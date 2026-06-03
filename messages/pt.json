@@ -212,6 +212,8 @@
     "clientLabel": "Cliente",
     "monthLabel": "Mês",
     "yearLabel": "Ano",
+    "appointmentDetails": "Detalhes do Atendimento",
+    "notes": "Observações",
     "paymentLabel": "Pagamento",
     "allMonths": "Todos",
     "allYears": "Todos",
