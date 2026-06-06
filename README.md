@@ -162,9 +162,3 @@ The app will be available at `http://localhost:3000`.
 This frontend connects to a REST API. All routes except login (`POST /sessions/`) and signup (`POST /users`) require a Bearer token.
 
 Base URL is configured via `NEXT_PUBLIC_API_URL` in your `.env.local`.
-
----
-
-## License
-
-Private — All rights reserved.
