@@ -1,3 +1,4 @@
+import { clientMessage } from '@/lib/messages'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { customersApi, type CustomerContact } from '../api/customers.api'
@@ -30,8 +31,8 @@ export const useCreateCustomer = (onSuccess?: () => void) => {
   return useMutation({
     mutationFn: (data: CustomerInput) => customersApi.create(buildPayload(data)),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: customersKeys.all })
-      toast.success('Cliente cadastrado!')
+      qc.invalidateQueries({ queryKey: customersKeys.all }); qc.invalidateQueries({ queryKey: ['dashboard'] }); qc.invalidateQueries({ queryKey: ['customers', 'dashboard'] })
+      toast.success(clientMessage('Cliente cadastrado!'))
       onSuccess?.()
     },
   })

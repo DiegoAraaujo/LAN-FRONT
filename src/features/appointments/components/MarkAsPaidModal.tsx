@@ -21,6 +21,7 @@ export const MarkAsPaidModal = ({ open, onClose, onConfirm, isLoading }: Props) 
   return (
     <Modal
       open={open}
+      busy={isLoading}
       onClose={onClose}
       title={t('markAsPaid')}
       footer={

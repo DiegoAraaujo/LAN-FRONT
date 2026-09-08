@@ -1,4 +1,5 @@
-import { useMutation } from '@tanstack/react-query'
+import { clientMessage } from '@/lib/messages'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { authApi } from '../api/auth.api'
@@ -8,11 +9,13 @@ import { ROUTES } from '@/constants'
 export const useLogin = () => {
   const { setSession } = useAuthStore()
   const router = useRouter()
+  const qc = useQueryClient()
   return useMutation({
     mutationFn: authApi.login,
-    onSuccess: ({ data }) => {
-      setSession(data.user, data.token, data.refreshToken)
-      toast.success(`Bem-vindo, ${data.user.name}!`)
+    onSuccess: ({ data }, variables) => {
+      qc.clear()
+      setSession(data.user, data.token, data.refreshToken, !!variables.remember)
+      toast.success(clientMessage('WELCOME')+', '+data.user.name+'!')
       router.push(ROUTES.dashboard)
     },
   })

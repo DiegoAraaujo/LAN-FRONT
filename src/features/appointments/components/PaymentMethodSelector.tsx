@@ -8,10 +8,12 @@ interface Props { value: PaymentMethod; onChange: (v: PaymentMethod) => void; da
 
 export const PaymentMethodSelector = ({ value, onChange, dark }: Props) => {
   const t = useTranslations('appointments')
+  const d = useTranslations('overview.methods')
 
   const OPTIONS: { key: PaymentMethod; label: string; icon: React.ReactNode }[] = [
     { key: 'PIX',   label: t('pix'),  icon: <Banknote   size={14} /> },
-    { key: 'CARD',  label: t('card'), icon: <CreditCard size={14} /> },
+    { key: 'DEBIT_CARD', label: d('DEBIT_CARD'), icon: <CreditCard size={14} /> },
+    { key: 'CREDIT_CARD', label: d('CREDIT_CARD'), icon: <CreditCard size={14} /> },
     { key: 'CASH',  label: t('cash'), icon: <Banknote   size={14} /> },
     { key: 'OTHER', label: t('other'),icon: <CreditCard size={14} /> },
   ]
@@ -19,7 +21,7 @@ export const PaymentMethodSelector = ({ value, onChange, dark }: Props) => {
   return (
     <div className="grid grid-cols-2 gap-2">
       {OPTIONS.map(opt => (
-        <button key={opt.key} onClick={() => onChange(opt.key)}
+        <button type="button" aria-pressed={value === opt.key} key={opt.key} onClick={() => onChange(opt.key)}
           className={cn(
             'flex items-center justify-center gap-1.5 border rounded-lg py-2.5 text-xs font-medium transition-colors',
             value === opt.key

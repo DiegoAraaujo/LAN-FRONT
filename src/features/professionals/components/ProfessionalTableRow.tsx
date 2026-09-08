@@ -13,10 +13,10 @@ export const ProfessionalTableRow = ({ professional, index, onEdit, onDelete }: 
     <td className="px-5 py-4"><ProfessionalServiceBadges services={professional.services} /></td>
     <td className="px-5 py-4">
       <div className="flex gap-2">
-        <button onClick={onEdit} className="w-7 h-7 flex items-center justify-center rounded text-gold hover:bg-amber-50 transition-colors">
+        <button onClick={onEdit} className="w-9 h-9 flex items-center justify-center rounded text-gold hover:bg-amber-50 transition-colors">
           <Pencil size={14} />
         </button>
-        <button onClick={onDelete} className="w-7 h-7 flex items-center justify-center rounded text-red-400 hover:bg-red-50 transition-colors">
+        <button onClick={onDelete} className="w-9 h-9 flex items-center justify-center rounded text-red-400 hover:bg-red-50 transition-colors">
           <Trash2 size={14} />
         </button>
       </div>

@@ -1,4 +1,7 @@
 "use client";
+import { ConfirmDelete } from '@/components/ui/ConfirmDelete'
+import { QueryError } from '@/components/ui/QueryError'
+import { useUrlFilters } from '@/hooks/useUrlFilters'
 import { useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -18,14 +21,18 @@ import type { Professional } from "@/features/professionals/api/professionals.ap
 
 const ProfessionalsPage = () => {
   const t = useTranslations("professionals");
-  const [search, setSearch] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<Professional | null>(null)
+  const { params, setFilters } = useUrlFilters()
+  const tc = useTranslations('common')
+  const search = params.get('search') ?? ''
+  const setSearch = (value: string) => setFilters({ search: value, page: 1 })
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Professional | null>(null);
   const debounced = useDebounce(search, 300);
 
-  const { data: professionals = [], isLoading } = useProfessionals(debounced);
+  const { data: professionals = [], isLoading, isError, refetch } = useProfessionals(debounced);
   const createMutation = useCreateProfessional(() => setModalOpen(false));
-  const updateMutation = useUpdateProfessional(() => setEditTarget(null));
+  const updateMutation = useUpdateProfessional(() => { setEditTarget(null); setModalOpen(false) });
   const deleteMutation = useDeleteProfessional();
 
   const handleOpen = (p?: Professional) => {
@@ -43,6 +50,11 @@ const ProfessionalsPage = () => {
 
   return (
     <div className="p-5 sm:p-8 flex flex-col gap-5">
+      <ConfirmDelete open={!!deleteTarget} detail={deleteTarget?.name} busy={deleteMutation.isPending} onClose={() => setDeleteTarget(null)} onConfirm={() => {
+        if (deleteTarget && !deleteMutation.isPending) deleteMutation.mutate(deleteTarget.id, { onSuccess: () => { setDeleteTarget(null);  } })
+      }}/>
+      {isError && <QueryError onRetry={() => refetch()}/>}
+
       <PageHeader
         title={t("title")}
         subtitle={t("subtitle")}
@@ -72,9 +84,9 @@ const ProfessionalsPage = () => {
         <div className="px-5 py-4 border-b border-border font-semibold text-sm text-text">
           {t("activeProfessionals")} ({professionals.length})
         </div>
-        {isLoading ? (
+        {isError ? null : isLoading ? (
           <div className="px-5 py-10 text-center text-sm text-text-light">
-            Carregando…
+            {tc('loading')}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -114,7 +126,7 @@ const ProfessionalsPage = () => {
                       professional={p}
                       index={i}
                       onEdit={() => handleOpen(p)}
-                      onDelete={() => deleteMutation.mutate(p.id)}
+                      onDelete={() => setDeleteTarget(p)}
                     />
                   ))
                 )}
@@ -130,9 +142,9 @@ const ProfessionalsPage = () => {
       </Card>
 
       <div className="sm:hidden flex flex-col gap-3">
-        {isLoading ? (
+        {isError ? null : isLoading ? (
           <div className="text-center py-10 text-sm text-text-light">
-            Carregando…
+            {tc('loading')}
           </div>
         ) : (
           professionals.map((p) => (
@@ -140,7 +152,7 @@ const ProfessionalsPage = () => {
               key={p.id}
               professional={p}
               onEdit={() => handleOpen(p)}
-              onDelete={() => deleteMutation.mutate(p.id)}
+              onDelete={() => setDeleteTarget(p)}
             />
           ))
         )}

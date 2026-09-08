@@ -1,4 +1,7 @@
 'use client'
+import { ConfirmDelete } from '@/components/ui/ConfirmDelete'
+import { QueryError } from '@/components/ui/QueryError'
+import { useUrlFilters } from '@/hooks/useUrlFilters'
 import { useState } from 'react'
 import { Plus, Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -18,12 +21,16 @@ import type { Service } from '@/features/services/api/services.api'
 
 const ServicesPage = () => {
   const t = useTranslations('services')
-  const [search, setSearch]         = useState('')
+  const [deleteTarget, setDeleteTarget] = useState<Service | null>(null)
+  const { params, setFilters } = useUrlFilters()
+  const tc = useTranslations('common')
+  const search = params.get('search') ?? ''
+  const setSearch = (value: string) => setFilters({ search: value, page: 1 })
   const [addOpen, setAddOpen]       = useState(false)
   const [editTarget, setEditTarget] = useState<Service | null>(null)
   const debounced = useDebounce(search, 300)
 
-  const { data: services = [], isLoading } = useServices(debounced)
+  const { data: services = [], isLoading, isError, refetch } = useServices(debounced)
   const createMutation = useCreateService(() => setAddOpen(false))
   const updateMutation = useUpdateService(() => setEditTarget(null))
   const deleteMutation = useDeleteService()
@@ -33,6 +40,11 @@ const ServicesPage = () => {
 
   return (
     <div className="p-5 sm:p-8 flex flex-col gap-5">
+      <ConfirmDelete open={!!deleteTarget} detail={deleteTarget?.name} busy={deleteMutation.isPending} onClose={() => setDeleteTarget(null)} onConfirm={() => {
+        if (deleteTarget && !deleteMutation.isPending) deleteMutation.mutate(deleteTarget.id, { onSuccess: () => { setDeleteTarget(null);  } })
+      }}/>
+      {isError && <QueryError onRetry={() => refetch()}/>}
+
       <PageHeader
         title={t('title')}
         subtitle={t('subtitle')}
@@ -54,8 +66,8 @@ const ServicesPage = () => {
 
       <Card className="hidden sm:block">
         <div className="px-5 py-4 border-b border-border font-semibold text-sm">{t('activeServices')}</div>
-        {isLoading ? (
-          <div className="px-5 py-10 text-center text-sm text-text-light">Carregando…</div>
+        {isError ? null : isLoading ? (
+          <div className="px-5 py-10 text-center text-sm text-text-light">{tc('loading')}</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -71,7 +83,7 @@ const ServicesPage = () => {
                   ? <tr><td colSpan={4} className="px-5 py-10 text-center text-sm text-text-light">Nenhum serviço encontrado.</td></tr>
                   : services.map((s, i) => (
                       <ServiceTableRow key={s.id} service={s} index={i}
-                        onEdit={() => setEditTarget(s)} onDelete={() => deleteMutation.mutate(s.id)} />
+                        onEdit={() => setEditTarget(s)} onDelete={() => setDeleteTarget(s)} />
                     ))
                 }
               </tbody>
@@ -86,7 +98,7 @@ const ServicesPage = () => {
       <div className="sm:hidden flex flex-col gap-3">
         {services.map(s => (
           <ServiceMobileCard key={s.id} service={s}
-            onEdit={() => setEditTarget(s)} onDelete={() => deleteMutation.mutate(s.id)} />
+            onEdit={() => setEditTarget(s)} onDelete={() => setDeleteTarget(s)} />
         ))}
       </div>
 

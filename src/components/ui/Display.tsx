@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from 'next-intl'
 import { cn } from "@/lib/utils";
 
 interface ToggleProps {
@@ -99,10 +100,13 @@ interface PaginationProps {
 }
 
 export const Pagination = ({
-  current,
-  total,
+  current: requestedCurrent,
+  total: requestedTotal,
   onPageChange,
 }: PaginationProps) => {
+  const t = useTranslations('experience')
+  const total = Math.max(1, requestedTotal)
+  const current = Math.min(Math.max(1, requestedCurrent), total)
   const getPages = (): (number | "...")[] => {
     if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
     if (current <= 4) return [1, 2, 3, 4, 5, "...", total];
@@ -116,9 +120,10 @@ export const Pagination = ({
   return (
     <div className="flex items-center gap-1">
       <button
+        aria-label={t('previous')}
         onClick={() => onPageChange(Math.max(1, current - 1))}
         disabled={current === 1}
-        className="w-7 h-7 flex items-center justify-center rounded-md border border-border text-text-muted text-sm hover:border-gold-btn transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-9 h-9 flex items-center justify-center rounded-md border border-border text-text-muted text-sm hover:border-gold-btn transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         ‹
       </button>
@@ -126,16 +131,17 @@ export const Pagination = ({
         p === "..." ? (
           <span
             key={`dots-${i}`}
-            className="w-7 h-7 flex items-center justify-center text-sm text-text-light"
+            className="w-9 h-9 flex items-center justify-center text-sm text-text-light"
           >
             …
           </span>
         ) : (
           <button
             key={p}
+            aria-current={p === current ? 'page' : undefined}
             onClick={() => onPageChange(p as number)}
             className={cn(
-              "w-7 h-7 flex items-center justify-center rounded-md text-sm font-medium transition-colors",
+              "w-9 h-9 flex items-center justify-center rounded-md text-sm font-medium transition-colors",
               p === current
                 ? "bg-gold-btn text-text font-bold"
                 : "border border-border text-text-muted hover:border-gold-btn",
@@ -146,9 +152,10 @@ export const Pagination = ({
         ),
       )}
       <button
+        aria-label={t('next')}
         onClick={() => onPageChange(Math.min(total, current + 1))}
         disabled={current === total}
-        className="w-7 h-7 flex items-center justify-center rounded-md border border-border text-text-muted text-sm hover:border-gold-btn transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        className="w-9 h-9 flex items-center justify-center rounded-md border border-border text-text-muted text-sm hover:border-gold-btn transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
         ›
       </button>

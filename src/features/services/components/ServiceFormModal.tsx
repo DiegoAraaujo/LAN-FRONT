@@ -40,7 +40,7 @@ export const ServiceFormModal = ({ open, onClose, onSave, isLoading, defaultValu
     onSave({ name: d.name, price: parseFloat(d.price), description: d.description })
 
   return (
-    <Modal open={open} onClose={onClose}
+    <Modal busy={isLoading} open={open} onClose={onClose}
       title={defaultValues ? t('editService') : t('addService')}
       footer={
         <>

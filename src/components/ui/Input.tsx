@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { forwardRef } from 'react'
+import { forwardRef, useId } from 'react'
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?:     string
@@ -9,10 +9,13 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, icon, rightIcon, error, className, ...props }, ref) => (
+  ({ label, icon, rightIcon, error, className, id, ...props }, ref) => {
+    const generatedId = useId()
+    const fieldId = id ?? generatedId
+    return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label className="text-xs font-medium text-text-light uppercase tracking-wide">
+        <label htmlFor={fieldId} className="text-xs font-medium text-text-light uppercase tracking-wide">
           {label}
         </label>
       )}
@@ -20,6 +23,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {icon && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light">{icon}</span>}
         <input
           ref={ref}
+          id={fieldId}
+          aria-invalid={!!error}
+          aria-describedby={error ? fieldId + '-error' : props['aria-describedby']}
           className={cn(
             'w-full border rounded-lg py-2.5 text-sm text-text bg-surface placeholder:text-text-light transition-colors',
             error ? 'border-danger' : 'border-border',
@@ -35,8 +41,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           </span>
         )}
       </div>
-      {error && <p className="text-xs text-danger">{error}</p>}
+      {error && <p id={fieldId + '-error'} role="alert" className="text-xs text-danger">{error}</p>}
     </div>
-  ),
+  )},
 )
 Input.displayName = 'Input'

@@ -1,32 +1,16 @@
 'use client'
-
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ROUTES } from '@/constants'
-
+import { useTranslations } from 'next-intl'
+import { useAuthStore } from '@/stores/auth.store'
+import { QueryError } from '@/components/ui/QueryError'
 export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
-  const router  = useRouter()
-  const [ready, setReady] = useState(false)
-
-  useEffect(() => {
-    const token = sessionStorage.getItem('accessToken')
-    if (!token) {
-      router.replace(ROUTES.login)
-    } else {
-      setReady(true)
-    }
-  }, [router])
-
-  if (!ready) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-bg">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-gold-btn border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-text-light">Verificando sessão…</span>
-        </div>
-      </div>
-    )
-  }
-
+  const { ready, accessToken, error, initFromStorage } = useAuthStore()
+  const router = useRouter()
+  const t = useTranslations('common')
+  useEffect(() => { void initFromStorage() }, [initFromStorage])
+  useEffect(() => { if (ready && !accessToken && !error) router.replace('/login') }, [ready, accessToken, error, router])
+  if (error) return <div className="p-8"><QueryError onRetry={() => void initFromStorage()}/></div>
+  if (!ready || !accessToken) return <div role="status" className="min-h-screen grid place-content-center gap-3 text-center text-sm text-text-muted"><div className="mx-auto h-8 w-8 rounded-full border-2 border-gold-btn border-t-transparent animate-spin"/>{t('loading')}</div>
   return <>{children}</>
 }

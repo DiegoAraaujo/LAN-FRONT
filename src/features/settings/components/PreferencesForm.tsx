@@ -1,18 +1,14 @@
 'use client'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Globe } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { useLocaleStore } from '@/stores/locale.store'
 import { cn } from '@/lib/utils'
 
-const TIMEZONES = [
-  { value: 'brasilia', label: '(GMT-03:00) Brasília' },
-  { value: 'manaus',   label: '(GMT-04:00) Manaus'   },
-]
-
 export const PreferencesForm = () => {
   const t = useTranslations('settings')
-  const { locale, setLocale } = useLocaleStore()
+  const locale = useLocale()
+  const { setLocale } = useLocaleStore()
 
   return (
     <Card className="p-5">
@@ -28,7 +24,7 @@ export const PreferencesForm = () => {
             { value: 'en' as const, label: t('langEnglish'),    flag: '🇺🇸' },
             { value: 'pt' as const, label: t('langPortuguese'), flag: '🇧🇷' },
           ].map(opt => (
-            <button key={opt.value} onClick={() => setLocale(opt.value)}
+            <button type="button" aria-pressed={locale === opt.value} key={opt.value} onClick={() => setLocale(opt.value)}
               className={cn(
                 'flex items-center justify-center gap-2 border rounded-lg py-2.5 text-sm font-medium transition-all',
                 locale === opt.value
@@ -44,9 +40,7 @@ export const PreferencesForm = () => {
         <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">
           {t('timezone')}
         </label>
-        <select className="w-full sm:w-64 border border-border rounded-lg px-3 py-2.5 text-sm bg-surface appearance-none">
-          {TIMEZONES.map(tz => <option key={tz.value} value={tz.value}>{tz.label}</option>)}
-        </select>
+        <p className="text-sm text-text-muted rounded-lg border border-border px-3 py-2.5">America/Sao_Paulo · Brasília</p>
       </div>
     </Card>
   )

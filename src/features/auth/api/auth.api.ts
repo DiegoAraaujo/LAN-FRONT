@@ -1,6 +1,6 @@
 import { api } from '@/lib/api'
 
-export interface LoginPayload  { email: string; password: string }
+export interface LoginPayload  { email: string; password: string; remember?: boolean }
 export interface SignupPayload { name: string; email: string; password: string }
 export interface AuthResponse  {
   user: { name: string; email: string; createdAt: string }
@@ -9,6 +9,6 @@ export interface AuthResponse  {
 export interface SignupResponse { name: string; email: string; createdAt: string }
 
 export const authApi = {
-  login:  (data: LoginPayload)  => api.post<AuthResponse>('/sessions/', data),
+  login:  (data: LoginPayload)  => api.post<AuthResponse>('/sessions/', { email: data.email, password: data.password }),
   signup: (data: SignupPayload) => api.post<SignupResponse>('/users', data),
 }

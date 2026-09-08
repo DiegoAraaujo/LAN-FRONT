@@ -1,3 +1,4 @@
+import { clientMessage } from '@/lib/messages'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { customersApi, type UpdateCustomerPayload, type CustomerContact } from '../api/customers.api'
@@ -33,8 +34,8 @@ export const useUpdateCustomer = (onSuccess?: () => void) => {
       return customersApi.update(id, data as UpdateCustomerPayload)
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: customersKeys.all })
-      toast.success('Cliente atualizado!')
+      qc.invalidateQueries({ queryKey: ['appointments'] }); qc.invalidateQueries({ queryKey: customersKeys.all }); qc.invalidateQueries({ queryKey: ['dashboard'] }); qc.invalidateQueries({ queryKey: ['customers', 'dashboard'] })
+      toast.success(clientMessage('Cliente atualizado!'))
       onSuccess?.()
     },
   })

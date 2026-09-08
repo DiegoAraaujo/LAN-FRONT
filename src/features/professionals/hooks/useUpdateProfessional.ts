@@ -1,3 +1,4 @@
+import { clientMessage } from '@/lib/messages'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { professionalsApi, type UpdateProfessionalPayload } from '../api/professionals.api'
@@ -7,6 +8,6 @@ export const useUpdateProfessional = (onSuccess?: () => void) => {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateProfessionalPayload }) => professionalsApi.update(id, data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: professionalsKeys.all }); toast.success('Profissional atualizado!'); onSuccess?.() },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: professionalsKeys.all }); qc.invalidateQueries({ queryKey: ['dashboard'] }); qc.invalidateQueries({ queryKey: ['customers', 'dashboard'] }); toast.success(clientMessage('Profissional atualizado!')); onSuccess?.() },
   })
 }

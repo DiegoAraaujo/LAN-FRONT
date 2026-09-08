@@ -1,5 +1,5 @@
 "use client";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Avatar } from "@/components/ui/Display";
@@ -8,8 +8,9 @@ import { Pencil, Trash2, CheckCircle } from "lucide-react";
 import { formatCurrency, getAvatarColor } from "@/lib/utils";
 import type { Appointment } from "@/features/appointments/api/appointments.api";
 
-const fmt = (iso: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
+const fmt = (iso: string, locale: string) =>
+  new Intl.DateTimeFormat(locale, {
+    timeZone: "America/Sao_Paulo",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -33,6 +34,8 @@ export const ActivityMobileCard = ({
   onViewDetail,
 }: Props) => {
   const t = useTranslations("activities");
+  const locale = useLocale();
+  const common = useTranslations('common')
   const isPending = a.paymentStatus === "PENDING";
 
   return (
@@ -52,7 +55,7 @@ export const ActivityMobileCard = ({
               {a.customerName}
             </div>
             <div className="text-xs text-text-light">
-              {fmt(a.appointmentDate)}
+              {fmt(a.appointmentDate, locale)}
             </div>
           </div>
         </div>
@@ -90,7 +93,7 @@ export const ActivityMobileCard = ({
           variant="outline"
           size="sm"
           className="justify-center"
-          onClick={onEdit}
+          aria-label={common('edit')} onClick={onEdit}
         >
           <Pencil size={13} /> {t("editAppointment")}
         </Button>
@@ -98,7 +101,7 @@ export const ActivityMobileCard = ({
           variant="danger"
           size="sm"
           className="justify-center"
-          onClick={onDelete}
+          aria-label={common('delete')} onClick={onDelete}
         >
           <Trash2 size={13} />
         </Button>

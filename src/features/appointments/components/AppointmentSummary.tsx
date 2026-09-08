@@ -24,7 +24,9 @@ export const AppointmentSummary = ({
   onDiscountChange, onPaymentChange, onPaymentStatusChange, onSubmit,
 }: Props) => {
   const t = useTranslations('appointments')
-  const total    = Math.max(0, subtotal - discount)
+  const e = useTranslations('experience')
+  const invalidDiscount = !Number.isFinite(discount) || discount < 0 || discount > subtotal
+  const total    = subtotal - discount
   const isPending = paymentStatus === 'PENDING'
 
   return (
@@ -41,7 +43,9 @@ export const AppointmentSummary = ({
         <div className="relative w-20">
           <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40 text-xs">R$</span>
           <input
-            type="number"
+            aria-label={t('discount')} min={0} max={subtotal} step={0.01} type="number"
+            aria-invalid={invalidDiscount}
+            aria-describedby={invalidDiscount ? 'appointment-discount-error' : undefined}
             value={discount}
             onChange={e => onDiscountChange(Number(e.target.value))}
             className="w-full bg-transparent border border-white/20 rounded-md py-1 pl-7 pr-2 text-white text-sm"
@@ -49,6 +53,7 @@ export const AppointmentSummary = ({
         </div>
       </div>
 
+      {invalidDiscount && <p id="appointment-discount-error" className="text-sm text-amber-200 mb-3">{e('invalidDiscount')}</p>}
       <div className="flex justify-between items-center mb-5 pt-3 border-t border-white/10">
         <span className="text-[11px] font-semibold uppercase tracking-wide text-white/40">{t('total')}</span>
         <span className="text-2xl font-black text-gold-btn">{formatCurrency(total)}</span>
@@ -58,6 +63,7 @@ export const AppointmentSummary = ({
       <div className="grid grid-cols-2 gap-2 mb-4">
         {(['PAID', 'PENDING'] as PaymentStatus[]).map(s => (
           <button
+            type="button" aria-pressed={paymentStatus === s}
             key={s}
             onClick={() => onPaymentStatusChange(s)}
             className={`py-2.5 rounded-lg text-xs font-semibold border transition-colors ${

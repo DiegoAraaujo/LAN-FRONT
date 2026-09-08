@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
@@ -17,24 +17,15 @@ interface Props {
   onSave: (data: ProfessionalInput) => void
 }
 
-export const ProfessionalFormModal = ({ open, onClose, onSave, isLoading, defaultValues }: Props) => {
+export const ProfessionalFormModal = (props: Props) => props.open ? <ProfessionalForm key={props.defaultValues?.id ?? 'new'} {...props}/> : null
+const ProfessionalForm = ({ open, onClose, onSave, isLoading, defaultValues }: Props) => {
   const t  = useTranslations('professionals')
   const tc = useTranslations('common')
   const { data: services = [] } = useServices()
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [selectedIds, setSelectedIds] = useState<string[]>(defaultValues?.services.map(s => s.id) ?? [])
 
-  const { register, handleSubmit, reset, formState: { errors } } =
-    useForm<ProfessionalInput>({ resolver: zodResolver(professionalSchema) })
-
-  useEffect(() => {
-    if (defaultValues) {
-      reset({ name: defaultValues.name, address: defaultValues.address, phone: defaultValues.phone })
-      setSelectedIds(defaultValues.services.map(s => s.id))
-    } else {
-      reset({ name: '', address: '', phone: '' })
-      setSelectedIds([])
-    }
-  }, [defaultValues, reset, open])
+  const { register, handleSubmit, formState: { errors } } =
+    useForm<ProfessionalInput>({ resolver: zodResolver(professionalSchema), defaultValues: { name: defaultValues?.name ?? '', address: defaultValues?.address ?? '', phone: defaultValues?.phone ?? '' } })
 
   const toggleService = (id: string) =>
     setSelectedIds(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id])
@@ -42,7 +33,7 @@ export const ProfessionalFormModal = ({ open, onClose, onSave, isLoading, defaul
   const onSubmit = (data: ProfessionalInput) => onSave({ ...data, servicesIds: selectedIds })
 
   return (
-    <Modal open={open} onClose={onClose} size="lg"
+    <Modal busy={isLoading} open={open} onClose={onClose} size="lg"
       title={defaultValues ? t('editProfessional') : t('addProfessional')}
       footer={
         <>

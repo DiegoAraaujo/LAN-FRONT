@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/auth.store'
 export const SecurityCard = () => {
   const t        = useTranslations('settings')
   const { user } = useAuthStore()
+  const e = useTranslations('experience')
 
   const rows = [
     {
@@ -15,7 +16,7 @@ export const SecurityCard = () => {
         ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }).format(new Date(user.createdAt))
         : '—',
     },
-    { label: t('emailVerified'), value: t('twoFactorActive'),   color: 'text-success' },
+    { label: t('emailVerified'), value: e('securityUnknown'), color: 'text-text-muted' },
     { label: t('twoFactor'),     value: t('twoFactorInactive'), color: 'text-text-muted' },
   ]
 

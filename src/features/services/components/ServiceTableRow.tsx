@@ -8,6 +8,7 @@ interface Props { service: Service; index: number; onEdit: () => void; onDelete:
 
 export const ServiceTableRow = ({ service, index, onEdit, onDelete }: Props) => {
   const t = useTranslations('services')
+  const common = useTranslations('common')
 
   return (
     <tr className={index > 0 ? 'border-t border-border' : ''}>
@@ -28,10 +29,10 @@ export const ServiceTableRow = ({ service, index, onEdit, onDelete }: Props) => 
       <td className="px-5 py-4 text-sm font-bold text-text">{formatCurrency(service.price)}</td>
       <td className="px-5 py-4">
         <div className="flex gap-2">
-          <button onClick={onEdit} className="w-7 h-7 flex items-center justify-center rounded text-gold hover:bg-amber-50 transition-colors">
+          <button aria-label={common('edit')} onClick={onEdit} className="w-9 h-9 flex items-center justify-center rounded text-gold hover:bg-amber-50 transition-colors">
             <Pencil size={14} />
           </button>
-          <button onClick={onDelete} className="w-7 h-7 flex items-center justify-center rounded text-red-400 hover:bg-red-50 transition-colors">
+          <button aria-label={common('delete')} onClick={onDelete} className="w-9 h-9 flex items-center justify-center rounded text-red-400 hover:bg-red-50 transition-colors">
             <Trash2 size={14} />
           </button>
         </div>

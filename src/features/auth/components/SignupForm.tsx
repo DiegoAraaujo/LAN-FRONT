@@ -29,7 +29,7 @@ export const SignupForm = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <Input label={t('fullName')} placeholder={t('fullNamePlaceholder')} icon={<User size={15} />}
         error={errors.name?.message} {...register('name')} />
       <EmailField register={register} error={errors.email} />
@@ -43,7 +43,7 @@ export const SignupForm = () => {
         </label>
         {errors.terms && <p className="text-xs text-danger">{errors.terms.message}</p>}
       </div>
-      <Button variant="primary" fullWidth size="lg" onClick={handleSubmit(onSubmit)} disabled={signup.isPending}>
+      <Button variant="primary" fullWidth size="lg" type="submit" disabled={signup.isPending}>
         {signup.isPending ? t('creatingAccount') : t('createAccount')}
       </Button>
       <hr className="border-border" />
@@ -51,6 +51,6 @@ export const SignupForm = () => {
         {t('alreadyHaveAccount')}{' '}
         <Link href={ROUTES.login} className="text-gold font-semibold hover:underline">{t('signInLink')}</Link>
       </p>
-    </div>
+    </form>
   )
 }

@@ -1,15 +1,16 @@
 "use client";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Calendar, CheckCircle, CreditCard } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Avatar } from "@/components/ui/Display";
-import { formatCurrency, getAvatarColor, cn } from "@/lib/utils";
+import { formatCurrency, getAvatarColor } from "@/lib/utils";
 import type { Appointment } from "@/features/appointments/api/appointments.api";
 
-const fmt = (iso: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
+const fmt = (iso: string, locale: string) =>
+  new Intl.DateTimeFormat(locale, {
+    timeZone: "America/Sao_Paulo",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -17,12 +18,6 @@ const fmt = (iso: string) =>
     minute: "2-digit",
   }).format(new Date(iso));
 
-const PAYMENT_LABELS: Record<string, string> = {
-  PIX: "Pix",
-  CARD: "Cartão",
-  CASH: "Dinheiro",
-  OTHER: "Outro",
-};
 
 interface Props {
   open: boolean;
@@ -40,7 +35,9 @@ export const ActivityDetailModal = ({
   onMarkPaid,
 }: Props) => {
   const t = useTranslations("activities");
+  const locale = useLocale();
   const tc = useTranslations("common");
+  const paymentLabel = useTranslations("overview.methods");
 
   if (!a) return null;
 
@@ -92,7 +89,7 @@ export const ActivityDetailModal = ({
               {a.customerName}
             </div>
             <div className="flex items-center gap-1.5 text-xs text-text-light mt-0.5">
-              <Calendar size={11} /> {fmt(a.appointmentDate)}
+              <Calendar size={11} /> {fmt(a.appointmentDate, locale)}
             </div>
           </div>
           <div className="ml-auto">
@@ -155,7 +152,7 @@ export const ActivityDetailModal = ({
                 <CreditCard size={11} /> Forma de pagamento
               </span>
               <span className="font-medium text-text">
-                {PAYMENT_LABELS[a.paymentMethod] ?? a.paymentMethod}
+                {paymentLabel(a.paymentMethod)}
               </span>
             </div>
           )}

@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
@@ -22,38 +22,33 @@ interface Props {
   }) => void
 }
 
-export const AppointmentEditModal = ({ open, appointment: a, isLoading, onClose, onSave }: Props) => {
+export const AppointmentEditModal = (props: Props) => props.open && props.appointment
+  ? <AppointmentEditForm key={props.appointment.id} {...props} appointment={props.appointment}/> : null
+const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave }: Props & { appointment: Appointment }) => {
   const t = useTranslations('appointments')
   const tc = useTranslations('common')
 
-  const [paymentStatus,  setPaymentStatus]  = useState<PaymentStatus>('PENDING')
-  const [paymentMethod,  setPaymentMethod]  = useState<PaymentMethod>('PIX')
-  const [discount,       setDiscount]       = useState(0)
-  const [notes,          setNotes]          = useState('')
-  const [date,           setDate]           = useState('')
-
-  useEffect(() => {
-    if (!a) return
-    setPaymentStatus(a.paymentStatus)
-    setPaymentMethod(a.paymentMethod)
-    setDiscount(a.discount)
-    setNotes(a.notes ?? '')
+  const e = useTranslations('experience')
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(a.paymentStatus)
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(a.paymentMethod ?? 'PIX')
+  const [discount, setDiscount] = useState(a.discount)
+  const [notes, setNotes] = useState(a.notes ?? '')
+  const [date, setDate] = useState(() => {
     const local = new Date(a.appointmentDate)
     const pad = (n: number) => String(n).padStart(2, '0')
-    setDate(`${local.getFullYear()}-${pad(local.getMonth()+1)}-${pad(local.getDate())}T${pad(local.getHours())}:${pad(local.getMinutes())}`)
-  }, [a, open])
-
-  if (!a) return null
-
+    return `${local.getFullYear()}-${pad(local.getMonth()+1)}-${pad(local.getDate())}T${pad(local.getHours())}:${pad(local.getMinutes())}`
+  })
+  const valid = !!date && Number.isFinite(new Date(date).getTime()) && Number.isFinite(discount) && discount >= 0 && discount <= a.subtotal
   const isPending = paymentStatus === 'PENDING'
   const total     = Math.max(0, a.subtotal - discount)
 
   const handleSave = () => {
+    if (!valid || isLoading) return
     onSave(a.id, {
       paymentStatus,
       paymentMethod: isPending ? undefined : paymentMethod,
       discount,
-      notes:         notes || undefined,
+      notes:         notes,
       appointmentDate: new Date(date).toISOString(),
     })
   }
@@ -61,19 +56,21 @@ export const AppointmentEditModal = ({ open, appointment: a, isLoading, onClose,
   return (
     <Modal
       open={open}
+      busy={isLoading}
       onClose={onClose}
       title={t('editAppointment')}
       size="md"
       footer={
         <>
           <Button variant="outline" onClick={onClose} disabled={isLoading}>{tc('cancel')}</Button>
-          <Button variant="primary" onClick={handleSave} disabled={isLoading}>
+          <Button variant="primary" onClick={handleSave} disabled={isLoading || !valid}>
             {isLoading ? tc('saving') : tc('save')}
           </Button>
         </>
       }
     >
       <div className="flex flex-col gap-4">
+        {!valid && <p role="alert" className="text-sm text-danger">{e( discount < 0 || discount > a.subtotal ? 'invalidDiscount' : 'formErrors')}</p>}
         <div className="bg-bg rounded-xl p-4">
           <div className="text-xs text-text-light uppercase tracking-wide font-medium mb-2">
             {t('clientSelection')}
@@ -98,7 +95,7 @@ export const AppointmentEditModal = ({ open, appointment: a, isLoading, onClose,
             {t('appointmentDate')}
           </label>
           <input
-            type="datetime-local"
+            aria-label={e('date')} type="datetime-local"
             value={date}
             onChange={e => setDate(e.target.value)}
             className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface text-text"
@@ -113,7 +110,7 @@ export const AppointmentEditModal = ({ open, appointment: a, isLoading, onClose,
             <div className="relative w-32">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-text-light">R$</span>
               <input
-                type="number"
+                aria-label={e('discount')} type="number"
                 min={0}
                 max={a.subtotal}
                 step={0.01}

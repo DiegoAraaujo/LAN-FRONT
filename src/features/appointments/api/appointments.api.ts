@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 
 export type PaymentStatus = "PAID" | "PENDING";
-export type PaymentMethod = "PIX" | "CARD" | "CASH" | "OTHER";
+export type PaymentMethod = "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CASH" | "OTHER";
 
 export interface AppointmentItem {
   serviceId: string;
@@ -19,7 +19,7 @@ export interface Appointment {
   discount: number;
   total: number;
   paymentStatus: PaymentStatus;
-  paymentMethod: PaymentMethod;
+  paymentMethod: PaymentMethod | null;
   notes?: string;
   items: AppointmentItem[];
 }
@@ -41,7 +41,7 @@ export interface CreateAppointmentPayload {
   appointmentDate: string;
   discount?: number;
   paymentStatus: PaymentStatus;
-  paymentMethod: PaymentMethod;
+  paymentMethod: PaymentMethod | null;
   notes?: string;
   items: { serviceId: string; professionalId: string }[];
 }

@@ -10,12 +10,12 @@ interface UsePaginationReturn {
 
 export const usePagination = (totalItems: number, itemsPerPage = 10): UsePaginationReturn => {
   const [page, setPage] = useState(1)
-  const totalPages = Math.ceil(totalItems / itemsPerPage)
+  const totalPages = Math.max(1, Math.ceil(totalItems / Math.max(1, itemsPerPage)))
 
   return {
-    page,
+    page: Math.min(page, totalPages),
     totalPages,
-    setPage,
+    setPage: (value) => setPage(Math.max(1, Math.min(value, totalPages))),
     next: () => setPage((p) => Math.min(p + 1, totalPages)),
     prev: () => setPage((p) => Math.max(p - 1, 1)),
   }

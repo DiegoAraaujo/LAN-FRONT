@@ -2,7 +2,8 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast'
-import { useState } from 'react'
+import { useAuthStore } from '@/stores/auth.store'
+import { useEffect, useState } from 'react'
 
 export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
   const [queryClient] = useState(
@@ -18,6 +19,19 @@ export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
       }),
   )
 
+  useEffect(() => {
+    const unsubscribe = useAuthStore.subscribe((state, previous) => {
+      if (!state.accessToken && previous.accessToken) { void queryClient.cancelQueries(); queryClient.clear() }
+    })
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === 'refreshToken' && event.newValue === null && useAuthStore.getState().accessToken) {
+        useAuthStore.getState().clearSession()
+        window.location.replace('/login')
+      }
+    }
+    window.addEventListener('storage', onStorage)
+    return () => { unsubscribe(); window.removeEventListener('storage', onStorage) }
+  }, [queryClient])
   return (
     <QueryClientProvider client={queryClient}>
       {children}

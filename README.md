@@ -16,7 +16,6 @@ A full-featured web management system for barbershops and salons, covering the e
 - **Appointments** — Smart scheduling with real-time professional filtering by service, duplicate service prevention, discount calculation and payment tracking
 - **Activities** — Appointment history with filters, inline mark-as-paid and full edit support
 - **Settings** — Profile management and language preferences
-- **Support** — FAQ and contact form
 - **Internationalization** — Full PT/EN support via `next-intl`
 
 ---
@@ -51,8 +50,7 @@ src/
 │   │   ├── dashboard/
 │   │   ├── professionals/
 │   │   ├── services/
-│   │   ├── settings/
-│   │   └── support/
+│   │   └── settings/
 │   └── (auth)/              # Public routes
 │       ├── login/
 │       └── signup/
@@ -68,8 +66,7 @@ src/
 │   ├── dashboard/
 │   ├── professionals/
 │   ├── services/
-│   ├── settings/
-│   └── support/
+│   └── settings/
 ├── hooks/                   # Global hooks (useDebounce)
 ├── i18n/                    # next-intl server config
 ├── lib/                     # axios instance (api.ts), utilities (utils.ts)

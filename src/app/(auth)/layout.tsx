@@ -1,8 +1,6 @@
-import { getTranslations } from 'next-intl/server'
 import { GuestGuard } from '@/components/layout/GuestGuard'
 
 const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
-  const t = await getTranslations('auth')
   return (
     <GuestGuard>
       <div className="min-h-screen bg-bg flex">
@@ -16,7 +14,7 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
           </div>
           <div>
             <blockquote className="text-white/60 text-sm leading-relaxed italic mb-4">
-              "Organize seu negócio, valorize cada cliente e acompanhe cada centavo faturado — tudo em um só lugar."
+              &ldquo;Organize seu negócio, valorize cada cliente e acompanhe cada centavo faturado — tudo em um só lugar.&rdquo;
             </blockquote>
             <div className="flex gap-2">
               {[1,2,3].map(i => (

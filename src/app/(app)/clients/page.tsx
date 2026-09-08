@@ -1,4 +1,7 @@
 "use client";
+import { ConfirmDelete } from '@/components/ui/ConfirmDelete'
+import { QueryError } from '@/components/ui/QueryError'
+import { useUrlFilters } from '@/hooks/useUrlFilters'
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
@@ -28,9 +31,14 @@ const LIMIT = 10;
 
 const CustomersPage = () => {
   const t = useTranslations("clients");
+  const [deleteTarget, setDeleteTarget] = useState<Customer | null>(null)
+  const { params, setFilters } = useUrlFilters()
+  const tc = useTranslations('common')
 
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const search = params.get('search') ?? ''
+  const setSearch = (value: string) => setFilters({ search: value, page: 1 })
+  const page = Math.max(1, Number(params.get('page')) || 1)
+  const setPage = (value: number) => setFilters({ page: value })
   const [formOpen, setFormOpen] = useState(false);
   const [loyaltyOpen, setLoyaltyOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Customer | null>(null);
@@ -38,7 +46,7 @@ const CustomersPage = () => {
 
   const debounced = useDebounce(search, 300);
 
-  const { data, isLoading } = useCustomers({
+  const { data, isLoading, isError, refetch } = useCustomers({
     search: debounced,
     page,
     limit: LIMIT,
@@ -82,6 +90,11 @@ const CustomersPage = () => {
 
   return (
     <div className="p-5 sm:p-8 flex flex-col gap-5">
+      <ConfirmDelete open={!!deleteTarget} detail={deleteTarget?.name} busy={deleteMutation.isPending} onClose={() => setDeleteTarget(null)} onConfirm={() => {
+        if (deleteTarget && !deleteMutation.isPending) deleteMutation.mutate(deleteTarget.id, { onSuccess: () => { setDeleteTarget(null); setPage(Math.max(1, page - (customers.length === 1 ? 1 : 0))); } })
+      }}/>
+      {isError && <QueryError onRetry={() => refetch()}/>}
+
       <PageHeader
         title={t("title")}
         subtitle={t("subtitle")}
@@ -111,16 +124,16 @@ const CustomersPage = () => {
           isLoading={isLoading}
           onToggle={handleToggle}
           onEdit={setEditTarget}
-          onDelete={(id) => deleteMutation.mutate(id)}
+          onDelete={(id) => setDeleteTarget(customers.find(c => c.id === id) ?? null)}
           onPageChange={setPage}
           onViewDetail={setDetailTarget}
         />
       </div>
 
       <div className="sm:hidden flex flex-col gap-3">
-        {isLoading ? (
+        {isError ? null : isLoading ? (
           <div className="text-center py-10 text-sm text-text-light">
-            Carregando…
+            {tc('loading')}
           </div>
         ) : customers.length === 0 ? (
           <div className="text-center py-10 text-sm text-text-light">
@@ -131,7 +144,7 @@ const CustomersPage = () => {
             customers={customers}
             isLoading={isLoading}
             onEdit={setEditTarget}
-            onDelete={(id) => deleteMutation.mutate(id)}
+            onDelete={(id) => setDeleteTarget(customers.find(c => c.id === id) ?? null)}
             onViewDetail={setDetailTarget}
           />
         )}

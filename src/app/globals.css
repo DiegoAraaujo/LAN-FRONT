@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-gold:         #D4A017;
-  --color-gold-btn:     #E8B830;
+  --color-gold:         #946b20;
+  --color-gold-btn:     #e5b95b;
   --color-gold-light:   #F5EFC0;
-  --color-sidebar:      #1E1E1E;
-  --color-bg:           #F5F3EE;
-  --color-bg2:          #FAFAF8;
+  --color-sidebar:      #172c29;
+  --color-bg:           #f4f6f5;
+  --color-bg2:          #fafbf9;
   --color-surface:      #FFFFFF;
-  --color-text:         #1C1C1C;
-  --color-text-muted:   #6B6B6B;
-  --color-text-light:   #9A9A9A;
-  --color-border:       #E2E0DA;
-  --color-divider:      #F0EDE6;
-  --color-success:      #22C55E;
-  --color-warning:      #F59E0B;
+  --color-text:         #1b302d;
+  --color-text-muted:   #5c6e68;
+  --color-text-light:   #6b7b75;
+  --color-border:       #dfe6e2;
+  --color-divider:      #edf1ee;
+  --color-success:      #15805e;
+  --color-warning:      #a86810;
   --color-danger:       #EF4444;
   --color-loyalty-bg:   #EEF5EE;
   --color-banner-from:  #2D3B45;
@@ -22,6 +22,8 @@
 }
 
 body {
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-feature-settings: "ss01";
   background-color: var(--color-bg);
   color: var(--color-text);
 }
@@ -34,4 +36,13 @@ input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--color-gold-btn) !important;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-gold-btn) 15%, transparent);
+}
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled), select { cursor: pointer; }
+:focus-visible { outline: 3px solid #16856a; outline-offset: 3px; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #16856a; outline-offset: 2px; }
+body:has(dialog[open]) { overflow: hidden; }
+main > div { max-width: 1600px; margin-inline: auto; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }

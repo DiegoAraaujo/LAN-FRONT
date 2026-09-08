@@ -12,7 +12,6 @@ export const ROUTES = {
   appointments:  '/appointments',
   activities:    '/activities',
   settings:      '/settings',
-  support:       '/support',
 } as const
 
 export const AVATAR_COLORS = [

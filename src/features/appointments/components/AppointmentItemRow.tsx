@@ -13,12 +13,14 @@ interface Props {
   services:       Service[]
   usedServiceIds: string[]
   showRemove:     boolean
+  showErrors?:    boolean
   onChange:       (id: string, field: 'serviceId' | 'professionalId', value: string) => void
   onRemove:       (id: string) => void
 }
 
-export const AppointmentItemRow = ({ item, services, usedServiceIds, showRemove, onChange, onRemove }: Props) => {
+export const AppointmentItemRow = ({ item, services, usedServiceIds, showRemove, showErrors = false, onChange, onRemove }: Props) => {
   const t  = useTranslations('appointments')
+  const e = useTranslations('experience')
   const svc = services.find(s => s.id === item.serviceId)
 
   const { data: filteredProfessionals = [], isLoading: loadingPros } =
@@ -47,8 +49,10 @@ export const AppointmentItemRow = ({ item, services, usedServiceIds, showRemove,
     <div className="border border-border rounded-lg p-3">
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto_auto] gap-3 items-end">
         <Select label={t('serviceLabel')} options={serviceOptions} value={item.serviceId}
+          error={showErrors && !item.serviceId ? t('selectService') : undefined}
           onChange={e => handleServiceChange(e.target.value)} />
         <Select label={t('professionalLabel')} options={professionalOptions} value={item.professionalId}
+          error={showErrors && !item.professionalId ? t('selectProfessional') : undefined}
           disabled={!item.serviceId || loadingPros}
           onChange={e => onChange(item.id, 'professionalId', e.target.value)} />
         <div>
@@ -60,7 +64,7 @@ export const AppointmentItemRow = ({ item, services, usedServiceIds, showRemove,
           </div>
         </div>
         {showRemove && (
-          <button onClick={() => onRemove(item.id)} className="text-red-400 hover:text-red-600 pb-1">
+          <button aria-label={e('removeItem')} type="button" onClick={() => onRemove(item.id)} className="text-red-400 hover:text-red-600 pb-1">
             <Trash2 size={16} />
           </button>
         )}

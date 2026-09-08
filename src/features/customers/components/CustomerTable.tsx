@@ -1,7 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/Card";
-import { Pagination } from "@/components/ui/Display";
 import { CustomerTableRow } from "./CustomerTableRow";
 import type { Customer } from "../api/customers.api";
 
@@ -20,14 +19,10 @@ interface Props {
 
 export const CustomerTable = ({
   customers,
-  total,
-  page,
-  totalPages,
   isLoading,
   onToggle,
   onEdit,
   onDelete,
-  onPageChange,
   onViewDetail,
 }: Props) => {
   const t = useTranslations("clients");

@@ -1,6 +1,6 @@
 "use client";
 import { Trash2, Pencil, CheckCircle } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Badge } from "@/components/ui/Badge";
 import { Avatar } from "@/components/ui/Display";
 import { formatCurrency, getAvatarColor, cn } from "@/lib/utils";
@@ -8,8 +8,9 @@ import type { Appointment } from "@/features/appointments/api/appointments.api";
 
 const DOT = ["bg-success", "bg-gold", "bg-warning"];
 
-const fmt = (iso: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
+const fmt = (iso: string, locale: string) =>
+  new Intl.DateTimeFormat(locale, {
+    timeZone: "America/Sao_Paulo",
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -35,18 +36,19 @@ export const ActivityTableRow = ({
   onViewDetail,
 }: Props) => {
   const t = useTranslations("activities");
+  const common = useTranslations('common')
+  const locale = useLocale();
   const isPending = a.paymentStatus === "PENDING";
 
   return (
     <tr className={index > 0 ? "border-t border-border" : ""}>
       <td
         className="px-5 py-4 text-sm text-text cursor-pointer hover:text-gold transition-colors underline-offset-2 hover:underline"
-        onClick={onViewDetail}
       >
-        {fmt(a.appointmentDate)}
+        <button type="button" onClick={onViewDetail} className="text-left hover:underline">{fmt(a.appointmentDate, locale)}</button>
       </td>
 
-      <td className="px-5 py-4" onClick={onViewDetail}>
+      <td className="px-5 py-4">
         <div className="flex items-center gap-2 cursor-pointer">
           <Avatar
             initials={a.customerName.charAt(0)}
@@ -95,24 +97,24 @@ export const ActivityTableRow = ({
             <button
               onClick={onMarkPaid}
               title={t("markAsPaid")}
-              className="w-7 h-7 flex items-center justify-center rounded text-green-600 hover:bg-green-50 transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded text-green-600 hover:bg-green-50 transition-colors"
             >
               <CheckCircle size={15} />
             </button>
           )}
 
           <button
-            onClick={onEdit}
+            aria-label={common('edit')} onClick={onEdit}
             title={t("editAppointment")}
-            className="w-7 h-7 flex items-center justify-center rounded text-gold hover:bg-amber-50 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded text-gold hover:bg-amber-50 transition-colors"
           >
             <Pencil size={14} />
           </button>
 
           <button
-            onClick={onDelete}
+            aria-label={common('delete')} onClick={onDelete}
             title={t("deleteAppointment")}
-            className="w-7 h-7 flex items-center justify-center rounded text-red-400 hover:bg-red-50 transition-colors"
+            className="w-9 h-9 flex items-center justify-center rounded text-red-400 hover:bg-red-50 transition-colors"
           >
             <Trash2 size={14} />
           </button>

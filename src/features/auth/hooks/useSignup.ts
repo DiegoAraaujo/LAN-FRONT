@@ -1,3 +1,4 @@
+import { clientMessage } from '@/lib/messages'
 import { useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
@@ -9,7 +10,7 @@ export const useSignup = () => {
   return useMutation({
     mutationFn: authApi.signup,
     onSuccess: () => {
-      toast.success('Conta criada! Faça login para continuar.')
+      toast.success(clientMessage('Conta criada! Faça login para continuar.'))
       router.push(ROUTES.login)
     },
   })

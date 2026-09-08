@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
-import { Geist, Geist_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 import { QueryProvider } from '@/providers/QueryProvider'
 import './globals.css'
 
-const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
-const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
+// Use the Geist files bundled with our pinned Next version; builds need no font download.
+const geistSans = localFont({ src: '../../node_modules/next/dist/next-devtools/server/font/geist-latin.woff2', variable: '--font-geist-sans', display: 'swap', weight: '100 900' })
+const geistMono = localFont({ src: '../../node_modules/next/dist/next-devtools/server/font/geist-mono-latin.woff2', variable: '--font-geist-mono', display: 'swap', weight: '100 900' })
 
 export const metadata: Metadata = {
   title:       'LAN — Launched, Noted, Never Forgotten',

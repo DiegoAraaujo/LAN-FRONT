@@ -33,7 +33,7 @@ export const LoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <EmailField register={register} error={errors.email} />
       <div className="flex flex-col gap-1.5">
         <PasswordField
@@ -55,7 +55,7 @@ export const LoginForm = () => {
         variant="primary"
         fullWidth
         size="lg"
-        onClick={handleSubmit(onSubmit)}
+        type="submit"
         disabled={login.isPending}
       >
         {login.isPending ? t("signingIn") : t("signIn")}
@@ -69,6 +69,6 @@ export const LoginForm = () => {
           {t("createOne")}
         </Link>
       </p>
-    </div>
+    </form>
   );
 };

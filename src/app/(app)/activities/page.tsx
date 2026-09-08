@@ -1,4 +1,7 @@
 "use client";
+import { ConfirmDelete } from '@/components/ui/ConfirmDelete'
+import { QueryError } from '@/components/ui/QueryError'
+import { useUrlFilters } from '@/hooks/useUrlFilters'
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader, Pagination } from "@/components/ui/Display";
@@ -32,14 +35,22 @@ const HEADERS_KEYS = [
 
 const ActivitiesPage = () => {
   const t = useTranslations("activities");
+  const [deleteTarget, setDeleteTarget] = useState<Appointment | null>(null)
+  const { params, setFilters } = useUrlFilters()
+  const tc = useTranslations('common')
 
-  const [search, setSearch] = useState("");
-  const [month, setMonth] = useState<number | undefined>();
-  const [year, setYear] = useState<number | undefined>();
-  const [paymentStatus, setPaymentStatus] = useState<
-    PaymentStatus | undefined
-  >();
-  const [page, setPage] = useState(1);
+  const search = params.get('search') ?? ''
+  const setSearch = (value: string) => setFilters({ search: value, page: 1 })
+  const monthValue = Number(params.get('month'))
+  const yearValue = Number(params.get('year'))
+  const month = monthValue >= 1 && monthValue <= 12 ? monthValue : undefined
+  const year = yearValue >= 2000 && yearValue <= 2100 ? yearValue : undefined
+  const paymentStatus: PaymentStatus | undefined = params.get('paymentStatus') === 'PAID' ? 'PAID' : params.get('paymentStatus') === 'PENDING' ? 'PENDING' : undefined
+  const setMonth = (value: number | undefined) => setFilters({ month: value, page: 1 })
+  const setYear = (value: number | undefined) => setFilters({ year: value, page: 1 })
+  const setPaymentStatus = (value: PaymentStatus | undefined) => setFilters({ paymentStatus: value, page: 1 })
+  const page = Math.max(1, Number(params.get('page')) || 1)
+  const setPage = (value: number) => setFilters({ page: value })
   const [editTarget, setEditTarget] = useState<Appointment | null>(null);
   const [markPaidTarget, setMarkPaidTarget] = useState<Appointment | null>(
     null,
@@ -53,7 +64,7 @@ const ActivitiesPage = () => {
     setMarkPaidTarget(null);
   });
 
-  const { data, isLoading } = useAppointments({
+  const { data, isLoading, isError, refetch } = useAppointments({
     search: debounced || undefined,
     month,
     year,
@@ -77,7 +88,7 @@ const ActivitiesPage = () => {
   };
 
   const handleConfirmMarkPaid = (method: PaymentMethod) => {
-    if (!markPaidTarget) return;
+    if (!markPaidTarget || updateMutation.isPending) return;
     updateMutation.mutate({
       id: markPaidTarget.id,
       data: { paymentStatus: "PAID", paymentMethod: method },
@@ -98,7 +109,7 @@ const ActivitiesPage = () => {
       id,
       data: {
         paymentStatus: data.paymentStatus,
-        paymentMethod: data.paymentMethod ?? "OTHER",
+        paymentMethod: data.paymentStatus === "PENDING" ? null : data.paymentMethod ?? "OTHER",
         discount: data.discount,
         notes: data.notes,
         appointmentDate: data.appointmentDate,
@@ -112,6 +123,11 @@ const ActivitiesPage = () => {
 
   return (
     <div className="p-5 sm:p-8 flex flex-col gap-5">
+      <ConfirmDelete open={!!deleteTarget} detail={deleteTarget ? deleteTarget.customerName + ' · ' + new Date(deleteTarget.appointmentDate).toLocaleString() + ' · R$ ' + deleteTarget.total.toFixed(2) : undefined} busy={deleteMutation.isPending} onClose={() => setDeleteTarget(null)} onConfirm={() => {
+        if (deleteTarget && !deleteMutation.isPending) deleteMutation.mutate(deleteTarget.id, { onSuccess: () => { setDeleteTarget(null); setPage(Math.max(1, page - (appointments.length === 1 ? 1 : 0))); } })
+      }}/>
+      {isError && <QueryError onRetry={() => refetch()}/>}
+
       <PageHeader title={t("title")} subtitle={t("subtitle")} />
       <ActivitiesFilterBar
         search={search}
@@ -162,9 +178,9 @@ const ActivitiesPage = () => {
           </span>
         </div>
 
-        {isLoading ? (
+        {isError ? null : isLoading ? (
           <div className="px-5 py-10 text-center text-sm text-text-light">
-            Carregando…
+            {tc('loading')}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -198,7 +214,7 @@ const ActivitiesPage = () => {
                       key={a.id}
                       appointment={a}
                       index={i}
-                      onDelete={() => deleteMutation.mutate(a.id)}
+                      onDelete={() => setDeleteTarget(a)}
                       onEdit={() => setEditTarget(a)}
                       onMarkPaid={() => setMarkPaidTarget(a)}
                       onViewDetail={() => setDetailTarget(a)}
@@ -211,9 +227,9 @@ const ActivitiesPage = () => {
         )}
       </Card>
       <div className="sm:hidden flex flex-col gap-3">
-        {isLoading ? (
+        {isError ? null : isLoading ? (
           <div className="text-center py-10 text-sm text-text-light">
-            Carregando…
+            {tc('loading')}
           </div>
         ) : appointments.length === 0 ? (
           <div className="text-center py-10 text-sm text-text-light">
@@ -224,7 +240,7 @@ const ActivitiesPage = () => {
             <ActivityMobileCard
               key={a.id}
               appointment={a}
-              onDelete={() => deleteMutation.mutate(a.id)}
+              onDelete={() => setDeleteTarget(a)}
               onEdit={() => setEditTarget(a)}
               onMarkPaid={() => setMarkPaidTarget(a)}
               onViewDetail={() => setDetailTarget(a)}

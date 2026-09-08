@@ -1,6 +1,6 @@
 'use client'
-import { useEffect, useRef } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { useEffect } from 'react'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
 import { MessageCircle } from 'lucide-react'
@@ -60,10 +60,10 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
   const t  = useTranslations('clients')
   const tc = useTranslations('common')
 
-  const { register, handleSubmit, reset, watch, setValue, control, formState: { errors } } =
+  const { register, handleSubmit, reset, setValue, control, formState: { errors } } =
     useForm<CustomerInput>({ resolver: zodResolver(customerSchema), defaultValues: { whatsappDdi: '+55' } })
 
-  const selectedDdi = watch('whatsappDdi')
+  const selectedDdi = useWatch({ control, name: 'whatsappDdi' })
 
   useEffect(() => {
     if (defaultValues) {
@@ -94,7 +94,7 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
   }
 
   return (
-    <Modal open={open} onClose={onClose}
+    <Modal busy={isLoading} open={open} onClose={onClose}
       title={defaultValues ? t('editClient') : t('addClient')}
       footer={
         <>
