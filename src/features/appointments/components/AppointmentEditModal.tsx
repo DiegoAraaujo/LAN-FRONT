@@ -4,9 +4,8 @@ import { useTranslations } from 'next-intl'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { Textarea } from '@/components/ui/Textarea'
-import { PaymentMethodSelector } from './PaymentMethodSelector'
 import { formatCurrency } from '@/lib/utils'
-import type { Appointment, PaymentMethod, PaymentStatus } from '../api/appointments.api'
+import type { Appointment } from '../api/appointments.api'
 
 interface Props {
   open:        boolean
@@ -14,8 +13,6 @@ interface Props {
   isLoading:   boolean
   onClose:     () => void
   onSave:      (id: string, data: {
-    paymentStatus:  PaymentStatus
-    paymentMethod?: PaymentMethod
     discount:       number
     notes?:         string
     appointmentDate: string
@@ -29,8 +26,7 @@ const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave 
   const tc = useTranslations('common')
 
   const e = useTranslations('experience')
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>(a.paymentStatus)
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(a.paymentMethod ?? 'PIX')
+
   const [discount, setDiscount] = useState(a.discount)
   const [notes, setNotes] = useState(a.notes ?? '')
   const [date, setDate] = useState(() => {
@@ -39,14 +35,12 @@ const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave 
     return `${local.getFullYear()}-${pad(local.getMonth()+1)}-${pad(local.getDate())}T${pad(local.getHours())}:${pad(local.getMinutes())}`
   })
   const valid = !!date && Number.isFinite(new Date(date).getTime()) && Number.isFinite(discount) && discount >= 0 && discount <= a.subtotal
-  const isPending = paymentStatus === 'PENDING'
+
   const total     = Math.max(0, a.subtotal - discount)
 
   const handleSave = () => {
     if (!valid || isLoading) return
     onSave(a.id, {
-      paymentStatus,
-      paymentMethod: isPending ? undefined : paymentMethod,
       discount,
       notes:         notes,
       appointmentDate: new Date(date).toISOString(),
@@ -125,37 +119,7 @@ const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave 
           </div>
         </div>
 
-        <div>
-          <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-2">
-            {t('paymentStatus')}
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {(['PAID', 'PENDING'] as PaymentStatus[]).map(s => (
-              <button
-                key={s}
-                onClick={() => setPaymentStatus(s)}
-                className={`py-2.5 rounded-lg text-xs font-semibold border transition-colors ${
-                  paymentStatus === s
-                    ? s === 'PAID'
-                      ? 'border-success bg-green-50 text-green-700'
-                      : 'border-warning bg-amber-50 text-amber-700'
-                    : 'border-border text-text-muted'
-                }`}
-              >
-                {s === 'PAID' ? t('paid') : t('pending')}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {!isPending && (
-          <div>
-            <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-2">
-              {t('paymentMethod')}
-            </label>
-            <PaymentMethodSelector value={paymentMethod} onChange={setPaymentMethod} />
-          </div>
-        )}
+        <p className="text-sm text-text-muted">Para receber valores ou usar crédito, escolha Registrar pagamento. O desconto altera o preço do serviço.</p>
 
         <Textarea
           label={`${t('notes')} (${tc('optional')})`}

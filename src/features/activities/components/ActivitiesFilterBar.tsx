@@ -1,4 +1,6 @@
 'use client'
+import { useUrlFilters } from '@/hooks/useUrlFilters'
+import { Input } from '@/components/ui/Input'
 import { Search, RotateCcw } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Button } from '@/components/ui/Button'
@@ -20,13 +22,19 @@ export const ActivitiesFilterBar = ({ search, month, year, paymentStatus, onSear
   const t  = useTranslations('activities')
   const tc = useTranslations('common')
 
+  const { params, setFilters } = useUrlFilters()
+  const custom = params.get('dateMode') === 'custom' || !!(params.get('dateFrom') || params.get('dateTo'))
+  const changeMode = (value: string) => setFilters({
+    dateMode: value === 'custom' ? 'custom' : undefined,
+    dateFrom: undefined, dateTo: undefined, month: undefined, year: undefined, page: 1,
+  })
   const locale = useLocale()
   const MONTHS = locale === 'en' ? MONTHS_EN : MONTHS_PT
 
   return (
-    <Card className="p-4">
-      <div className="flex flex-wrap gap-3 items-end">
-        <div className="flex-1 min-w-45">
+    <Card className="p-4 sm:p-5 space-y-4">
+      <div className="flex flex-wrap gap-4 items-end">
+        <div className="w-full sm:flex-1 min-w-0">
           <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">{t('clientLabel')}</label>
           <div className="relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light" />
@@ -35,29 +43,14 @@ export const ActivitiesFilterBar = ({ search, month, year, paymentStatus, onSear
               className="w-full border border-border rounded-lg pl-8 pr-3 py-2.5 text-sm bg-surface" />
           </div>
         </div>
-        <div className="min-w-35">
-          <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">{t('monthLabel')}</label>
-          <select aria-label={t('monthLabel')} value={month ?? ''} onChange={e => onMonth(e.target.value ? Number(e.target.value) : undefined)}
-            className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface appearance-none cursor-pointer">
-            <option value="">{t('allMonths')}</option>
-            {MONTHS.map((m, i) => <option key={i+1} value={i+1}>{m}</option>)}
-          </select>
-        </div>
-        <div className="min-w-25">
-          <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">{t('yearLabel')}</label>
-          <select aria-label={t('yearLabel')} value={year ?? ''} onChange={e => onYear(e.target.value ? Number(e.target.value) : undefined)}
-            className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface appearance-none cursor-pointer">
-            <option value="">{t('allYears')}</option>
-            {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
-          </select>
-        </div>
-        <div className="min-w-32.5">
+        <div className="w-full sm:w-56 shrink-0">
           <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">{t('paymentLabel')}</label>
           <select aria-label={t('paymentLabel')} value={paymentStatus ?? ''} onChange={e => onPaymentStatus((e.target.value as PaymentStatus) || undefined)}
             className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface appearance-none cursor-pointer">
             <option value="">{t('allStatuses')}</option>
             <option value="PAID">{t('paid')}</option>
             <option value="PENDING">{t('pending')}</option>
+            <option value="PARTIAL">Parcialmente pago</option>
           </select>
         </div>
         {hasFilters && (
@@ -65,6 +58,44 @@ export const ActivitiesFilterBar = ({ search, month, year, paymentStatus, onSear
             <RotateCcw size={13} /> {tc('reset')}
           </Button>
         )}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-end border-t border-border pt-4 [&>*]:min-w-0">
+        <div className="min-w-0">
+          <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5" htmlFor="appointment-period-mode">{locale === 'en' ? 'Period' : 'Período'}</label>
+          <select id="appointment-period-mode" value={custom ? 'custom' : 'month'} onChange={e => changeMode(e.target.value)} className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface">
+            <option value="month">{locale === 'en' ? 'Month and year' : 'Mês e ano'}</option>
+            <option value="custom">{locale === 'en' ? 'Custom period' : 'Personalizado'}</option>
+          </select>
+        </div>
+        {custom ? <>
+          <Input label={locale === 'en' ? 'From' : 'De'} type="date" value={params.get('dateFrom') ?? ''} max={params.get('dateTo') || undefined} onChange={e => setFilters({dateFrom: e.target.value, month: undefined, year: undefined, page: 1})}/>
+          <Input label={locale === 'en' ? 'To' : 'Até'} type="date" value={params.get('dateTo') ?? ''} min={params.get('dateFrom') || undefined} onChange={e => setFilters({dateTo: e.target.value, month: undefined, year: undefined, page: 1})}/>
+        </> : <>
+        <div className="min-w-0">
+          <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">{t('monthLabel')}</label>
+          <select aria-label={t('monthLabel')} value={month ?? ''} onChange={e => onMonth(e.target.value ? Number(e.target.value) : undefined)}
+            className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface appearance-none cursor-pointer">
+            <option value="">{t('allMonths')}</option>
+            {MONTHS.map((m, i) => <option key={i+1} value={i+1}>{m}</option>)}
+          </select>
+        </div>
+        <div className="min-w-0">
+          <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">{t('yearLabel')}</label>
+          <select aria-label={t('yearLabel')} value={year ?? ''} onChange={e => onYear(e.target.value ? Number(e.target.value) : undefined)}
+            className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface appearance-none cursor-pointer">
+            <option value="">{t('allYears')}</option>
+            {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+        </div>
+        </>}
+        <div className="min-w-0">
+          <label htmlFor="appointment-date-type" className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">{locale === 'en' ? 'Date of' : 'Filtrar pela data'}</label>
+          <select id="appointment-date-type" className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface" value={params.get('dateType') || 'appointment'} onChange={e => setFilters({dateType: e.target.value, page: 1})}>
+            <option value="appointment">{locale === 'en' ? 'Appointment' : 'Do atendimento'}</option>
+            <option value="payment">{locale === 'en' ? 'Payment' : 'Do pagamento'}</option>
+          </select>
+        </div>
+
       </div>
     </Card>
   )

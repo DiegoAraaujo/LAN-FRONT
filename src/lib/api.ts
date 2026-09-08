@@ -1,41 +1,43 @@
 import axios, { AxiosError } from 'axios'
 import toast from 'react-hot-toast'
-import { useAuthStore, getRefreshToken } from '@/stores/auth.store'
+import { useAuthStore } from '@/stores/auth.store'
 import { clientMessage } from './messages'
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3333'
-export const api = axios.create({ baseURL: BASE_URL, timeout: 10000 })
-api.interceptors.request.use(config => {
-  const token = sessionStorage.getItem('accessToken')
-  if (token) config.headers.Authorization = 'Bearer '+token
-  else delete config.headers.Authorization
-  return config
-})
-let refreshing: Promise<string> | null = null
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? (process.env.NODE_ENV === 'production'
+  ? 'https://api.jdbarbeariatapuio.com.br' : 'http://localhost:3333')
+const config = { baseURL: BASE_URL, timeout: 10000, withCredentials: true,
+  headers: { 'X-CSRF-Protection': '1' } }
+export const api = axios.create(config)
+const sessionApi = axios.create(config)
+let refreshing: Promise<void> | null = null
+let signingOut = false
+export const withSessionLock = async <T>(perform: () => Promise<T>): Promise<T> =>
+  typeof navigator !== 'undefined' && navigator.locks
+    ? navigator.locks.request('lan-refresh-session', perform) : perform()
+
+export async function logoutSession(): Promise<void> {
+  if (signingOut) return
+  signingOut = true
+  try {
+    if (refreshing) await refreshing.catch(() => undefined)
+    await withSessionLock(async () => {
+      await api.post('/sessions/logout')
+      useAuthStore.getState().clearSession()
+      localStorage.setItem('lan-session-event', JSON.stringify({ type: 'logout', id: crypto.randomUUID() }))
+    })
+  } finally { signingOut = false }
+}
 export const clearSession = () => {
   useAuthStore.getState().clearSession()
-  delete api.defaults.headers.common.Authorization
-  window.location.replace('/login')
 }
-export function refreshSession(): Promise<string> {
+export function refreshSession(): Promise<void> {
+  if (signingOut) return Promise.reject(new Error('Signing out'))
   if (refreshing) return refreshing
-  const token = getRefreshToken()
-  if (!token) { clearSession(); return Promise.reject(new Error('No session')) }
-  const perform = async () => {
-    // Another tab may have rotated the shared refresh token while this tab waited.
-    const storage = localStorage.getItem('refreshToken') ? localStorage : sessionStorage
-    const current = storage.getItem('refreshToken')
-    if (!current) throw new Error('No session')
-    const { data } = await axios.post<{ token: string; refreshToken: string }>(BASE_URL+'/sessions/refresh-token', { token: current }, { timeout: 10000 })
-    if (storage.getItem('refreshToken') !== current) throw new Error('Session changed')
-    sessionStorage.setItem('accessToken', data.token)
-    storage.setItem('refreshToken', data.refreshToken)
-    useAuthStore.setState({ accessToken: data.token })
-    return data.token
-  }
-  refreshing = (async () => typeof navigator !== 'undefined' && navigator.locks
-    ? await navigator.locks.request('lan-refresh-session', perform) : await perform())()
-    .catch(error => { if (axios.isAxiosError(error) && error.response?.status === 401) clearSession(); throw error })
-    .finally(() => { refreshing = null })
+  refreshing = withSessionLock(async () => {
+    await sessionApi.post('/sessions/refresh-token')
+  }).catch(error => {
+    if (axios.isAxiosError(error) && error.response?.status === 401) clearSession()
+    throw error
+  }).finally(() => { refreshing = null })
   return refreshing
 }
 api.interceptors.response.use(res => res, async (error: AxiosError<ApiError>) => {
@@ -50,7 +52,7 @@ api.interceptors.response.use(res => res, async (error: AxiosError<ApiError>) =>
   }
   {
     const key = code ?? (!error.response ? 'NETWORK_ERROR' : status === 403 ? 'FORBIDDEN' : status === 404 ? 'NOT_FOUND' : 'UNKNOWN_ERROR')
-    toast.error(clientMessage(key), { id: key })
+    toast.error(code === "PAYMENT_CONFLICT" && error.response?.data?.message ? error.response.data.message : clientMessage(key), { id: key })
   }
   return Promise.reject(error)
 })

@@ -10,8 +10,7 @@ import { DashboardStatCards } from './DashboardStatCards'
 import { DashboardPeriodFilter } from './DashboardPeriodFilter'
 import { Card } from '@/components/ui/Card'
 import { QueryError } from '@/components/ui/QueryError'
-import { MarkAsPaidModal } from '@/features/appointments/components/MarkAsPaidModal'
-import { useUpdateAppointment } from '@/features/appointments/hooks/useUpdateAppointment'
+import { PaymentModal } from '@/features/finance/PaymentModal'
 import type { DashboardAppointment } from '../api/dashboard.api'
 const RevenueChart = dynamic(() => import('@/components/charts/RevenueChart').then(m => m.RevenueChart), { ssr: false, loading: () => <div className="h-72 animate-pulse rounded-xl bg-bg" /> })
 
@@ -28,7 +27,6 @@ export function DashboardClient() {
   const setPeriod = (y: number, m?: number) => router.replace('/dashboard?year='+y+'&month='+(m ?? 'all'), { scroll: false })
   const query = useDashboard({ year, month })
   const [target, setTarget] = useState<DashboardAppointment | null>(null)
-  const update = useUpdateAppointment(() => setTarget(null))
   const currency = (n: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL' }).format(n)
   const date = (s: string) => new Intl.DateTimeFormat(locale, { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' }).format(new Date(s))
   const periodLink = '/activities?year='+year+(month ? '&month='+month : '')
@@ -54,7 +52,7 @@ export function DashboardClient() {
     {query.isError && <QueryError onRetry={() => query.refetch()} />}
     {!data && query.isLoading && <div aria-label={t('loading')} role="status" className="space-y-5"><div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-48 rounded-2xl bg-border/50 animate-pulse"/>)}</div><div className="h-80 rounded-2xl bg-border/50 animate-pulse"/></div>}
     {data && <>
-      <DashboardStatCards data={data}/>
+      <DashboardStatCards data={data}/><p className="text-xs text-text-muted mb-4">Valores por data do atendimento, incluindo pagamentos parciais e crédito aplicado. Consulte o Fluxo de caixa para entradas por data de recebimento.</p>
       <div className="grid xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)] gap-5">
         <Card className="p-5 sm:p-6 min-w-0"><div className="mb-6"><h2 className="font-semibold text-lg">{t('evolution')}</h2><p className="text-xs text-text-muted mt-1">{t(month ? 'daily' : 'monthly')}</p></div>
           <RevenueChart data={data.evolutionGraph} daily={!!month}/>
@@ -64,8 +62,8 @@ export function DashboardClient() {
         <Card className="p-5 sm:p-6">
           <div className="flex justify-between gap-2 items-start"><div><h2 className="font-semibold text-lg">{t('toReceive')}</h2><p className="text-xs text-text-muted mt-1">{t('oldestPending')}</p></div><span className="text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg text-xs font-semibold">{data.cards.pendingCount}</span></div>
           <div className="text-3xl font-semibold tracking-tight mt-5 mb-4 tabular-nums">{currency(data.cards.pendingRevenue)}</div>
-          {!data.pendingAppointments.length ? <div className="py-10 text-center text-text-muted"><CheckCircle2 className="mx-auto text-emerald-600 mb-3" size={30}/><p className="text-sm">{t('noPending')}</p></div> : <ul className="divide-y divide-border">{data.pendingAppointments.map(a => <li key={a.id} className="flex items-center gap-3 py-3"><div className="flex-1 min-w-0"><p className="font-medium text-sm truncate">{a.customerName}</p><p className="text-xs text-text-muted mt-1">{date(a.appointmentDate)}</p></div><span className="text-sm font-semibold">{currency(a.total)}</span><button aria-label={t('markPaidFor', { name: a.customerName })} title={t('markPaid')} disabled={update.isPending} onClick={() => setTarget(a)} className="p-2.5 rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100"><CheckCircle2 size={17}/></button></li>)}</ul>}
-          <Link href={periodLink+'&paymentStatus=PENDING'} className="text-sm font-medium flex items-center justify-between mt-5 pt-4 border-t border-border">{t('viewPending')}<ArrowUpRight size={16}/></Link>
+          {!data.pendingAppointments.length ? <div className="py-10 text-center text-text-muted"><CheckCircle2 className="mx-auto text-emerald-600 mb-3" size={30}/><p className="text-sm">{t('noPending')}</p></div> : <ul className="divide-y divide-border">{data.pendingAppointments.map(a => <li key={a.id} className="flex items-center gap-3 py-3"><div className="flex-1 min-w-0"><p className="font-medium text-sm truncate">{a.customerName}</p><p className="text-xs text-text-muted mt-1">{date(a.appointmentDate)}</p></div><span className="text-sm font-semibold">{currency(a.remaining)}</span><button aria-label={t('markPaidFor', { name: a.customerName })} title={t('markPaid')} onClick={() => setTarget(a)} className="p-2.5 rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100"><CheckCircle2 size={17}/></button></li>)}</ul>}
+          <Link href={periodLink+'&openOnly=true'} className="text-sm font-medium flex items-center justify-between mt-5 pt-4 border-t border-border">{t('viewPending')}<ArrowUpRight size={16}/></Link>
         </Card>
       </div>
       <div className="grid lg:grid-cols-3 gap-5">
@@ -77,11 +75,11 @@ export function DashboardClient() {
       </div>
       <div className="grid lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)] gap-5">
         <Card className="p-5 sm:p-6"><div className="flex justify-between gap-3 mb-5"><h2 className="font-semibold">{t('recent')}</h2><Link href={periodLink} className="text-xs font-medium text-gold flex items-center gap-1">{t('viewAll')}<ArrowUpRight size={14}/></Link></div>
-          {!data.recentAppointments.length ? <p className="text-sm text-text-muted py-6">{t('empty')}</p> : <ul className="divide-y divide-border">{data.recentAppointments.map(a => <li key={a.id} className="py-4 flex items-center gap-3"><span className="w-10 h-10 shrink-0 rounded-xl bg-bg flex items-center justify-center font-semibold text-text-muted">{a.customerName.charAt(0)}</span><div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{a.customerName}</p><p className="text-xs text-text-muted truncate mt-1">{a.services.join(', ')} · {date(a.appointmentDate)}</p></div><div className="text-right"><p className="text-sm font-semibold">{currency(a.total)}</p><span className={'inline-block text-[11px] px-2 py-0.5 rounded-md mt-1 '+(a.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700')}>{t(a.paymentStatus === 'PAID' ? 'paid' : 'pending')}</span></div></li>)}</ul>}
+          {!data.recentAppointments.length ? <p className="text-sm text-text-muted py-6">{t('empty')}</p> : <ul className="divide-y divide-border">{data.recentAppointments.map(a => <li key={a.id} className="py-4 flex items-center gap-3"><span className="w-10 h-10 shrink-0 rounded-xl bg-bg flex items-center justify-center font-semibold text-text-muted">{a.customerName.charAt(0)}</span><div className="flex-1 min-w-0"><p className="text-sm font-medium truncate">{a.customerName}</p><p className="text-xs text-text-muted truncate mt-1">{a.services.join(', ')} · {date(a.appointmentDate)}</p></div><div className="text-right"><p className="text-sm font-semibold">{currency(a.total)}</p><span className={'inline-block text-[11px] px-2 py-0.5 rounded-md mt-1 '+(a.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700')}>{a.paymentStatus === 'PARTIAL' ? 'Parcialmente pago' : t(a.paymentStatus === 'PAID' ? 'paid' : 'pending')}</span></div></li>)}</ul>}
         </Card>
         <div className="space-y-5"><div className="rounded-2xl bg-sidebar text-white p-5 flex items-center gap-4"><div className="p-3 rounded-xl bg-white/10"><Users size={23} className="text-gold-btn"/></div><div><p className="text-3xl font-semibold">{data.cards.newCustomers}</p><p className="text-sm text-white/70">{t('newCustomers')}</p></div></div>{ranking(t('customers'), data.customers, true)}</div>
       </div>
     </>}
-    <MarkAsPaidModal open={!!target} onClose={() => { if (!update.isPending) setTarget(null) }} isLoading={update.isPending} onConfirm={method => { if (target && !update.isPending) update.mutate({ id: target.id, data: { paymentStatus: 'PAID', paymentMethod: method } }) }}/>
+    {target && <PaymentModal key={target.id} appointment={{...target, subtotal: target.total, discount: 0, paymentMethod: null, items: []}} onClose={() => setTarget(null)}/>}
   </div>
 }

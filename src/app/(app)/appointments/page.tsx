@@ -1,4 +1,7 @@
 'use client'
+import Link from 'next/link'
+import { PaymentModal } from '@/features/finance/PaymentModal'
+import type { Appointment } from '@/features/appointments/api/appointments.api'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { QueryError } from '@/components/ui/QueryError'
@@ -23,6 +26,7 @@ const newItem = (): ItemRowData => ({ id: crypto.randomUUID(), serviceId: '', pr
 const AppointmentsPage = () => {
   const t = useTranslations('appointments')
   const e = useTranslations('experience')
+  const [payTarget, setPayTarget] = useState<Appointment | null>(null)
   const [formError, setFormError] = useState('')
   const [attempted, setAttempted] = useState(false)
 
@@ -36,7 +40,8 @@ const AppointmentsPage = () => {
 
   const { data: services = [], isError, refetch } = useServices()
 
-  const createMutation = useCreateAppointment(() => {
+  const createMutation = useCreateAppointment(appointment => {
+    if (paymentStatus === "PARTIAL") setPayTarget({ ...appointment, customerName: client?.name ?? "", remaining: appointment.total, paidAmount: 0 })
     setAttempted(false)
     toast.dismiss('appointment-validation')
     setFormError(''); setClient(null); setDate(''); setItems([newItem()])
@@ -69,8 +74,8 @@ const AppointmentsPage = () => {
       customerId:      client.id,
       appointmentDate: new Date(date).toISOString(),
       discount,
-      paymentStatus,
-      paymentMethod: paymentStatus === 'PENDING' ? null : payment,
+      paymentStatus: paymentStatus === "PARTIAL" ? "PENDING" : paymentStatus,
+      paymentMethod: paymentStatus !== 'PAID' ? null : payment,
       notes:         notes || undefined,
       items:         items.map(({ serviceId, professionalId }) => ({ serviceId, professionalId })),
     }, { onError: error => {
@@ -81,7 +86,9 @@ const AppointmentsPage = () => {
 
   return (
     <div className="p-5 sm:p-8">
+      {payTarget && <PaymentModal key={payTarget.id} appointment={payTarget} onClose={() => setPayTarget(null)}/>}
       <PageHeader title={t('title')} subtitle={t('subtitle')} />
+      <Link href="/activities" className="inline-block mb-5 text-sm font-semibold text-gold underline">Consultar atendimentos e pagamentos</Link>
       {isError && <QueryError onRetry={() => refetch()}/>}
       {formError && <p role="alert" className="mb-4 rounded-xl bg-rose-50 border border-rose-200 p-4 text-sm text-danger">{formError}</p>}
 

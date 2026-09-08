@@ -42,7 +42,8 @@
     "professionals": "Profissionais",
     "services": "Serviços",
     "activities": "Atividades",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "cashFlow": "Fluxo de caixa"
   },
   "auth": {
     "welcomeBack": "Bem-vindo de volta",
@@ -234,7 +235,7 @@
     "of": "de",
     "paidBadge": "Pago",
     "pendingBadge": "Pendente",
-    "markAsPaid": "Confirmar Pagamento",
+    "markAsPaid": "Registrar pagamento",
     "editAppointment": "Editar",
     "deleteAppointment": "Excluir"
   },
@@ -311,7 +312,8 @@
       "CASH": "Dinheiro",
       "DEBIT_CARD": "Débito",
       "CREDIT_CARD": "Crédito",
-      "OTHER": "Outros"
+      "OTHER": "Outros",
+      "CUSTOMER_CREDIT": "Crédito do cliente"
     }
   },
   "experience": {

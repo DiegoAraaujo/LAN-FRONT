@@ -12,9 +12,10 @@ export const useLogin = () => {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: authApi.login,
-    onSuccess: ({ data }, variables) => {
+    onSuccess: ({ data }) => {
       qc.clear()
-      setSession(data.user, data.token, data.refreshToken, !!variables.remember)
+      setSession(data.user)
+      localStorage.setItem('lan-session-event', JSON.stringify({ type: 'login', id: crypto.randomUUID() }))
       toast.success(clientMessage('WELCOME')+', '+data.user.name+'!')
       router.push(ROUTES.dashboard)
     },

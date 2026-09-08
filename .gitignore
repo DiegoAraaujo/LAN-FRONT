@@ -10,6 +10,9 @@
 
 # testing
 /coverage
+/.review/
+/IMPROVEMENTS.md
+/COOKIE-DEPLOYMENT.md
 
 # next.js
 /.next/

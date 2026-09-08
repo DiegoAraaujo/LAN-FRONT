@@ -10,7 +10,9 @@ import { ActivitiesFilterBar } from "@/features/activities/components/Activities
 import { ActivityTableRow } from "@/features/activities/components/ActivityTableRow";
 import { ActivityMobileCard } from "@/features/activities/components/ActivityMobileCard";
 import { AppointmentEditModal } from "@/features/appointments/components/AppointmentEditModal";
-import { MarkAsPaidModal } from "@/features/appointments/components/MarkAsPaidModal";
+import { PaymentModal } from "@/features/finance/PaymentModal";
+import { AppointmentFinanceFilters } from "@/features/finance/AppointmentFinanceFilters";
+import { formatCurrency } from "@/lib/utils";
 import { useAppointments } from "@/features/appointments/hooks/useAppointments";
 import { useDeleteAppointment } from "@/features/appointments/hooks/useDeleteAppointment";
 import { useUpdateAppointment } from "@/features/appointments/hooks/useUpdateAppointment";
@@ -41,14 +43,15 @@ const ActivitiesPage = () => {
 
   const search = params.get('search') ?? ''
   const setSearch = (value: string) => setFilters({ search: value, page: 1 })
+  const customPeriod = params.get('dateMode') === 'custom' || !!(params.get('dateFrom') || params.get('dateTo'))
   const monthValue = Number(params.get('month'))
   const yearValue = Number(params.get('year'))
-  const month = monthValue >= 1 && monthValue <= 12 ? monthValue : undefined
-  const year = yearValue >= 2000 && yearValue <= 2100 ? yearValue : undefined
-  const paymentStatus: PaymentStatus | undefined = params.get('paymentStatus') === 'PAID' ? 'PAID' : params.get('paymentStatus') === 'PENDING' ? 'PENDING' : undefined
-  const setMonth = (value: number | undefined) => setFilters({ month: value, page: 1 })
-  const setYear = (value: number | undefined) => setFilters({ year: value, page: 1 })
-  const setPaymentStatus = (value: PaymentStatus | undefined) => setFilters({ paymentStatus: value, page: 1 })
+  const month = !customPeriod && monthValue >= 1 && monthValue <= 12 ? monthValue : undefined
+  const year = !customPeriod && yearValue >= 2000 && yearValue <= 2100 ? yearValue : undefined
+  const paymentStatus: PaymentStatus | undefined = params.get('paymentStatus') === 'PARTIAL' ? 'PARTIAL' : params.get('paymentStatus') === 'PAID' ? 'PAID' : params.get('paymentStatus') === 'PENDING' ? 'PENDING' : undefined
+  const setMonth = (value: number | undefined) => setFilters({ month: value, dateMode: undefined, dateFrom: undefined, dateTo: undefined, page: 1 })
+  const setYear = (value: number | undefined) => setFilters({ year: value, dateMode: undefined, dateFrom: undefined, dateTo: undefined, page: 1 })
+  const setPaymentStatus = (value: PaymentStatus | undefined) => setFilters({ paymentStatus: value, openOnly: undefined, page: 1 })
   const page = Math.max(1, Number(params.get('page')) || 1)
   const setPage = (value: number) => setFilters({ page: value })
   const [editTarget, setEditTarget] = useState<Appointment | null>(null);
@@ -66,6 +69,11 @@ const ActivitiesPage = () => {
 
   const { data, isLoading, isError, refetch } = useAppointments({
     search: debounced || undefined,
+    openOnly: params.get("openOnly") === "true" ? "true" : undefined,
+    serviceId: params.get("serviceId") || undefined, professionalId: params.get("professionalId") || undefined,
+    paymentMethod: (params.get("paymentMethod") || undefined) as PaymentMethod | undefined,
+    dateFrom: params.get("dateFrom") || undefined, dateTo: params.get("dateTo") || undefined,
+    dateType: params.get("dateType") === "payment" ? "payment" : "appointment",
     month,
     year,
     paymentStatus,
@@ -77,29 +85,17 @@ const ActivitiesPage = () => {
   const total = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / LIMIT));
   const pendingCount = data?.totalPending ?? 0;
-  const hasFilters = !!(search || month || year || paymentStatus);
+  const hasFilters = [...params.keys()].some(key => key !== 'page');
 
   const resetFilters = () => {
-    setSearch("");
-    setMonth(undefined);
-    setYear(undefined);
-    setPaymentStatus(undefined);
-    setPage(1);
-  };
-
-  const handleConfirmMarkPaid = (method: PaymentMethod) => {
-    if (!markPaidTarget || updateMutation.isPending) return;
-    updateMutation.mutate({
-      id: markPaidTarget.id,
-      data: { paymentStatus: "PAID", paymentMethod: method },
-    });
+    setFilters({search: undefined, month: undefined, year: undefined, paymentStatus: undefined,
+      dateMode: undefined, dateFrom: undefined, dateTo: undefined, dateType: undefined,
+      serviceId: undefined, professionalId: undefined, paymentMethod: undefined, openOnly: undefined, page: 1});
   };
 
   const handleSaveEdit = (
     id: string,
     data: {
-      paymentStatus: PaymentStatus;
-      paymentMethod?: PaymentMethod;
       discount: number;
       notes?: string;
       appointmentDate: string;
@@ -108,8 +104,6 @@ const ActivitiesPage = () => {
     updateMutation.mutate({
       id,
       data: {
-        paymentStatus: data.paymentStatus,
-        paymentMethod: data.paymentStatus === "PENDING" ? null : data.paymentMethod ?? "OTHER",
         discount: data.discount,
         notes: data.notes,
         appointmentDate: data.appointmentDate,
@@ -153,6 +147,10 @@ const ActivitiesPage = () => {
         onReset={resetFilters}
         hasFilters={hasFilters}
       />
+      {params.get("openOnly") && <p className="text-sm text-amber-800">Exibindo atendimentos pendentes e parcialmente pagos. <button className="underline" onClick={() => setFilters({openOnly: undefined, page: 1})}>Mostrar todos</button></p>}
+      <AppointmentFinanceFilters/>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">{[['Valor total', data?.summary?.totalValue], ['Pago / crédito aplicado', data?.summary?.paidValue], ['Em aberto', data?.summary?.pendingValue]].map(([label,value]) => <Card key={label} className="p-4"><p className="text-xs text-text-muted">{label}</p><strong className="text-xl">{formatCurrency(Number(value ?? 0))}</strong></Card>)}</div>
+      {(params.get('serviceId') || params.get('professionalId')) && <p className="rounded-xl bg-amber-50 p-4 text-sm">Somente os itens filtrados, após descontos: <strong>{formatCurrency(data?.summary?.serviceValue ?? 0)}</strong>. Os cartões incluem o valor completo dos atendimentos encontrados.</p>}
       <div className="grid grid-cols-2 gap-4">
         <Card className="p-5">
           <div className="text-xs text-text-light mb-2">
@@ -270,12 +268,7 @@ const ActivitiesPage = () => {
         }}
       />
 
-      <MarkAsPaidModal
-        open={!!markPaidTarget}
-        onClose={() => setMarkPaidTarget(null)}
-        onConfirm={handleConfirmMarkPaid}
-        isLoading={updateMutation.isPending}
-      />
+      {markPaidTarget && <PaymentModal key={markPaidTarget.id} appointment={markPaidTarget} onClose={() => setMarkPaidTarget(null)}/>}
       <AppointmentEditModal
         open={!!editTarget}
         appointment={editTarget}

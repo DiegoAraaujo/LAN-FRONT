@@ -38,7 +38,7 @@ export const ActivityTableRow = ({
   const t = useTranslations("activities");
   const common = useTranslations('common')
   const locale = useLocale();
-  const isPending = a.paymentStatus === "PENDING";
+  const isPending = a.paymentStatus !== "PAID";
 
   return (
     <tr className={index > 0 ? "border-t border-border" : ""}>
@@ -67,7 +67,7 @@ export const ActivityTableRow = ({
               <span
                 className={cn("w-2 h-2 rounded-full shrink-0", DOT[j % 3])}
               />
-              {item.serviceName}
+              {item.serviceName} · {formatCurrency(item.value)}
             </div>
             <div className="text-xs text-text-light pl-3.5">
               {item.professionalName}
@@ -82,12 +82,12 @@ export const ActivityTableRow = ({
             {formatCurrency(a.subtotal)}
           </div>
         )}
-        <div className="text-sm font-bold">{formatCurrency(a.total)}</div>
+        <div className="text-sm font-bold">{formatCurrency(a.total)}</div><div className="text-xs text-emerald-700">Pago: {formatCurrency(a.paidAmount)}</div><div className="text-xs text-amber-800">Falta: {formatCurrency(a.remaining)}</div>
       </td>
 
       <td className="px-5 py-4">
         <Badge variant={isPending ? "yellow" : "green"}>
-          {isPending ? t("pendingBadge") : t("paidBadge")}
+          {a.paymentStatus === "PARTIAL" ? "Parcialmente pago" : isPending ? t("pendingBadge") : t("paidBadge")}
         </Badge>
       </td>
 

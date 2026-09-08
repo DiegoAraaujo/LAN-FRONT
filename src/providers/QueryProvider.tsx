@@ -21,12 +21,12 @@ export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = useAuthStore.subscribe((state, previous) => {
-      if (!state.accessToken && previous.accessToken) { void queryClient.cancelQueries(); queryClient.clear() }
+      if (!state.authenticated && previous.authenticated) { void queryClient.cancelQueries(); queryClient.clear() }
     })
     const onStorage = (event: StorageEvent) => {
-      if (event.key === 'refreshToken' && event.newValue === null && useAuthStore.getState().accessToken) {
+      if (event.key === 'lan-session-event' && event.newValue) {
         useAuthStore.getState().clearSession()
-        window.location.replace('/login')
+        window.location.reload()
       }
     }
     window.addEventListener('storage', onStorage)

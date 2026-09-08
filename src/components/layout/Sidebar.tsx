@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Briefcase, Users, UserCheck, Clock, LogOut, X, Menu, Wrench } from 'lucide-react'
+import { LayoutDashboard, Briefcase, Users, UserCheck, Clock, LogOut, X, Menu, Wrench, Wallet } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/stores/ui.store'
-import { useAuthStore } from '@/stores/auth.store'
+import { logoutSession } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { ROUTES } from '@/constants'
 
@@ -17,6 +17,7 @@ const NAV_KEYS = [
   { key: 'clients',       href: ROUTES.clients,       icon: Users           },
   { key: 'professionals', href: ROUTES.professionals, icon: UserCheck       },
   { key: 'services',      href: ROUTES.services,      icon: Wrench          },
+  { key: 'cashFlow', href: ROUTES.cashFlow, icon: Wallet },
   { key: 'activities',    href: ROUTES.activities,    icon: Clock           },
 ] as const
 
@@ -24,13 +25,20 @@ const SidebarContent = ({ pathname, onNav }: { pathname: string; onNav?: () => v
   const t  = useTranslations('nav')
   const tc = useTranslations('common')
   const qc = useQueryClient()
-  const { clearSession } = useAuthStore()
+  const [signingOut, setSigningOut] = useState(false)
 
-  const handleSignOut = () => {
-    void qc.cancelQueries()
-    qc.clear()
-    clearSession()
-    window.location.replace(ROUTES.login)
+  const handleSignOut = async () => {
+    if (signingOut) return
+    setSigningOut(true)
+    try {
+      await qc.cancelQueries()
+      await logoutSession()
+      qc.clear()
+      window.location.replace(ROUTES.login)
+    } catch {
+      // The API interceptor shows the error; keep the session so logout can be retried.
+      setSigningOut(false)
+    }
   }
 
   return (
@@ -58,6 +66,8 @@ const SidebarContent = ({ pathname, onNav }: { pathname: string; onNav?: () => v
       <div className="p-3 border-t border-white/[0.07] shrink-0">
         <button
           onClick={handleSignOut}
+          disabled={signingOut}
+          aria-busy={signingOut}
           className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] text-white/60 hover:text-white/70 transition-colors"
         >
           <LogOut size={16} /> {tc('signOut')}

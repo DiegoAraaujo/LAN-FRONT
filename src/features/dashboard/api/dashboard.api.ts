@@ -4,8 +4,8 @@ export interface DashboardCards {
   pendingRevenue: number; totalValue: number; averageTicket: number; newCustomers: number;
 }
 export interface DashboardAppointment {
-  id: string; customerName: string; appointmentDate: string; total: number;
-  paymentStatus: 'PAID' | 'PENDING'; services: string[];
+  id: string; customerId: string; paidAmount: number; remaining: number; customerName: string; appointmentDate: string; total: number;
+  paymentStatus: 'PAID' | 'PENDING' | 'PARTIAL'; services: string[];
 }
 export interface DashboardData {
   cards: DashboardCards;

@@ -36,7 +36,7 @@ export const ActivityMobileCard = ({
   const t = useTranslations("activities");
   const locale = useLocale();
   const common = useTranslations('common')
-  const isPending = a.paymentStatus === "PENDING";
+  const isPending = a.paymentStatus !== "PAID";
 
   return (
     <Card className="p-4">
@@ -60,7 +60,7 @@ export const ActivityMobileCard = ({
           </div>
         </div>
         <Badge variant={isPending ? "yellow" : "green"}>
-          {isPending ? t("pendingBadge") : t("paidBadge")}
+          {a.paymentStatus === "PARTIAL" ? "Parcialmente pago" : isPending ? t("pendingBadge") : t("paidBadge")}
         </Badge>
       </button>
 
@@ -72,10 +72,11 @@ export const ActivityMobileCard = ({
               {formatCurrency(a.subtotal)}
             </div>
           )}
-          <span className="text-sm font-bold">{formatCurrency(a.total)}</span>
+          <span className="text-sm font-bold">{formatCurrency(a.total)}</span><p className="text-xs">Pago: {formatCurrency(a.paidAmount)} · Falta: {formatCurrency(a.remaining)}</p>
         </div>
       </div>
 
+      <div className="mb-3 text-xs space-y-1">{a.items.map((item,i)=><p key={i}>{item.serviceName} · {formatCurrency(item.value)}</p>)}</div>
       <div
         className={`grid gap-2 ${isPending ? "grid-cols-3" : "grid-cols-2"}`}
       >

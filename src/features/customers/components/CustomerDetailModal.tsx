@@ -1,5 +1,6 @@
 "use client";
 
+import { CustomerFinance } from "@/features/finance/CustomerFinance";
 import { useTranslations } from "next-intl";
 import { MessageCircle, MapPin, Calendar } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
@@ -196,6 +197,7 @@ export const CustomerDetailModal = ({
           />
         )}
       </div>
+      {open && <CustomerFinance customerId={customer.id} customerName={customer.name}/>}
     </Modal>
   );
 };

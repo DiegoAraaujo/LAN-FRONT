@@ -11,6 +11,7 @@ export const ROUTES = {
   services:      '/services',
   appointments:  '/appointments',
   activities:    '/activities',
+  cashFlow:      '/cash-flow',
   settings:      '/settings',
 } as const
 

@@ -91,8 +91,8 @@ features/<name>/
 ## Architecture Decisions
 
 **Authentication flow**
-- `accessToken` stored in `sessionStorage` (cleared on tab close)
-- `refreshToken` stored in `localStorage` (persists across sessions)
+- Access and refresh tokens use HttpOnly cookies scoped to the API host; production cookies require HTTPS.
+- Remember-me controls cookie persistence; tokens are never stored in browser storage or returned in JSON.
 - Axios interceptor automatically refreshes the access token on 401 responses
 - `AuthGuard` protects all dashboard routes; `GuestGuard` redirects logged-in users away from auth pages
 
@@ -156,7 +156,7 @@ The app will be available at `http://localhost:3000`.
 
 ## API
 
-This frontend connects to a REST API. All routes except login (`POST /sessions/`) and signup (`POST /users`) require a Bearer token.
+This frontend connects to a REST API using HttpOnly session cookies. Axios sends credentials and a CSRF protection header; the API validates the exact frontend origin. Login and signup are public, while application data requires an authenticated session.
 
 Base URL is configured via `NEXT_PUBLIC_API_URL` in your `.env.local`.
 

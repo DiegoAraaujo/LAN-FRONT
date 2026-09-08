@@ -1,41 +1,47 @@
 'use client'
 import { create } from 'zustand'
+import axios from 'axios'
 export interface AuthUser { name: string; email: string; createdAt: string }
 interface AuthState {
-  user: AuthUser | null; accessToken: string | null; ready: boolean; error: boolean;
-  setSession: (user: AuthUser, accessToken: string, refreshToken: string, remember?: boolean) => void;
+  user: AuthUser | null; authenticated: boolean; ready: boolean; error: boolean;
+  setSession: (user: AuthUser) => void;
   clearSession: () => void; initFromStorage: () => Promise<void>;
 }
-export const getRefreshToken = () => localStorage.getItem('refreshToken') ?? sessionStorage.getItem('refreshToken')
+const removeLegacyTokens = () => {
+  for (const storage of [localStorage, sessionStorage]) {
+    storage.removeItem('accessToken')
+    storage.removeItem('refreshToken')
+  }
+}
 let initialization: Promise<void> | null = null
+let generation = 0
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null, accessToken: null, ready: false, error: false,
-  setSession: (user, accessToken, refreshToken, remember = true) => {
-    sessionStorage.setItem('accessToken', accessToken)
-    localStorage.removeItem('refreshToken')
-    sessionStorage.removeItem('refreshToken')
-    ;(remember ? localStorage : sessionStorage).setItem('refreshToken', refreshToken)
-    set({ user, accessToken, ready: true, error: false })
+  user: null, authenticated: false, ready: false, error: false,
+  setSession: user => {
+    generation++
+    removeLegacyTokens()
+    set({ user, authenticated: true, ready: true, error: false })
   },
   clearSession: () => {
-    sessionStorage.removeItem('accessToken')
-    localStorage.removeItem('refreshToken')
-    sessionStorage.removeItem('refreshToken')
-    set({ user: null, accessToken: null, ready: true, error: false })
+    generation++
+    removeLegacyTokens()
+    set({ user: null, authenticated: false, ready: true, error: false })
   },
   initFromStorage: async () => {
     if (initialization) return initialization
+    const current = generation
     initialization = (async () => {
+      removeLegacyTokens()
       set({ error: false })
       try {
-        const { api, refreshSession } = await import('@/lib/api')
-        let token = sessionStorage.getItem('accessToken')
-        if (!token && getRefreshToken()) token = await refreshSession()
-        if (!token) { set({ ready: true, user: null, accessToken: null }); return }
+        const { api } = await import('@/lib/api')
         const { data } = await api.get<AuthUser>('/users/me')
-        set({ user: data, accessToken: sessionStorage.getItem('accessToken'), ready: true })
-      } catch {
-        set({ error: true, ready: true })
+        if (current === generation) set({ user: data, authenticated: true, ready: true, error: false })
+      } catch (error) {
+        if (current !== generation) return
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          set({ user: null, authenticated: false, ready: true, error: false })
+        } else set({ error: true, ready: true })
       }
     })().finally(() => { initialization = null })
     return initialization

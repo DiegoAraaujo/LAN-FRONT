@@ -1,4 +1,5 @@
 "use client";
+import { CustomerFinance } from "@/features/finance/CustomerFinance";
 import { useTranslations, useLocale } from "next-intl";
 import { Calendar, CheckCircle, CreditCard } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
@@ -41,7 +42,7 @@ export const ActivityDetailModal = ({
 
   if (!a) return null;
 
-  const isPending = a.paymentStatus === "PENDING";
+  const isPending = a.paymentStatus !== "PAID";
 
   return (
     <Modal
@@ -94,7 +95,7 @@ export const ActivityDetailModal = ({
           </div>
           <div className="ml-auto">
             <Badge variant={isPending ? "yellow" : "green"}>
-              {isPending ? t("pendingBadge") : t("paidBadge")}
+              {a.paymentStatus === "PARTIAL" ? "Parcialmente pago" : isPending ? t("pendingBadge") : t("paidBadge")}
             </Badge>
           </div>
         </div>
@@ -167,6 +168,7 @@ export const ActivityDetailModal = ({
           </div>
         )}
       </div>
+      {open && <CustomerFinance customerId={a.customerId} customerName={a.customerName}/>}
     </Modal>
   );
 };

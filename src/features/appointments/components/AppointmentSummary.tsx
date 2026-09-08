@@ -27,7 +27,7 @@ export const AppointmentSummary = ({
   const e = useTranslations('experience')
   const invalidDiscount = !Number.isFinite(discount) || discount < 0 || discount > subtotal
   const total    = subtotal - discount
-  const isPending = paymentStatus === 'PENDING'
+  const isPending = paymentStatus !== 'PAID'
 
   return (
     <div className="bg-text rounded-xl p-5 text-white">
@@ -61,7 +61,7 @@ export const AppointmentSummary = ({
 
       <div className="text-xs text-white/40 uppercase tracking-wide mb-2">{t('paymentStatus')}</div>
       <div className="grid grid-cols-2 gap-2 mb-4">
-        {(['PAID', 'PENDING'] as PaymentStatus[]).map(s => (
+        {(['PAID', 'PENDING', 'PARTIAL'] as PaymentStatus[]).map(s => (
           <button
             type="button" aria-pressed={paymentStatus === s}
             key={s}
@@ -74,7 +74,7 @@ export const AppointmentSummary = ({
                 : 'border-white/15 text-white/40 hover:border-white/30'
             }`}
           >
-            {s === 'PAID' ? t('paid') : t('pending')}
+            {s === 'PARTIAL' ? 'Parcial / usar crédito' : s === 'PAID' ? t('paid') : t('pending')}
           </button>
         ))}
       </div>
@@ -90,7 +90,7 @@ export const AppointmentSummary = ({
 
       {isPending && (
         <div className="mb-5 border border-white/10 rounded-lg px-3 py-2.5 text-xs text-white/40 italic">
-          {t('pendingNote')}
+          {paymentStatus === 'PARTIAL' ? 'Salve o atendimento para informar o valor recebido, crédito ou troco na próxima etapa.' : t('pendingNote')}
         </div>
       )}
 
