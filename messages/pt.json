@@ -248,14 +248,7 @@
     "systemPreferences": "Preferências do Sistema",
     "language": "Idioma",
     "timezone": "Fuso Horário",
-    "security": "Segurança",
-    "securityNote": "Mantenha sua conta segura atualizando sua senha regularmente.",
-    "changePassword": "Alterar Senha",
     "createdAt": "Conta criada em",
-    "emailVerified": "E-mail verificado",
-    "twoFactor": "Autenticação 2FA",
-    "twoFactorActive": "Ativo",
-    "twoFactorInactive": "Inativo",
     "saveChanges": "Salvar Alterações",
     "discard": "Descartar",
     "langEnglish": "English",
@@ -344,7 +337,6 @@
     "date": "Data e horário",
     "selectCustomer": "Selecione um cliente",
     "formErrors": "Confira os campos antes de salvar.",
-    "securityUnknown": "Não informado pelo sistema",
     "requiredDate": "Informe uma data e horário válidos."
   }
 }

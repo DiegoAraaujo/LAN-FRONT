@@ -248,14 +248,7 @@
     "systemPreferences": "System Preferences",
     "language": "Language",
     "timezone": "Timezone",
-    "security": "Security",
-    "securityNote": "Keep your account secure by updating your password regularly.",
-    "changePassword": "Change Password",
     "createdAt": "Account created",
-    "emailVerified": "Email verified",
-    "twoFactor": "Two-factor auth",
-    "twoFactorActive": "Active",
-    "twoFactorInactive": "Inactive",
     "saveChanges": "Save Changes",
     "discard": "Discard",
     "langEnglish": "English",
@@ -344,7 +337,6 @@
     "date": "Date and time",
     "selectCustomer": "Select a customer",
     "formErrors": "Check the fields before saving.",
-    "securityUnknown": "Not provided by the system",
     "requiredDate": "Enter a valid date and time."
   }
 }
