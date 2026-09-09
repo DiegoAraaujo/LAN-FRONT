@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function CollapsibleStats({ items, children }: Props) {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(true)
   const id = useId()
   const en = useLocale() === 'en'
   const action = expanded ? (en ? 'Collapse' : 'Recolher') : (en ? 'Expand' : 'Expandir')
