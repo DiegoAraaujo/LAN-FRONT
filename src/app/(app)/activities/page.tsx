@@ -6,12 +6,12 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader, Pagination } from "@/components/ui/Display";
 import { Card } from "@/components/ui/Card";
+import { CollapsibleStats } from '@/components/ui/CollapsibleStats'
 import { ActivitiesFilterBar } from "@/features/activities/components/ActivitiesFilterBar";
 import { ActivityTableRow } from "@/features/activities/components/ActivityTableRow";
 import { ActivityMobileCard } from "@/features/activities/components/ActivityMobileCard";
 import { AppointmentEditModal } from "@/features/appointments/components/AppointmentEditModal";
 import { PaymentModal } from "@/features/finance/PaymentModal";
-import { AppointmentFinanceFilters } from "@/features/finance/AppointmentFinanceFilters";
 import { formatCurrency } from "@/lib/utils";
 import { useAppointments } from "@/features/appointments/hooks/useAppointments";
 import { useDeleteAppointment } from "@/features/appointments/hooks/useDeleteAppointment";
@@ -146,27 +146,33 @@ const ActivitiesPage = () => {
         onReset={resetFilters}
         hasFilters={hasFilters}
       />
-      {params.get("openOnly") && <p className="text-sm text-amber-800">Exibindo atendimentos pendentes e parcialmente pagos. <button className="underline" onClick={() => setFilters({openOnly: undefined, page: 1})}>Mostrar todos</button></p>}
-      <AppointmentFinanceFilters/>
-      <div className="grid grid-cols-1 gap-4 min-[440px]:grid-cols-3">{[['Valor total', data?.summary?.totalValue], ['Pago / crédito aplicado', data?.summary?.paidValue], ['Em aberto', data?.summary?.pendingValue]].map(([label,value]) => <Card key={label} className="p-5"><p className="mb-2 text-sm font-medium text-text-muted">{label}</p><strong className="text-2xl font-semibold tracking-tight">{formatCurrency(Number(value ?? 0))}</strong></Card>)}</div>
-      {(params.get('serviceId') || params.get('professionalId')) && <p className="rounded-xl bg-amber-50 p-4 text-sm">Somente os itens filtrados, após descontos: <strong>{formatCurrency(data?.summary?.serviceValue ?? 0)}</strong>. Os cartões incluem o valor completo dos atendimentos encontrados.</p>}
-      <div className="grid grid-cols-1 gap-4 min-[440px]:grid-cols-2">
-        <Card className="p-5">
-          <div className="mb-2 text-sm font-medium text-text-muted">
+      {params.get("openOnly") === "true" && <p className="text-sm text-amber-800">Exibindo atendimentos pendentes e parcialmente pagos. <button type="button" className="underline" onClick={resetFilters}>Mostrar todos</button></p>}
+      <CollapsibleStats items={[
+        { label: 'Valor total', value: formatCurrency(data?.summary?.totalValue ?? 0) },
+        { label: 'Pago / crédito aplicado', value: formatCurrency(data?.summary?.paidValue ?? 0) },
+        { label: 'Em aberto', value: formatCurrency(data?.summary?.pendingValue ?? 0) },
+        { label: t('totalAppointments'), value: total },
+        { label: t('pendingCount'), value: pendingCount, className: 'text-warning' },
+      ]}>
+      <div className="grid grid-cols-1 gap-3 min-[440px]:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">{[['Valor total', data?.summary?.totalValue], ['Pago / crédito aplicado', data?.summary?.paidValue], ['Em aberto', data?.summary?.pendingValue]].map(([label,value]) => <Card key={label} className="min-w-0 px-4 py-3"><p className="mb-1 text-xs font-medium text-text-muted">{label}</p><strong className="text-xl break-words font-semibold tracking-tight">{formatCurrency(Number(value ?? 0))}</strong></Card>)}
+        <Card className="min-w-0 px-4 py-3">
+          <div className="mb-1 text-xs font-medium text-text-muted">
             {t("totalAppointments")}
           </div>
-          <div className="text-2xl font-semibold tracking-tight">{total}</div>
+          <div className="text-xl break-words font-semibold tracking-tight">{total}</div>
         </Card>
 
-        <Card className="p-5">
-          <div className="mb-2 text-sm font-medium text-text-muted">
+        <Card className="min-w-0 px-4 py-3">
+          <div className="mb-1 text-xs font-medium text-text-muted">
             {t("pendingCount")}
           </div>
-          <div className="text-2xl font-semibold tracking-tight text-warning">
+          <div className="text-xl break-words font-semibold tracking-tight text-warning">
             {pendingCount}
           </div>
         </Card>
       </div>
+      </CollapsibleStats>
+      {(params.get('serviceId') || params.get('professionalId')) && <p className="rounded-xl bg-amber-50 p-4 text-sm">Somente os itens filtrados, após descontos: <strong>{formatCurrency(data?.summary?.serviceValue ?? 0)}</strong>. As estatísticas incluem o valor completo dos atendimentos encontrados.</p>}
       <Card className={`relative hidden sm:block transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <h2 className="text-base font-semibold">{t("appointmentList")}</h2>

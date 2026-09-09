@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, BarChart3, CalendarDays, Scissors } from "lucide-react";
+import { ArrowRight, BarChart3, CalendarDays } from "lucide-react";
+import Image from "next/image";
+import authLogo from "../../../public/assets/browser-favicon-source.png";
 
 type RoutePoint = { x: number; y: number; delay: number };
 type AuthExperienceProps = {
@@ -109,6 +111,19 @@ const DotNetwork = () => {
   return <canvas ref={canvasRef} className="absolute inset-0 size-full" aria-hidden="true" />;
 };
 
+const AuthLogo = () => (
+  <div className="flex aspect-[5/2] w-full max-w-[200px] items-center overflow-hidden">
+    <Image
+      src={authLogo}
+      alt="LAN — Launched, Noted, Never Forgotten"
+      sizes="200px"
+      preload
+      unoptimized
+      className="block h-auto w-full shrink-0 drop-shadow-[0_2px_4px_rgba(23,44,41,0.6)]"
+    />
+  </div>
+);
+
 export const AuthExperience = ({ children, eyebrow, title, description, mode }: AuthExperienceProps) => (
   <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-[#edf3ef] via-bg to-gold-light/60 p-4 sm:p-6">
     <motion.section
@@ -120,10 +135,9 @@ export const AuthExperience = ({ children, eyebrow, title, description, mode }: 
       <div className="relative hidden min-h-[620px] w-1/2 overflow-hidden border-r border-border bg-gradient-to-br from-gold-light via-[#edf3e8] to-[#dce9e3] md:block">
         <DotNetwork />
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-10 text-center">
-          <motion.div initial={{ opacity: 0, y: -18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.5 }} className="mb-6 grid size-14 place-items-center rounded-full bg-gradient-to-br from-sidebar to-[#31544e] text-gold-btn shadow-xl shadow-sidebar/20">
-            <Scissors size={25} />
+          <motion.div initial={{ opacity: 0, y: -18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.5 }} className="flex w-full justify-center">
+            <AuthLogo />
           </motion.div>
-          <motion.h2 initial={{ opacity: 0, y: -18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.58, duration: 0.5 }} className="text-4xl font-black tracking-tight text-sidebar">LAN</motion.h2>
           <motion.p initial={{ opacity: 0, y: -18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.5 }} className="mt-3 max-w-xs text-sm leading-relaxed text-text-muted">Atendimentos, clientes e fluxo de caixa conectados para facilitar sua rotina.</motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }} className="mt-9 flex gap-3 text-sidebar/75">
             {[CalendarDays, BarChart3, ArrowRight].map((Icon, index) => <div key={index} className="grid size-10 place-items-center rounded-xl border border-sidebar/10 bg-white/45 backdrop-blur"><Icon size={18} /></div>)}
@@ -135,7 +149,7 @@ export const AuthExperience = ({ children, eyebrow, title, description, mode }: 
         <AnimatePresence mode="wait">
           <motion.div key={mode} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.35 }}>
             <div className="mb-8 md:hidden">
-              <div className="mb-2 flex items-center gap-2 text-xl font-black text-sidebar"><Scissors size={20} className="text-gold" /> LAN</div>
+              <div className="mb-3"><AuthLogo /></div>
               <div className="h-px bg-gradient-to-r from-gold-btn to-transparent" />
             </div>
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-gold">{eyebrow}</p>

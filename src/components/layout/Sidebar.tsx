@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import sidebarLogo from '../../../public/assets/browser-favicon-source.png'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, Briefcase, Users, UserCheck, Clock, LogOut, X, Menu, Wrench, Wallet } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -44,8 +46,18 @@ const SidebarContent = ({ pathname, onNav }: { pathname: string; onNav?: () => v
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="px-5 py-6 border-b border-white/[0.07] shrink-0">
-        <div className="text-gold-btn text-2xl font-extrabold tracking-tight">LAN</div>
-        <div className="text-white/60 text-[10px] leading-snug mt-1">Launched, Noted, Never Forgotten</div>
+        <div className="flex h-20 w-full max-w-[200px] items-center overflow-hidden">
+          <Image
+            src={sidebarLogo}
+            alt="LAN — Launched, Noted, Never Forgotten"
+            width={1254}
+            height={1254}
+            sizes="200px"
+            preload
+            unoptimized
+            className="block h-auto w-full shrink-0"
+          />
+        </div>
       </div>
       <nav className="flex-1 p-3 flex flex-col gap-1 mt-1 overflow-y-auto">
         {NAV_KEYS.map(({ key, href, icon: Icon }) => {

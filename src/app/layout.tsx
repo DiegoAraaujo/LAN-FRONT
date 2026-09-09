@@ -10,6 +10,8 @@ const geistSans = localFont({ src: '../../node_modules/next/dist/next-devtools/s
 const geistMono = localFont({ src: '../../node_modules/next/dist/next-devtools/server/font/geist-mono-latin.woff2', variable: '--font-geist-mono', display: 'swap', weight: '100 900' })
 
 export const metadata: Metadata = {
+  applicationName: 'LAN',
+  appleWebApp: { capable: true, title: 'LAN', statusBarStyle: 'default' },
   title:       'LAN — Launched, Noted, Never Forgotten',
   description: 'Sistema de gestão para barbearia e salão',
 }

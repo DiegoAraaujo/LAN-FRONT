@@ -8,7 +8,6 @@ import { useTranslations } from 'next-intl'
 import { PageHeader } from '@/components/ui/Display'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { ServiceStatsBar } from '@/features/services/components/ServiceStatsBar'
 import { ServiceTableRow } from '@/features/services/components/ServiceTableRow'
 import { ServiceMobileCard } from '@/features/services/components/ServiceMobileCard'
 import { ServiceFormModal } from '@/features/services/components/ServiceFormModal'
@@ -53,8 +52,6 @@ const ServicesPage = () => {
           </Button>
         }
       />
-
-      <ServiceStatsBar services={services} />
 
       <div className="relative w-full sm:max-w-sm">
         <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light" />

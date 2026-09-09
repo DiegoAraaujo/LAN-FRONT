@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { dashboardApi } from '../api/dashboard.api'
+import { dashboardApi, type DashboardFilters } from '../api/dashboard.api'
 
-export const useDashboard = (params?: { year?: number; month?: number }) =>
+export const useDashboard = (params?: DashboardFilters, enabled = true) =>
   useQuery({
     queryKey: ['dashboard', params],
+    enabled,
     queryFn:  () => dashboardApi.get(params).then(r => r.data),
   })
