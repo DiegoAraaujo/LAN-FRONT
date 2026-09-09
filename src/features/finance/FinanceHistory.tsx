@@ -17,7 +17,7 @@ export function FinanceHistory({ entries }: { entries: FinanceEntry[] }) {
   return <><div className="divide-y divide-border">{entries.map(entry=><div key={entry.id} className="py-4 flex flex-wrap items-center justify-between gap-3">
     <div className="min-w-0"><p className="font-medium text-sm break-words">{entry.description}</p><p className="text-xs text-text-muted mt-1">{new Date(entry.occurredAt).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})} · {entry.category}{entry.method?` · ${methodLabels[entry.method]}`:''}{entry.customer?` · ${entry.customer.name}`:''}</p>
     <p className="text-xs mt-1">{entry.kind==='REVERSAL'?'Estorno':entry.status==='PENDING'?'Pendente':entry.status==='CANCELLED'?'Cancelado':entry.reversal?'Estornado':'Confirmado'}{entry.creditCents!==0?` · Crédito: ${money(entry.creditCents/100)}`:''}{entry.appliedCents!==0?` · Aplicado no atendimento: ${money(entry.appliedCents/100)}`:''}</p></div>
-    <div className="flex items-center gap-3"><strong className={entry.cashCents<0?'text-rose-700':'text-emerald-700'}>{money(entry.cashCents/100)}</strong>
+    <div className="flex items-center gap-3"><strong className={entry.cashCents<0?'text-rose-700':'text-emerald-700'}>{entry.cashCents > 0 ? '+' : ''}{money(entry.cashCents/100)}</strong>
       {entry.status==='PENDING'&&<Button size="sm" disabled={settle.isPending} onClick={()=>settle.mutate(entry.id)}>Confirmar</Button>}
       {entry.status!=='CANCELLED'&&!entry.reversal&&entry.kind!=='REVERSAL'&&<Button variant="outline" size="sm" onClick={()=>{setTarget(entry);setReason('')}}>{entry.status==='PENDING'?'Cancelar':'Estornar'}</Button>}
     </div></div>)}</div>

@@ -5,10 +5,12 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import toast from 'react-hot-toast'
 import { PageHeader, Pagination } from '@/components/ui/Display'
 import { Card } from '@/components/ui/Card'
+import { CollapsibleStats } from '@/components/ui/CollapsibleStats'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
 import { QueryError } from '@/components/ui/QueryError'
+import { FilterDrawer } from '@/components/ui/FilterDrawer'
 import { ClientSearchInput } from '@/features/appointments/components/ClientSearchInput'
 import type { Customer } from '@/features/customers/api/customers.api'
 import type { PaymentMethod } from '@/features/appointments/api/appointments.api'
@@ -42,7 +44,13 @@ function EntryForm({ mode, onClose }: { mode: EntryMode; onClose:()=>void }) {
 }
 export default function CashFlowPage() {
   const today=localDateTime().slice(0,10)
-  const [from,setFrom]=useState(today.slice(0,8)+'01'),[to,setTo]=useState(today)
+  const currentYear=Number(today.slice(0,4)), currentMonth=Number(today.slice(5,7))
+  const [dateMode,setDateMode]=useState('month')
+  const [year,setYear]=useState(currentYear),[month,setMonth]=useState<number | undefined>(currentMonth)
+  const [customFrom,setFrom]=useState(today.slice(0,8)+'01'),[customTo,setTo]=useState(today)
+  const from=dateMode==='custom'?customFrom:`${year}-${String(month ?? 1).padStart(2,'0')}-01`
+  const to=dateMode==='custom'?customTo:`${year}-${String(month ?? 12).padStart(2,'0')}-${new Date(Date.UTC(year,month ?? 12,0)).getUTCDate()}`
+  const years=Array.from(new Set([year,...Array.from({length:10},(_,i)=>currentYear+1-i)])).sort((a,b)=>b-a)
   const [kind,setKind]=useState(''),[method,setMethod]=useState(''),[status,setStatus]=useState(''),[page,setPage]=useState(1)
   const [entryMode,setEntryMode]=useState<EntryMode|null>(null)
   const valid=!!from&&!!to&&from<=to
@@ -55,13 +63,28 @@ export default function CashFlowPage() {
         <Button variant="primary" onClick={()=>setEntryMode('INCOME')}><Plus size={16}/> Nova receita</Button>
       </div>
     }/>
-    <Card className="p-4 grid grid-cols-2 lg:grid-cols-5 gap-3"><Input label="De" type="date" value={from} onChange={e=>{setFrom(e.target.value);setPage(1)}}/><Input label="Até" type="date" value={to} onChange={e=>{setTo(e.target.value);setPage(1)}}/>
+    <div className="flex justify-end"><FilterDrawer active={!!kind || !!method || !!status || dateMode==='custom' || year!==currentYear || month!==currentMonth} onReset={()=>{setDateMode('month');setYear(currentYear);setMonth(currentMonth);setFrom(today.slice(0,8)+'01');setTo(today);setKind('');setMethod('');setStatus('');setPage(1)}}>
+      <div className="grid grid-cols-1 gap-4">
+      <label className="text-sm">Período<select className={field} value={dateMode} onChange={e=>{if(e.target.value==='custom'){setFrom(from);setTo(to)}setDateMode(e.target.value);setPage(1)}}><option value="month">Mês e ano</option><option value="custom">Personalizado</option></select></label>
+      {dateMode==='custom'?<>
+        <Input label="De" type="date" value={from} max={to || undefined} onChange={e=>{setFrom(e.target.value);setPage(1)}}/><Input label="Até" type="date" value={to} min={from || undefined} onChange={e=>{setTo(e.target.value);setPage(1)}}/>
+      </>:<>
+        <label className="text-sm">Mês<select className={field} value={month ?? ''} onChange={e=>{setMonth(e.target.value?Number(e.target.value):undefined);setPage(1)}}><option value="">Todos os meses</option>{Array.from({length:12},(_,i)=><option key={i+1} value={i+1}>{new Intl.DateTimeFormat('pt-BR',{month:'long',timeZone:'UTC'}).format(new Date(Date.UTC(year,i,1)))}</option>)}</select></label>
+        <label className="text-sm">Ano<select className={field} value={year} onChange={e=>{setYear(Number(e.target.value));setPage(1)}}>{years.map(value=><option key={value} value={value}>{value}</option>)}</select></label>
+      </>}
+      </div>
+      {!valid && <p role="alert" className="text-sm text-danger">Informe um período válido.</p>}
+      <div className="grid grid-cols-1 gap-4 border-t border-border pt-5">
+      <h3 className="text-xs font-medium uppercase tracking-wide text-text-light">Movimentação</h3>
       <label className="text-sm">Tipo<select className={field} value={kind} onChange={e=>{setKind(e.target.value);setPage(1)}}><option value="">Todos</option>{Object.entries({PAYMENT:'Atendimentos',EXPENSE:'Despesas',INCOME:'Outras entradas',CREDIT:'Adiantamentos',OPENING:'Saldo inicial',REVERSAL:'Estornos'}).map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></label>
       <label className="text-sm">Forma<select className={field} value={method} onChange={e=>{setMethod(e.target.value);setPage(1)}}><option value="">Todas</option>{Object.entries(methodLabels).map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></label>
       <label className="text-sm">Situação<select className={field} value={status} onChange={e=>{setStatus(e.target.value);setPage(1)}}><option value="">Todas</option><option value="POSTED">Confirmado</option><option value="PENDING">Pendente</option><option value="CANCELLED">Cancelado</option></select></label>
-    </Card>
+      </div>
+    </FilterDrawer></div>
     {!valid&&<p role="alert" className="text-danger">Informe um período válido.</p>}{query.isError&&<QueryError onRetry={()=>query.refetch()}/>}
-    <div className="grid grid-cols-1 gap-4 min-[440px]:grid-cols-2 xl:grid-cols-3">{cards.map(([label,value],i)=><Card key={label} className={`p-5 ${i===3?'border-emerald-300 bg-emerald-50':''}`}><p className="text-sm font-medium text-text-muted">{label}</p><p className="mt-2 text-2xl font-semibold tracking-tight tabular-nums">{value===undefined?'—':money(value)}</p></Card>)}</div>
+    <CollapsibleStats items={cards.map(([label,value],i)=>({label,value:value===undefined?'—':money(value),className:i===3?'text-emerald-700':undefined}))}>
+      <div className="grid grid-cols-1 gap-3 min-[440px]:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">{cards.map(([label,value],i)=><Card key={label} className={`min-w-0 px-4 py-3 ${i===3?'border-emerald-300 bg-emerald-50':''}`}><p className="text-xs font-medium text-text-muted">{label}</p><p className="mt-1 text-xl break-words font-semibold tracking-tight tabular-nums">{value===undefined?'—':money(value)}</p></Card>)}</div>
+    </CollapsibleStats>
     <p className="text-xs text-text-muted">Saldos e entradas/saídas consideram todo o período, independentemente dos filtros da lista. A receber e a pagar mostram todos os valores ainda em aberto. Uso de crédito não gera nova entrada.</p>
     <Card className="relative p-5"><h2 className="text-base font-semibold">Movimentações · {query.data?.total??0}</h2>{query.isLoading?<div className="min-h-40"/>:<div className={`transition-opacity ${query.isFetching?'opacity-45 pointer-events-none':''}`} aria-busy={query.isFetching}><FinanceHistory entries={query.data?.data??[]}/></div>}<Pagination current={page} total={Math.max(1,Math.ceil((query.data?.total??0)/25))} onPageChange={setPage} loading={query.isFetching}/></Card>
     {entryMode&&<EntryForm key={entryMode} mode={entryMode} onClose={()=>setEntryMode(null)}/>}

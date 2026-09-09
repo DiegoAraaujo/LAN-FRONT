@@ -1,10 +1,10 @@
 'use client'
 import { useUrlFilters } from '@/hooks/useUrlFilters'
 import { Input } from '@/components/ui/Input'
-import { Search, RotateCcw } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
-import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
+import { FilterDrawer } from '@/components/ui/FilterDrawer'
+import { AppointmentFinanceFilters } from '@/features/finance/AppointmentFinanceFilters'
 import type { PaymentStatus } from '@/features/appointments/api/appointments.api'
 
 const MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
@@ -20,7 +20,6 @@ interface Props {
 
 export const ActivitiesFilterBar = ({ search, month, year, paymentStatus, onSearch, onMonth, onYear, onPaymentStatus, onReset, hasFilters }: Props) => {
   const t  = useTranslations('activities')
-  const tc = useTranslations('common')
 
   const { params, setFilters } = useUrlFilters()
   const custom = params.get('dateMode') === 'custom' || !!(params.get('dateFrom') || params.get('dateTo'))
@@ -32,9 +31,8 @@ export const ActivitiesFilterBar = ({ search, month, year, paymentStatus, onSear
   const MONTHS = locale === 'en' ? MONTHS_EN : MONTHS_PT
 
   return (
-    <Card className="space-y-5 p-5">
-      <div className="flex flex-wrap items-end gap-4">
-        <div className="w-full sm:flex-1 min-w-0">
+    <div className="flex items-end gap-3">
+        <div className="flex-1 min-w-0">
           <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">{t('clientLabel')}</label>
           <div className="relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light" />
@@ -43,7 +41,8 @@ export const ActivitiesFilterBar = ({ search, month, year, paymentStatus, onSear
               className="w-full border border-border rounded-lg pl-8 pr-3 py-2.5 text-sm bg-surface" />
           </div>
         </div>
-        <div className="w-full sm:w-56 shrink-0">
+      <FilterDrawer active={hasFilters} onReset={onReset}>
+        <div className="w-full">
           <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">{t('paymentLabel')}</label>
           <select aria-label={t('paymentLabel')} value={paymentStatus ?? ''} onChange={e => onPaymentStatus((e.target.value as PaymentStatus) || undefined)}
             className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface appearance-none cursor-pointer">
@@ -53,13 +52,7 @@ export const ActivitiesFilterBar = ({ search, month, year, paymentStatus, onSear
             <option value="PARTIAL">Parcialmente pago</option>
           </select>
         </div>
-        {hasFilters && (
-          <Button variant="ghost" size="sm" onClick={onReset} className="self-end">
-            <RotateCcw size={13} /> {tc('reset')}
-          </Button>
-        )}
-      </div>
-      <div className="grid grid-cols-1 items-end gap-4 border-t border-border pt-5 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0">
+      <div className="grid grid-cols-1 items-end gap-4 border-t border-border pt-5 [&>*]:min-w-0">
         <div className="min-w-0">
           <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5" htmlFor="appointment-period-mode">{locale === 'en' ? 'Period' : 'Período'}</label>
           <select id="appointment-period-mode" value={custom ? 'custom' : 'month'} onChange={e => changeMode(e.target.value)} className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface">
@@ -97,6 +90,8 @@ export const ActivitiesFilterBar = ({ search, month, year, paymentStatus, onSear
         </div>
 
       </div>
-    </Card>
+        <AppointmentFinanceFilters />
+      </FilterDrawer>
+    </div>
   )
 }

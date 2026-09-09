@@ -18,6 +18,7 @@ export interface DashboardData {
   paymentMethods: { method: string; count: number; revenue: number }[];
   recentAppointments: DashboardAppointment[]; pendingAppointments: DashboardAppointment[];
 }
+export interface DashboardFilters { year?: number; month?: number; dateFrom?: string; dateTo?: string }
 export const dashboardApi = {
-  get: (params?: { year?: number; month?: number }) => api.get<DashboardData>('/dashboard/', { params }),
+  get: (params?: DashboardFilters) => api.get<DashboardData>('/dashboard/', { params }),
 }
