@@ -39,7 +39,6 @@ const ActivitiesPage = () => {
   const t = useTranslations("activities");
   const [deleteTarget, setDeleteTarget] = useState<Appointment | null>(null)
   const { params, setFilters } = useUrlFilters()
-  const tc = useTranslations('common')
 
   const search = params.get('search') ?? ''
   const setSearch = (value: string) => setFilters({ search: value, page: 1 })
@@ -67,7 +66,7 @@ const ActivitiesPage = () => {
     setMarkPaidTarget(null);
   });
 
-  const { data, isLoading, isError, refetch } = useAppointments({
+  const { data, isLoading, isFetching, isError, refetch } = useAppointments({
     search: debounced || undefined,
     openOnly: params.get("openOnly") === "true" ? "true" : undefined,
     serviceId: params.get("serviceId") || undefined, professionalId: params.get("professionalId") || undefined,
@@ -112,7 +111,7 @@ const ActivitiesPage = () => {
   };
 
   const pagination = (
-    <Pagination current={page} total={totalPages} onPageChange={setPage} />
+    <Pagination current={page} total={totalPages} onPageChange={setPage} loading={isFetching} />
   );
 
   return (
@@ -168,7 +167,7 @@ const ActivitiesPage = () => {
           </div>
         </Card>
       </div>
-      <Card className="hidden sm:block">
+      <Card className={`relative hidden sm:block transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <h3 className="font-semibold text-sm">{t("appointmentList")}</h3>
           <span className="bg-gold-btn text-text text-[11px] font-bold px-3 py-1 rounded">
@@ -177,9 +176,7 @@ const ActivitiesPage = () => {
         </div>
 
         {isError ? null : isLoading ? (
-          <div className="px-5 py-10 text-center text-sm text-text-light">
-            {tc('loading')}
-          </div>
+          <div className="min-h-40" />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -224,11 +221,9 @@ const ActivitiesPage = () => {
           </div>
         )}
       </Card>
-      <div className="sm:hidden flex flex-col gap-3">
+      <div className={`relative sm:hidden flex flex-col gap-3 transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`} aria-busy={isFetching}>
         {isError ? null : isLoading ? (
-          <div className="text-center py-10 text-sm text-text-light">
-            {tc('loading')}
-          </div>
+          <div className="min-h-40" />
         ) : appointments.length === 0 ? (
           <div className="text-center py-10 text-sm text-text-light">
             {t("noResults")}

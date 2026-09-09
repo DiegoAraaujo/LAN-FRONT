@@ -33,7 +33,6 @@ const CustomersPage = () => {
   const t = useTranslations("clients");
   const [deleteTarget, setDeleteTarget] = useState<Customer | null>(null)
   const { params, setFilters } = useUrlFilters()
-  const tc = useTranslations('common')
 
   const search = params.get('search') ?? ''
   const setSearch = (value: string) => setFilters({ search: value, page: 1 })
@@ -46,7 +45,7 @@ const CustomersPage = () => {
 
   const debounced = useDebounce(search, 300);
 
-  const { data, isLoading, isError, refetch } = useCustomers({
+  const { data, isLoading, isFetching, isError, refetch } = useCustomers({
     search: debounced,
     page,
     limit: LIMIT,
@@ -64,7 +63,7 @@ const CustomersPage = () => {
   const totalPages = data?.meta.totalPages ?? 1;
 
   const pagination = (
-    <Pagination current={page} total={totalPages} onPageChange={setPage} />
+    <Pagination current={page} total={totalPages} onPageChange={setPage} loading={isFetching} />
   );
 
   const handleSubmit = (formData: CustomerInput) => {
@@ -115,8 +114,8 @@ const CustomersPage = () => {
         }}
       />
 
-      <div className="hidden sm:block">
-        <CustomerTable
+      <div className="relative hidden sm:block" aria-busy={isFetching}>
+        <div className={`transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}><CustomerTable
           customers={customers}
           total={total}
           page={page}
@@ -127,26 +126,24 @@ const CustomersPage = () => {
           onDelete={(id) => setDeleteTarget(customers.find(c => c.id === id) ?? null)}
           onPageChange={setPage}
           onViewDetail={setDetailTarget}
-        />
+        /></div>
       </div>
 
       <div className="sm:hidden flex flex-col gap-3">
         {isError ? null : isLoading ? (
-          <div className="text-center py-10 text-sm text-text-light">
-            {tc('loading')}
-          </div>
+          <div className="min-h-40" />
         ) : customers.length === 0 ? (
           <div className="text-center py-10 text-sm text-text-light">
             {t("noResults")}
           </div>
         ) : (
-          <CustomerMobileList
+          <div className="relative" aria-busy={isFetching}><div className={`transition-opacity ${isFetching ? 'opacity-45 pointer-events-none' : ''}`}><CustomerMobileList
             customers={customers}
             isLoading={isLoading}
             onEdit={setEditTarget}
             onDelete={(id) => setDeleteTarget(customers.find(c => c.id === id) ?? null)}
             onViewDetail={setDetailTarget}
-          />
+          /></div></div>
         )}
       </div>
 

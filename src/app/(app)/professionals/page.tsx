@@ -23,14 +23,13 @@ const ProfessionalsPage = () => {
   const t = useTranslations("professionals");
   const [deleteTarget, setDeleteTarget] = useState<Professional | null>(null)
   const { params, setFilters } = useUrlFilters()
-  const tc = useTranslations('common')
   const search = params.get('search') ?? ''
   const setSearch = (value: string) => setFilters({ search: value, page: 1 })
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Professional | null>(null);
   const debounced = useDebounce(search, 300);
 
-  const { data: professionals = [], isLoading, isError, refetch } = useProfessionals(debounced);
+  const { data: professionals = [], isLoading, isFetching, isError, refetch } = useProfessionals(debounced);
   const createMutation = useCreateProfessional(() => setModalOpen(false));
   const updateMutation = useUpdateProfessional(() => { setEditTarget(null); setModalOpen(false) });
   const deleteMutation = useDeleteProfessional();
@@ -80,14 +79,12 @@ const ProfessionalsPage = () => {
         />
       </div>
 
-      <Card className="hidden sm:block">
+      <Card className={`relative hidden sm:block transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}>
         <div className="px-5 py-4 border-b border-border font-semibold text-sm text-text">
           {t("activeProfessionals")} ({professionals.length})
         </div>
         {isError ? null : isLoading ? (
-          <div className="px-5 py-10 text-center text-sm text-text-light">
-            {tc('loading')}
-          </div>
+          <div className="min-h-40" />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -141,11 +138,9 @@ const ProfessionalsPage = () => {
         </div>
       </Card>
 
-      <div className="sm:hidden flex flex-col gap-3">
+      <div className={`relative sm:hidden flex flex-col gap-3 transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`} aria-busy={isFetching}>
         {isError ? null : isLoading ? (
-          <div className="text-center py-10 text-sm text-text-light">
-            {tc('loading')}
-          </div>
+          <div className="min-h-40" />
         ) : (
           professionals.map((p) => (
             <ProfessionalMobileCard

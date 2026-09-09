@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { PageHeader, Pagination } from '@/components/ui/Display'
 import { Card } from '@/components/ui/Card'
@@ -46,7 +46,7 @@ export default function CashFlowPage() {
   const [kind,setKind]=useState(''),[method,setMethod]=useState(''),[status,setStatus]=useState(''),[page,setPage]=useState(1)
   const [entryMode,setEntryMode]=useState<EntryMode|null>(null)
   const valid=!!from&&!!to&&from<=to
-  const query=useQuery({queryKey:['finance','cash',{from,to,kind,method,status,page}],queryFn:()=>financeApi.list({from,to,page,kind:kind||undefined,method:method||undefined,status:status||undefined}),enabled:valid})
+  const query=useQuery({queryKey:['finance','cash',{from,to,kind,method,status,page}],queryFn:()=>financeApi.list({from,to,page,kind:kind||undefined,method:method||undefined,status:status||undefined}),enabled:valid,placeholderData:keepPreviousData})
   const summary=query.data?.summary
   const cards=[['Saldo inicial do período',summary?.opening],['Entradas no período',summary?.incoming],['Saídas no período',summary?.outgoing],['Saldo final',summary?.balance],['Total a receber',summary?.receivable],['Total a pagar',summary?.payable]] as const
   return <main className="p-5 sm:p-8 space-y-5"><PageHeader title="Fluxo de caixa" subtitle="Recebimentos, despesas e valores em aberto." actions={
@@ -63,7 +63,7 @@ export default function CashFlowPage() {
     {!valid&&<p role="alert" className="text-danger">Informe um período válido.</p>}{query.isError&&<QueryError onRetry={()=>query.refetch()}/>}
     <div className="grid grid-cols-2 xl:grid-cols-3 gap-3">{cards.map(([label,value],i)=><Card key={label} className={`p-5 ${i===3?'border-emerald-300 bg-emerald-50':''}`}><p className="text-xs text-text-muted">{label}</p><p className="text-2xl font-bold mt-2 tabular-nums">{value===undefined?'—':money(value)}</p></Card>)}</div>
     <p className="text-xs text-text-muted">Saldos e entradas/saídas consideram todo o período, independentemente dos filtros da lista. A receber e a pagar mostram todos os valores ainda em aberto. Uso de crédito não gera nova entrada.</p>
-    <Card className="p-5"><h2 className="font-semibold">Movimentações · {query.data?.total??0}</h2>{query.isLoading?<p role="status" className="py-5">Carregando…</p>:<FinanceHistory entries={query.data?.data??[]}/>}<Pagination current={page} total={Math.max(1,Math.ceil((query.data?.total??0)/25))} onPageChange={setPage}/></Card>
+    <Card className="relative p-5"><h2 className="font-semibold">Movimentações · {query.data?.total??0}</h2>{query.isLoading?<div className="min-h-40"/>:<div className={`transition-opacity ${query.isFetching?'opacity-45 pointer-events-none':''}`} aria-busy={query.isFetching}><FinanceHistory entries={query.data?.data??[]}/></div>}<Pagination current={page} total={Math.max(1,Math.ceil((query.data?.total??0)/25))} onPageChange={setPage} loading={query.isFetching}/></Card>
     {entryMode&&<EntryForm key={entryMode} mode={entryMode} onClose={()=>setEntryMode(null)}/>}
   </main>
 }

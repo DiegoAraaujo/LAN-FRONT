@@ -10,9 +10,10 @@ import { DashboardStatCards } from './DashboardStatCards'
 import { DashboardPeriodFilter } from './DashboardPeriodFilter'
 import { Card } from '@/components/ui/Card'
 import { QueryError } from '@/components/ui/QueryError'
+import { LoadingState } from '@/components/ui/luma-spin'
 import { PaymentModal } from '@/features/finance/PaymentModal'
 import type { DashboardAppointment } from '../api/dashboard.api'
-const RevenueChart = dynamic(() => import('@/components/charts/RevenueChart').then(m => m.RevenueChart), { ssr: false, loading: () => <div className="h-72 animate-pulse rounded-xl bg-bg" /> })
+const RevenueChart = dynamic(() => import('@/components/charts/RevenueChart').then(m => m.RevenueChart), { ssr: false, loading: () => <LoadingState label="Carregando gráfico…" className="h-72" /> })
 
 export function DashboardClient() {
   const t = useTranslations('overview')
@@ -44,13 +45,13 @@ export function DashboardClient() {
       <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold mb-2">LAN / {t('business')}</p><h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">{t('title')}</h1><p className="text-sm text-text-muted mt-2">{t('subtitle')}</p></div>
       <div className="flex flex-wrap items-center gap-2">
         <DashboardPeriodFilter year={year} month={month} onYearChange={y => setPeriod(y, month)} onMonthChange={m => setPeriod(year,m)} />
-        <button aria-label={t('refresh')} disabled={query.isFetching} onClick={() => query.refetch()} className="p-3 rounded-xl border border-border bg-white disabled:opacity-50"><RefreshCw size={16} className={query.isFetching ? 'animate-spin' : ''}/></button>
+        <button aria-label={t('refresh')} disabled={query.isFetching} onClick={() => query.refetch()} className="p-3 rounded-xl border border-border bg-white disabled:opacity-50"><RefreshCw size={16}/></button>
         <Link href="/appointments" className="inline-flex items-center gap-2 rounded-xl px-4 py-3 bg-sidebar text-white text-sm font-medium"><Plus size={16}/>{t('newAppointment')}</Link>
       </div>
     </div>
     <p className="flex items-center gap-2 text-xs text-text-muted"><CalendarDays size={14} className="shrink-0"/>{t('periodHint')}</p>
     {query.isError && <QueryError onRetry={() => query.refetch()} />}
-    {!data && query.isLoading && <div aria-label={t('loading')} role="status" className="space-y-5"><div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">{[1,2,3,4].map(i => <div key={i} className="h-48 rounded-2xl bg-border/50 animate-pulse"/>)}</div><div className="h-80 rounded-2xl bg-border/50 animate-pulse"/></div>}
+    {!data && query.isLoading && <LoadingState label={t('loading')} className="min-h-[420px]" />}
     {data && <>
       <DashboardStatCards data={data}/><p className="text-xs text-text-muted mb-4">Valores por data do atendimento, incluindo pagamentos parciais e crédito aplicado. Consulte o Fluxo de caixa para entradas por data de recebimento.</p>
       <div className="grid xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)] gap-5">

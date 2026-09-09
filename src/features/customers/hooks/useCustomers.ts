@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { customersApi, type CustomersParams } from '../api/customers.api'
 
 export const customersKeys = {
@@ -8,7 +8,7 @@ export const customersKeys = {
 }
 
 export const useCustomers = (params: CustomersParams = {}) =>
-  useQuery({ queryKey: customersKeys.list(params), queryFn: () => customersApi.list(params).then(r => r.data) })
+  useQuery({ queryKey: customersKeys.list(params), queryFn: () => customersApi.list(params).then(r => r.data), placeholderData: keepPreviousData })
 
 export const useCustomersDashboard = () =>
   useQuery({ queryKey: customersKeys.dashboard(), queryFn: () => customersApi.dashboard().then(r => r.data) })

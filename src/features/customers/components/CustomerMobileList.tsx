@@ -1,5 +1,4 @@
 'use client'
-import { useTranslations } from 'next-intl'
 import { CustomerCard } from './CustomerCard'
 import type { Customer } from '../api/customers.api'
 
@@ -12,9 +11,8 @@ interface Props {
 }
 
 export const CustomerMobileList = ({ customers, isLoading, onEdit, onDelete, onViewDetail }: Props) => {
-  const tc = useTranslations('common')
   if (isLoading) return (
-    <div className="sm:hidden text-center py-10 text-sm text-text-light">{tc('loading')}</div>
+    <div className="min-h-40 sm:hidden" />
   )
   return (
     <div className="sm:hidden flex flex-col gap-3">

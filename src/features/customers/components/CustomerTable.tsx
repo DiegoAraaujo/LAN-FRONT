@@ -26,7 +26,6 @@ export const CustomerTable = ({
   onViewDetail,
 }: Props) => {
   const t = useTranslations("clients");
-  const tc = useTranslations("common");
 
   const HEADERS = [
     t("tableNameCol"),
@@ -41,9 +40,7 @@ export const CustomerTable = ({
   return (
     <Card className="hidden sm:block">
       {isLoading ? (
-        <div className="px-5 py-10 text-center text-sm text-text-light">
-          {tc("loading")}
-        </div>
+        <div className="min-h-40" />
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">

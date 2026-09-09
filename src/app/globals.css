@@ -43,6 +43,26 @@ button:not(:disabled), select { cursor: pointer; }
 input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #16856a; outline-offset: 2px; }
 body:has(dialog[open]) { overflow: hidden; }
 main > div { max-width: 1600px; margin-inline: auto; }
+
+@keyframes luma-spin {
+  0% { inset: 0 54% 54% 0; }
+  12.5% { inset: 0 54% 0 0; }
+  25% { inset: 54% 54% 0 0; }
+  37.5% { inset: 54% 0 0 0; }
+  50% { inset: 54% 0 0 54%; }
+  62.5% { inset: 0 0 0 54%; }
+  75% { inset: 0 0 54% 54%; }
+  87.5% { inset: 0 0 54% 0; }
+  100% { inset: 0 54% 54% 0; }
+}
+.luma-spin-segment {
+  position: absolute;
+  display: block;
+  border-radius: 50px;
+  animation: luma-spin 2.5s linear infinite;
+}
+.luma-spin-delay { animation-delay: -1.25s; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }

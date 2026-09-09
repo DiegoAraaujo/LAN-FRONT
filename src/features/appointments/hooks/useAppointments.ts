@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { appointmentsApi, type AppointmentsParams } from '../api/appointments.api'
 
 export const appointmentsKeys = {
@@ -7,4 +7,4 @@ export const appointmentsKeys = {
 }
 
 export const useAppointments = (params: AppointmentsParams = {}) =>
-  useQuery({ queryKey: appointmentsKeys.list(params), queryFn: () => appointmentsApi.list(params).then(r => r.data) })
+  useQuery({ queryKey: appointmentsKeys.list(params), queryFn: () => appointmentsApi.list(params).then(r => r.data), placeholderData: keepPreviousData })

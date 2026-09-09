@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { servicesApi } from '../api/services.api'
 
 export const servicesKeys = {
@@ -7,4 +7,4 @@ export const servicesKeys = {
 }
 
 export const useServices = (search?: string) =>
-  useQuery({ queryKey: servicesKeys.list(search), queryFn: () => servicesApi.list(search).then(r => r.data) })
+  useQuery({ queryKey: servicesKeys.list(search), queryFn: () => servicesApi.list(search).then(r => r.data), placeholderData: keepPreviousData })

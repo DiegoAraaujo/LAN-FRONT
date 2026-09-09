@@ -7,7 +7,6 @@ interface Props { data: { serviceName: string; revenue: number }[]; isLoading: b
 
 export const ServiceRevenueTable = ({ data, isLoading }: Props) => {
   const t  = useTranslations('dashboard')
-  const tc = useTranslations('common')
 
   return (
     <Card>
@@ -25,7 +24,7 @@ export const ServiceRevenueTable = ({ data, isLoading }: Props) => {
           </thead>
           <tbody>
             {isLoading ? (
-              <tr><td colSpan={2} className="px-5 py-8 text-center text-sm text-text-light">{tc('loading')}</td></tr>
+              <tr><td colSpan={2} className="h-40" /></tr>
             ) : data.length === 0 ? (
               <tr><td colSpan={2} className="px-5 py-8 text-center text-sm text-text-light">{t('noPeriodData')}</td></tr>
             ) : data.map((row, i) => (

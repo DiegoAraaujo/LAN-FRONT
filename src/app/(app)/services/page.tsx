@@ -23,14 +23,13 @@ const ServicesPage = () => {
   const t = useTranslations('services')
   const [deleteTarget, setDeleteTarget] = useState<Service | null>(null)
   const { params, setFilters } = useUrlFilters()
-  const tc = useTranslations('common')
   const search = params.get('search') ?? ''
   const setSearch = (value: string) => setFilters({ search: value, page: 1 })
   const [addOpen, setAddOpen]       = useState(false)
   const [editTarget, setEditTarget] = useState<Service | null>(null)
   const debounced = useDebounce(search, 300)
 
-  const { data: services = [], isLoading, isError, refetch } = useServices(debounced)
+  const { data: services = [], isLoading, isFetching, isError, refetch } = useServices(debounced)
   const createMutation = useCreateService(() => setAddOpen(false))
   const updateMutation = useUpdateService(() => setEditTarget(null))
   const deleteMutation = useDeleteService()
@@ -64,10 +63,10 @@ const ServicesPage = () => {
           className="w-full sm:w-64 border border-border rounded-lg pl-8 pr-3 py-2.5 text-sm bg-surface" />
       </div>
 
-      <Card className="hidden sm:block">
+      <Card className={`relative hidden sm:block transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}>
         <div className="px-5 py-4 border-b border-border font-semibold text-sm">{t('activeServices')}</div>
         {isError ? null : isLoading ? (
-          <div className="px-5 py-10 text-center text-sm text-text-light">{tc('loading')}</div>
+          <div className="min-h-40" />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -95,8 +94,8 @@ const ServicesPage = () => {
         </div>
       </Card>
 
-      <div className="sm:hidden flex flex-col gap-3">
-        {services.map(s => (
+      <div className={`relative sm:hidden flex flex-col gap-3 transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`} aria-busy={isFetching}>
+        {isLoading ? <div className="min-h-40" /> : services.map(s => (
           <ServiceMobileCard key={s.id} service={s}
             onEdit={() => setEditTarget(s)} onDelete={() => setDeleteTarget(s)} />
         ))}
