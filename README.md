@@ -1,167 +1,119 @@
-# LAN System — Barbershop & Salon Management
+# LAN Frontend
 
-> **Launched, Noted, Never Forgotten**
+Interface web do LAN, sistema de gestão para barbearias e salões. O projeto acompanha clientes, profissionais, serviços, atendimentos, pagamentos e movimentações financeiras em desktop e dispositivos móveis.
 
-A full-featured web management system for barbershops and salons, covering the entire business cycle — from client registration to revenue analytics.
+## Funcionalidades
 
----
+- autenticação por cookies HttpOnly com renovação automática;
+- dashboard com valores pagos, pendentes, rankings e evolução do período;
+- cadastro e gestão de clientes, contatos e situação;
+- análise de fidelidade calculada sobre todos os clientes;
+- cadastro de profissionais e serviços autorizados;
+- catálogo de serviços e preços;
+- registro de atendimentos com múltiplos serviços, profissionais e desconto;
+- pagamentos totais ou parciais e uso de crédito do cliente;
+- fluxo de caixa com receitas, despesas, pendências e estornos;
+- histórico com filtros por período, serviço, profissional e pagamento;
+- interface responsiva em português e inglês;
+- feedback por toast e carregamento unificado da área de conteúdo.
 
-## Features
+## Tecnologias
 
-- **Authentication** — Sign up, login, automatic token refresh, and route protection
-- **Dashboard** — Monthly revenue chart, KPIs and service revenue breakdown, filterable by year/month
-- **Clients** — Full CRUD with WhatsApp/Instagram contacts, loyalty tier analysis (VIP GOLD, FREQUENT, ACTIVE), and detailed client profile modal
-- **Professionals** — Staff management with multi-service authorization per professional
-- **Services** — Service catalog with pricing
-- **Appointments** — Smart scheduling with real-time professional filtering by service, duplicate service prevention, discount calculation and payment tracking
-- **Activities** — Appointment history with filters, inline mark-as-paid and full edit support
-- **Settings** — Profile management and language preferences
-- **Internationalization** — Full PT/EN support via `next-intl`
+| Área | Tecnologia |
+| --- | --- |
+| Framework | Next.js 16 com App Router |
+| Interface | React 19 e Tailwind CSS 4 |
+| Linguagem | TypeScript |
+| Consultas | TanStack React Query 5 |
+| HTTP | Axios |
+| Formulários | React Hook Form e Zod |
+| Estado local | Zustand |
+| Gráficos | Recharts |
+| Traduções | next-intl |
+| Notificações | react-hot-toast |
 
----
+## Requisitos
 
-## Tech Stack
+- Node.js 20 ou superior
+- npm
+- LAN API em execução
 
-| Layer | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS v4 |
-| Data Fetching | TanStack React Query v5 |
-| HTTP Client | Axios (with interceptors) |
-| Forms | React Hook Form + Zod |
-| State | Zustand |
-| Charts | Recharts |
-| i18n | next-intl |
-| Icons | Lucide React |
-| Notifications | react-hot-toast |
+## Configuração local
 
----
-
-## Project Structure
-
-```
-src/
-├── app/
-│   ├── (app)/               # Authenticated routes (with sidebar + AuthGuard)
-│   │   ├── activities/
-│   │   ├── appointments/
-│   │   ├── clients/
-│   │   ├── dashboard/
-│   │   ├── professionals/
-│   │   ├── services/
-│   │   └── settings/
-│   └── (auth)/              # Public routes
-│       ├── login/
-│       └── signup/
-├── components/
-│   ├── charts/              # Recharts wrappers
-│   ├── layout/              # AppShell, Sidebar, Topbar, AuthGuard, GuestGuard
-│   └── ui/                  # Button, Card, Badge, Input, Modal, Select, Textarea, Display
-├── features/                # Feature-based modules
-│   ├── activities/
-│   ├── appointments/
-│   ├── auth/
-│   ├── customers/
-│   ├── dashboard/
-│   ├── professionals/
-│   ├── services/
-│   └── settings/
-├── hooks/                   # Global hooks (useDebounce)
-├── i18n/                    # next-intl server config
-├── lib/                     # axios instance (api.ts), utilities (utils.ts)
-├── providers/               # QueryProvider (React Query + Toaster)
-├── stores/                  # Zustand stores (auth, ui, locale)
-├── constants/               # Routes, avatar colors
-└── types/                   # Shared TypeScript types
-```
-
-Each feature follows a consistent internal structure:
-
-```
-features/<name>/
-├── api/          # Axios calls (*.api.ts)
-├── hooks/        # React Query hooks (use*.ts)
-├── components/   # UI components scoped to this feature
-└── schemas/      # Zod validation schemas
-```
-
----
-
-## Architecture Decisions
-
-**Authentication flow**
-- Access and refresh tokens use HttpOnly cookies scoped to the API host; production cookies require HTTPS.
-- Remember-me controls cookie persistence; tokens are never stored in browser storage or returned in JSON.
-- Axios interceptor automatically refreshes the access token on 401 responses
-- `AuthGuard` protects all dashboard routes; `GuestGuard` redirects logged-in users away from auth pages
-
-**Error handling**
-- Centralized in the Axios response interceptor
-- API error codes (e.g. `INVALID_CREDENTIALS`, `PROFESSIONAL_SERVICE_MISMATCH`) mapped to user-friendly toast messages
-- `VALIDATION_ERROR` responses are mapped field-by-field into React Hook Form errors
-
-**Smart appointment booking**
-- When a service is selected, only professionals authorized for that service are fetched (`GET /professionals/service/:id`)
-- Services already added to the appointment are filtered out of the selector to prevent duplicates
-
-**Data formatting**
-- Phone numbers are displayed with BR mask `(11) 99999-9999` but sent to the API as raw digits with DDI (`+5511999999999`)
-- Instagram handles are stripped of `@` before being sent to the API
-
----
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- The backend API running (see backend repo)
-
-### Installation
+Instale as dependências:
 
 ```bash
-# Clone the repository
-git clone <repo-url>
-cd lan-system
-
-# Install dependencies
 npm install
-
-# Set up environment variables
-cp .env.example .env.local
-# Edit .env.local with your API URL
 ```
 
-### Environment Variables
+Crie `.env.local` a partir de `.env.example`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3333
 ```
 
-### Running
+Inicie o projeto:
 
 ```bash
-# Development
 npm run dev
-
-# Production build
-npm run build
-npm start
 ```
 
-The app will be available at `http://localhost:3000`.
+Acesse `http://localhost:3000`.
 
----
+`NEXT_PUBLIC_API_URL` é uma configuração pública incorporada ao JavaScript durante o build. Ela deve conter apenas o endereço público da API, nunca senhas, tokens, segredos JWT ou a URL do banco.
 
-## API
+## Scripts
 
-This frontend connects to a REST API using HttpOnly session cookies. Axios sends credentials and a CSRF protection header; the API validates the exact frontend origin. Login and signup are public, while application data requires an authenticated session.
+| Comando | Finalidade |
+| --- | --- |
+| `npm run dev` | Inicia o Next.js em desenvolvimento |
+| `npm run build` | Cria o build de produção |
+| `npm run start` | Executa o build criado |
+| `npm run lint` | Verifica o código com ESLint |
 
-Base URL is configured via `NEXT_PUBLIC_API_URL` in your `.env.local`.
+## Estrutura
 
----
+```text
+src/
+├── app/          # rotas públicas e autenticadas
+├── components/   # componentes de interface, layout e gráficos
+├── features/     # módulos por domínio do sistema
+├── hooks/        # hooks compartilhados
+├── i18n/         # configuração de idioma
+├── lib/          # cliente HTTP, mensagens e utilitários
+├── providers/    # provedores React
+└── stores/       # estado da sessão, interface e idioma
+```
 
-## License
+Cada domínio reúne suas chamadas HTTP, hooks, componentes e validações em `src/features`.
 
-Private — All rights reserved.
+## Sessão e comunicação com a API
+
+O Axios envia cookies com `withCredentials: true` e inclui `X-CSRF-Protection: 1`. Ao receber `401`, o front tenta renovar a sessão uma vez e repete a requisição original. A renovação é coordenada entre abas para reduzir conflitos.
+
+Os tokens não ficam acessíveis ao JavaScript. Ao abrir o sistema, `/users/me` restaura a sessão a partir dos cookies da API.
+
+No ambiente publicado:
+
+- front: `https://app.jdbarbeariatapuio.com.br`;
+- API: `https://api.jdbarbeariatapuio.com.br`.
+
+## Carregamento de dados
+
+O primeiro carregamento mostra o Luma Spin sobre toda a área de conteúdo. Em paginações e filtros, os dados anteriores permanecem visíveis sob o fundo de carregamento até a nova resposta. A área principal fica bloqueada durante a consulta, enquanto o menu continua disponível.
+
+## Deploy na Vercel
+
+Configure a variável abaixo para os ambientes desejados:
+
+```env
+NEXT_PUBLIC_API_URL=https://api.jdbarbeariatapuio.com.br
+```
+
+Ela deve ser cadastrada como configuração comum, pois o endereço da API é público. Depois de alterar uma variável `NEXT_PUBLIC_`, faça um novo deploy para gerar o front com o novo valor.
+
+O domínio de produção esperado é `app.jdbarbeariatapuio.com.br` e precisa estar autorizado pelo CORS do backend.
+
+## Licença
+
+Projeto privado. Todos os direitos reservados.
