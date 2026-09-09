@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { User } from 'lucide-react'
@@ -12,11 +13,13 @@ import { useSignup } from '../hooks/useSignup'
 import { extractValidationErrors } from '@/lib/api'
 import { signupSchema, type SignupInput } from '../schemas/auth.schemas'
 import { ROUTES } from '@/constants'
+import { TermsOfServiceModal } from './TermsOfServiceModal'
 
 export const SignupForm = () => {
   const t    = useTranslations('auth')
   const signup = useSignup()
-  const { register, handleSubmit, setError, formState: { errors } } =
+  const [termsOpen, setTermsOpen] = useState(false)
+  const { register, handleSubmit, setError, setValue, formState: { errors } } =
     useForm<SignupInput>({ resolver: zodResolver(signupSchema) })
 
   const onSubmit = ({ name, email, password }: SignupInput) => {
@@ -37,10 +40,11 @@ export const SignupForm = () => {
       <PasswordField register={register} error={errors.confirmPassword}
         name="confirmPassword" label={t('confirmPassword')} placeholder={t('passwordPlaceholder')} />
       <div className="flex flex-col gap-1">
-        <label className="flex items-center gap-2 text-sm text-text-muted cursor-pointer">
-          <input type="checkbox" className="w-4 h-4 accent-gold-btn" {...register('terms')} />
-          {t('acceptTerms')}
-        </label>
+        <div className="flex items-center gap-2 text-sm text-text-muted">
+          <input id="terms" type="checkbox" className="h-4 w-4 shrink-0 accent-gold-btn" {...register('terms')} />
+          <label htmlFor="terms" className="cursor-pointer">Li e aceito os</label>
+          <button type="button" onClick={() => setTermsOpen(true)} className="font-semibold text-gold underline-offset-2 hover:underline">Termos de Serviço</button>
+        </div>
         {errors.terms && <p className="text-xs text-danger">{errors.terms.message}</p>}
       </div>
       <Button variant="primary" fullWidth size="lg" type="submit" disabled={signup.isPending}>
@@ -51,6 +55,14 @@ export const SignupForm = () => {
         {t('alreadyHaveAccount')}{' '}
         <Link href={ROUTES.login} className="text-gold font-semibold hover:underline">{t('signInLink')}</Link>
       </p>
+      <TermsOfServiceModal
+        open={termsOpen}
+        onClose={() => setTermsOpen(false)}
+        onAccept={() => {
+          setValue('terms', true, { shouldValidate: true, shouldDirty: true })
+          setTermsOpen(false)
+        }}
+      />
     </form>
   )
 }
