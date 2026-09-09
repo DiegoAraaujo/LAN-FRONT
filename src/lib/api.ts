@@ -4,7 +4,8 @@ import { useAuthStore } from '@/stores/auth.store'
 import { clientMessage } from './messages'
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? (process.env.NODE_ENV === 'production'
   ? 'https://api.jdbarbeariatapuio.com.br' : 'http://localhost:3333')
-const config = { baseURL: BASE_URL, timeout: 10000, withCredentials: true,
+// Allow time for connection acquisition and the bounded backend transaction.
+const config = { baseURL: BASE_URL, timeout: 60000, withCredentials: true,
   headers: { 'X-CSRF-Protection': '1' } }
 export const api = axios.create(config)
 const sessionApi = axios.create(config)
@@ -51,7 +52,8 @@ api.interceptors.response.use(res => res, async (error: AxiosError<ApiError>) =>
     try { await refreshSession(); return api(original) } catch (refreshError) { return Promise.reject(refreshError) }
   }
   {
-    const key = code ?? (!error.response ? 'NETWORK_ERROR' : status === 403 ? 'FORBIDDEN' : status === 404 ? 'NOT_FOUND' : 'UNKNOWN_ERROR')
+    const timedOut = error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT'
+    const key = code ?? (timedOut ? 'REQUEST_TIMEOUT' : !error.response ? 'NETWORK_ERROR' : status === 403 ? 'FORBIDDEN' : status === 404 ? 'NOT_FOUND' : 'UNKNOWN_ERROR')
     toast.error(code === "PAYMENT_CONFLICT" && error.response?.data?.message ? error.response.data.message : clientMessage(key), { id: key })
   }
   return Promise.reject(error)

@@ -1,4 +1,5 @@
 const messages: Record<string, [string, string]> = {
+  REQUEST_TIMEOUT: ['O servidor demorou demais para responder. Atualize a tela para conferir os dados.', 'The server took too long to respond. Refresh the page to check your data.'],
   PAYMENT_CONFLICT: ["Confira o saldo e o histórico. Estorne os pagamentos ou créditos vinculados antes dessa alteração.", "Check the balance and history. Reverse related payments or credit before this change."],
   'Conta criada! Faça login para continuar.': ['Conta criada! Faça login para continuar.', 'Account created! Sign in to continue.'],
   VALIDATION_ERROR: ['Confira os campos antes de salvar.', 'Check the fields before saving.'],
