@@ -115,7 +115,7 @@ const ActivitiesPage = () => {
   );
 
   return (
-    <div className="p-5 sm:p-8 flex flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 p-4 sm:p-8">
       <ConfirmDelete open={!!deleteTarget} detail={deleteTarget ? deleteTarget.customerName + ' · ' + new Date(deleteTarget.appointmentDate).toLocaleString() + ' · R$ ' + deleteTarget.total.toFixed(2) : undefined} busy={deleteMutation.isPending} onClose={() => setDeleteTarget(null)} onConfirm={() => {
         if (deleteTarget && !deleteMutation.isPending) deleteMutation.mutate(deleteTarget.id, { onSuccess: () => { setDeleteTarget(null); setPage(Math.max(1, page - (appointments.length === 1 ? 1 : 0))); } })
       }}/>
@@ -148,28 +148,28 @@ const ActivitiesPage = () => {
       />
       {params.get("openOnly") && <p className="text-sm text-amber-800">Exibindo atendimentos pendentes e parcialmente pagos. <button className="underline" onClick={() => setFilters({openOnly: undefined, page: 1})}>Mostrar todos</button></p>}
       <AppointmentFinanceFilters/>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">{[['Valor total', data?.summary?.totalValue], ['Pago / crédito aplicado', data?.summary?.paidValue], ['Em aberto', data?.summary?.pendingValue]].map(([label,value]) => <Card key={label} className="p-4"><p className="text-xs text-text-muted">{label}</p><strong className="text-xl">{formatCurrency(Number(value ?? 0))}</strong></Card>)}</div>
+      <div className="grid grid-cols-1 gap-4 min-[440px]:grid-cols-3">{[['Valor total', data?.summary?.totalValue], ['Pago / crédito aplicado', data?.summary?.paidValue], ['Em aberto', data?.summary?.pendingValue]].map(([label,value]) => <Card key={label} className="p-5"><p className="mb-2 text-sm font-medium text-text-muted">{label}</p><strong className="text-2xl font-semibold tracking-tight">{formatCurrency(Number(value ?? 0))}</strong></Card>)}</div>
       {(params.get('serviceId') || params.get('professionalId')) && <p className="rounded-xl bg-amber-50 p-4 text-sm">Somente os itens filtrados, após descontos: <strong>{formatCurrency(data?.summary?.serviceValue ?? 0)}</strong>. Os cartões incluem o valor completo dos atendimentos encontrados.</p>}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 min-[440px]:grid-cols-2">
         <Card className="p-5">
-          <div className="text-xs text-text-light mb-2">
+          <div className="mb-2 text-sm font-medium text-text-muted">
             {t("totalAppointments")}
           </div>
-          <div className="text-2xl sm:text-3xl font-bold">{total}</div>
+          <div className="text-2xl font-semibold tracking-tight">{total}</div>
         </Card>
 
         <Card className="p-5">
-          <div className="text-xs text-text-light mb-2">
+          <div className="mb-2 text-sm font-medium text-text-muted">
             {t("pendingCount")}
           </div>
-          <div className="text-xl sm:text-2xl font-bold text-warning">
+          <div className="text-2xl font-semibold tracking-tight text-warning">
             {pendingCount}
           </div>
         </Card>
       </div>
       <Card className={`relative hidden sm:block transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <h3 className="font-semibold text-sm">{t("appointmentList")}</h3>
+          <h2 className="text-base font-semibold">{t("appointmentList")}</h2>
           <span className="bg-gold-btn text-text text-[11px] font-bold px-3 py-1 rounded">
             {t("pendingCount")}: {pendingCount}
           </span>

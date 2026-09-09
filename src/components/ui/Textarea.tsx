@@ -23,7 +23,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           aria-invalid={!!error}
           aria-describedby={error ? fieldId + '-error' : props['aria-describedby']}
         className={cn(
-          'w-full border rounded-lg px-3 py-2.5 text-sm text-text bg-surface placeholder:text-text-light transition-colors resize-none',
+          'w-full rounded-xl border px-3 py-2.5 text-sm text-text bg-surface placeholder:text-text-light transition-colors resize-none',
           error ? 'border-danger' : 'border-border',
           className,
         )}

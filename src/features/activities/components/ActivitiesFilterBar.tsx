@@ -32,8 +32,8 @@ export const ActivitiesFilterBar = ({ search, month, year, paymentStatus, onSear
   const MONTHS = locale === 'en' ? MONTHS_EN : MONTHS_PT
 
   return (
-    <Card className="p-4 sm:p-5 space-y-4">
-      <div className="flex flex-wrap gap-4 items-end">
+    <Card className="space-y-5 p-5">
+      <div className="flex flex-wrap items-end gap-4">
         <div className="w-full sm:flex-1 min-w-0">
           <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">{t('clientLabel')}</label>
           <div className="relative">
@@ -59,7 +59,7 @@ export const ActivitiesFilterBar = ({ search, month, year, paymentStatus, onSear
           </Button>
         )}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 items-end border-t border-border pt-4 [&>*]:min-w-0">
+      <div className="grid grid-cols-1 items-end gap-4 border-t border-border pt-5 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0">
         <div className="min-w-0">
           <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5" htmlFor="appointment-period-mode">{locale === 'en' ? 'Period' : 'Período'}</label>
           <select id="appointment-period-mode" value={custom ? 'custom' : 'month'} onChange={e => changeMode(e.target.value)} className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface">

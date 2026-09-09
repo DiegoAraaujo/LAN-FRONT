@@ -12,7 +12,7 @@ export const PreferencesForm = () => {
 
   return (
     <Card className="p-5">
-      <div className="flex items-center gap-2 font-semibold text-sm text-text mb-4">
+      <div className="mb-4 flex items-center gap-2 text-base font-semibold text-text">
         <Globe size={15} className="text-gold" /> {t('systemPreferences')}
       </div>
       <div className="mb-4">
@@ -26,7 +26,7 @@ export const PreferencesForm = () => {
           ].map(opt => (
             <button type="button" aria-pressed={locale === opt.value} key={opt.value} onClick={() => setLocale(opt.value)}
               className={cn(
-                'flex items-center justify-center gap-2 border rounded-lg py-2.5 text-sm font-medium transition-all',
+                'flex min-h-11 items-center justify-center gap-2 rounded-xl border py-2.5 text-sm font-medium transition-all',
                 locale === opt.value
                   ? 'border-gold-btn bg-amber-50 text-text'
                   : 'border-border text-text-muted hover:border-gold-btn',
@@ -40,7 +40,7 @@ export const PreferencesForm = () => {
         <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">
           {t('timezone')}
         </label>
-        <p className="text-sm text-text-muted rounded-lg border border-border px-3 py-2.5">America/Sao_Paulo · Brasília</p>
+        <p className="flex min-h-11 items-center rounded-xl border border-border px-3 py-2.5 text-sm text-text-muted">America/Sao_Paulo · Brasília</p>
       </div>
     </Card>
   )

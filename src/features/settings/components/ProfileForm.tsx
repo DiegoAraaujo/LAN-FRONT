@@ -45,7 +45,7 @@ export const ProfileForm = () => {
 
   return (
     <Card className="p-5">
-      <div className="flex items-center gap-2 font-semibold text-sm text-text mb-5">
+      <div className="mb-5 flex items-center gap-2 text-base font-semibold text-text">
         <User size={15} className="text-gold" /> {t('userProfile')}
       </div>
 
@@ -88,11 +88,11 @@ export const ProfileForm = () => {
       </div>
 
       <div className="flex justify-end gap-3">
-        <Button variant="outline" size="sm" onClick={() => reset()} disabled={!isDirty}>
-          <X size={13} /> {tc('discard')}
+        <Button variant="outline" onClick={() => reset()} disabled={!isDirty}>
+          <X size={16} /> {tc('discard')}
         </Button>
-        <Button variant="primary" size="sm" onClick={handleSubmit(onSubmit)} disabled={!isDirty || updateUser.isPending}>
-          <Save size={13} /> {updateUser.isPending ? tc('saving') : tc('save')}
+        <Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={!isDirty || updateUser.isPending}>
+          <Save size={16} /> {updateUser.isPending ? tc('saving') : tc('save')}
         </Button>
       </div>
     </Card>

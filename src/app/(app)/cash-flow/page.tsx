@@ -15,7 +15,7 @@ import type { PaymentMethod } from '@/features/appointments/api/appointments.api
 import { financeApi, localDateTime, methodLabels } from '@/features/finance/finance.api'
 import { FinanceHistory } from '@/features/finance/FinanceHistory'
 import { formatCurrency as money } from '@/lib/utils'
-const field='w-full rounded-lg border border-border p-2.5 text-sm bg-surface'
+const field='mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface p-2.5 text-sm'
 type EntryMode = 'INCOME' | 'EXPENSE'
 function EntryForm({ mode, onClose }: { mode: EntryMode; onClose:()=>void }) {
   const isExpense = mode === 'EXPENSE'
@@ -49,7 +49,7 @@ export default function CashFlowPage() {
   const query=useQuery({queryKey:['finance','cash',{from,to,kind,method,status,page}],queryFn:()=>financeApi.list({from,to,page,kind:kind||undefined,method:method||undefined,status:status||undefined}),enabled:valid,placeholderData:keepPreviousData})
   const summary=query.data?.summary
   const cards=[['Saldo inicial do período',summary?.opening],['Entradas no período',summary?.incoming],['Saídas no período',summary?.outgoing],['Saldo final',summary?.balance],['Total a receber',summary?.receivable],['Total a pagar',summary?.payable]] as const
-  return <main className="p-5 sm:p-8 space-y-5"><PageHeader title="Fluxo de caixa" subtitle="Recebimentos, despesas e valores em aberto." actions={
+  return <div className="mx-auto w-full max-w-[1600px] space-y-6 p-4 sm:p-8"><PageHeader title="Fluxo de caixa" subtitle="Recebimentos, despesas e valores em aberto." actions={
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="primary" onClick={()=>setEntryMode('EXPENSE')}><Plus size={16}/> Nova despesa</Button>
         <Button variant="primary" onClick={()=>setEntryMode('INCOME')}><Plus size={16}/> Nova receita</Button>
@@ -61,9 +61,9 @@ export default function CashFlowPage() {
       <label className="text-sm">Situação<select className={field} value={status} onChange={e=>{setStatus(e.target.value);setPage(1)}}><option value="">Todas</option><option value="POSTED">Confirmado</option><option value="PENDING">Pendente</option><option value="CANCELLED">Cancelado</option></select></label>
     </Card>
     {!valid&&<p role="alert" className="text-danger">Informe um período válido.</p>}{query.isError&&<QueryError onRetry={()=>query.refetch()}/>}
-    <div className="grid grid-cols-2 xl:grid-cols-3 gap-3">{cards.map(([label,value],i)=><Card key={label} className={`p-5 ${i===3?'border-emerald-300 bg-emerald-50':''}`}><p className="text-xs text-text-muted">{label}</p><p className="text-2xl font-bold mt-2 tabular-nums">{value===undefined?'—':money(value)}</p></Card>)}</div>
+    <div className="grid grid-cols-1 gap-4 min-[440px]:grid-cols-2 xl:grid-cols-3">{cards.map(([label,value],i)=><Card key={label} className={`p-5 ${i===3?'border-emerald-300 bg-emerald-50':''}`}><p className="text-sm font-medium text-text-muted">{label}</p><p className="mt-2 text-2xl font-semibold tracking-tight tabular-nums">{value===undefined?'—':money(value)}</p></Card>)}</div>
     <p className="text-xs text-text-muted">Saldos e entradas/saídas consideram todo o período, independentemente dos filtros da lista. A receber e a pagar mostram todos os valores ainda em aberto. Uso de crédito não gera nova entrada.</p>
-    <Card className="relative p-5"><h2 className="font-semibold">Movimentações · {query.data?.total??0}</h2>{query.isLoading?<div className="min-h-40"/>:<div className={`transition-opacity ${query.isFetching?'opacity-45 pointer-events-none':''}`} aria-busy={query.isFetching}><FinanceHistory entries={query.data?.data??[]}/></div>}<Pagination current={page} total={Math.max(1,Math.ceil((query.data?.total??0)/25))} onPageChange={setPage} loading={query.isFetching}/></Card>
+    <Card className="relative p-5"><h2 className="text-base font-semibold">Movimentações · {query.data?.total??0}</h2>{query.isLoading?<div className="min-h-40"/>:<div className={`transition-opacity ${query.isFetching?'opacity-45 pointer-events-none':''}`} aria-busy={query.isFetching}><FinanceHistory entries={query.data?.data??[]}/></div>}<Pagination current={page} total={Math.max(1,Math.ceil((query.data?.total??0)/25))} onPageChange={setPage} loading={query.isFetching}/></Card>
     {entryMode&&<EntryForm key={entryMode} mode={entryMode} onClose={()=>setEntryMode(null)}/>}
-  </main>
+  </div>
 }

@@ -12,18 +12,18 @@ export const ServiceStatsBar = ({ services }: Props) => {
   const min = services.length > 0 ? Math.min(...services.map(s => s.price)) : 0
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 min-[440px]:grid-cols-3">
       <Card className="p-5">
-        <div className="text-xs text-text-light mb-1.5">{t('totalServices')}</div>
-        <div className="text-2xl font-bold text-text">{services.length}</div>
-      </Card>
-      <Card className="p-5 hidden sm:block">
-        <div className="text-xs text-text-light mb-1.5">{t('avgPrice')}</div>
-        <div className="text-2xl font-bold text-gold">{formatCurrency(avg)}</div>
+        <div className="mb-2 text-sm font-medium text-text-muted">{t('totalServices')}</div>
+        <div className="text-2xl font-semibold tracking-tight text-text">{services.length}</div>
       </Card>
       <Card className="p-5">
-        <div className="text-xs text-text-light mb-1.5">{t('minPrice')}</div>
-        <div className="text-2xl font-bold text-text">{services.length > 0 ? formatCurrency(min) : '—'}</div>
+        <div className="mb-2 text-sm font-medium text-text-muted">{t('avgPrice')}</div>
+        <div className="text-2xl font-semibold tracking-tight text-gold">{formatCurrency(avg)}</div>
+      </Card>
+      <Card className="p-5">
+        <div className="mb-2 text-sm font-medium text-text-muted">{t('minPrice')}</div>
+        <div className="text-2xl font-semibold tracking-tight text-text">{services.length > 0 ? formatCurrency(min) : '—'}</div>
       </Card>
     </div>
   )

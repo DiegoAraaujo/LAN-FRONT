@@ -9,15 +9,15 @@ interface Props { data?: CustomersDashboard }
 export const CustomerStatsBar = ({ data }: Props) => {
   const t = useTranslations('clients')
   return (
-    <div className="grid grid-cols-3 gap-3 sm:gap-4">
+    <div className="grid grid-cols-1 gap-4 min-[440px]:grid-cols-3">
       {[
         { label: t('totalClients'), value: data?.total        ?? '—', gold: false },
         { label: t('activeClients'),value: data?.active       ?? '—', gold: true  },
         { label: t('newMonth'),     value: `+${data?.newThisMonth ?? 0}`, gold: false },
       ].map((s) => (
-        <Card key={s.label} className="p-4 sm:p-5">
-          <div className="text-[10px] sm:text-xs text-text-light mb-1.5">{s.label}</div>
-          <div className={cn('text-xl sm:text-2xl font-bold', s.gold ? 'text-gold' : 'text-text')}>
+        <Card key={s.label} className="p-5">
+          <div className="mb-2 text-sm font-medium text-text-muted">{s.label}</div>
+          <div className={cn('text-2xl font-semibold tracking-tight', s.gold ? 'text-gold' : 'text-text')}>
             {s.value}
           </div>
         </Card>

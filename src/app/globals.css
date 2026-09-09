@@ -44,6 +44,22 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px
 body:has(dialog[open]) { overflow: hidden; }
 main > div { max-width: 1600px; margin-inline: auto; }
 
+#main-content input:not([type="checkbox"]):not([type="radio"]),
+#main-content select,
+#main-content textarea {
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+}
+#main-content input:not([type="checkbox"]):not([type="radio"]),
+#main-content select { min-height: 2.75rem; }
+#main-content table th {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+}
+
 @keyframes luma-spin {
   0% { inset: 0 54% 54% 0; }
   12.5% { inset: 0 54% 0 0; }

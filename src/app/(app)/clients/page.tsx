@@ -88,7 +88,7 @@ const CustomersPage = () => {
   const isSaving = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="p-5 sm:p-8 flex flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 p-4 sm:p-8">
       <ConfirmDelete open={!!deleteTarget} detail={deleteTarget?.name} busy={deleteMutation.isPending} onClose={() => setDeleteTarget(null)} onConfirm={() => {
         if (deleteTarget && !deleteMutation.isPending) deleteMutation.mutate(deleteTarget.id, { onSuccess: () => { setDeleteTarget(null); setPage(Math.max(1, page - (customers.length === 1 ? 1 : 0))); } })
       }}/>
@@ -98,8 +98,8 @@ const CustomersPage = () => {
         title={t("title")}
         subtitle={t("subtitle")}
         actions={
-          <Button variant="primary" size="sm" onClick={() => setFormOpen(true)}>
-            <Plus size={14} /> {t("newClient")}
+          <Button variant="primary" onClick={() => setFormOpen(true)}>
+            <Plus size={16} /> {t("newClient")}
           </Button>
         }
       />
