@@ -5,6 +5,7 @@ export const customersKeys = {
   all:       ['customers'] as const,
   list:      (p: CustomersParams) => [...customersKeys.all, 'list', p] as const,
   dashboard: ()                   => [...customersKeys.all, 'dashboard'] as const,
+  loyalty:   ()                   => [...customersKeys.all, 'loyalty'] as const,
 }
 
 export const useCustomers = (params: CustomersParams = {}) =>
@@ -12,3 +13,6 @@ export const useCustomers = (params: CustomersParams = {}) =>
 
 export const useCustomersDashboard = () =>
   useQuery({ queryKey: customersKeys.dashboard(), queryFn: () => customersApi.dashboard().then(r => r.data) })
+
+export const useCustomerLoyalty = (enabled: boolean) =>
+  useQuery({ queryKey: customersKeys.loyalty(), queryFn: () => customersApi.loyalty().then(r => r.data.data), enabled })

@@ -24,6 +24,13 @@ export interface CustomersDashboard {
   total: number; active: number; inactive: number; newThisMonth: number
 }
 
+export interface LoyaltyCustomer extends Customer {
+  totalAppointments: number
+  totalSpent: number
+  lastVisit: string
+  tier: 'VIP_GOLD' | 'FREQUENT' | 'ACTIVE'
+}
+
 export interface CustomersListResponse {
   data: Customer[]
   meta: { total: number; page: number; limit: number; totalPages: number }
@@ -49,6 +56,7 @@ export interface CustomersParams { search?: string; limit?: number; page?: numbe
 export const customersApi = {
   list:      (p?: CustomersParams)                     => api.get<CustomersListResponse>('/customers/', { params: p }),
   dashboard: ()                                        => api.get<CustomersDashboard>('/customers/dashboard'),
+  loyalty:   ()                                        => api.get<{ data: LoyaltyCustomer[] }>('/customers/loyalty'),
   create:    (data: CreateCustomerPayload)             => api.post<Customer>('/customers/', data),
   update:    (id: string, data: UpdateCustomerPayload) => api.patch<Customer>(`/customers/${id}`, data),
   remove:    (id: string)                              => api.delete(`/customers/${id}`),
