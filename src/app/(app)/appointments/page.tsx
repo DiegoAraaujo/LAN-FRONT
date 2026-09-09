@@ -85,10 +85,10 @@ const AppointmentsPage = () => {
   }
 
   return (
-    <div className="p-5 sm:p-8">
+    <div className="mx-auto w-full max-w-[1600px] space-y-6 p-4 sm:p-8">
       {payTarget && <PaymentModal key={payTarget.id} appointment={payTarget} onClose={() => setPayTarget(null)}/>}
       <PageHeader title={t('title')} subtitle={t('subtitle')} />
-      <Link href="/activities" className="inline-block mb-5 text-sm font-semibold text-gold underline">Consultar atendimentos e pagamentos</Link>
+      <Link href="/activities" className="inline-flex min-h-11 items-center rounded-xl border border-border bg-surface px-4 text-sm font-medium text-text hover:border-gold-btn">Consultar atendimentos e pagamentos</Link>
       {isError && <QueryError onRetry={() => refetch()}/>}
       {formError && <p role="alert" className="mb-4 rounded-xl bg-rose-50 border border-rose-200 p-4 text-sm text-danger">{formError}</p>}
 
@@ -96,7 +96,7 @@ const AppointmentsPage = () => {
         <div className="flex flex-col gap-4">
 
           <Card className="p-5">
-            <div className="font-semibold text-sm text-text mb-4">{t('clientSelection')}</div>
+            <h2 className="mb-4 text-base font-semibold text-text">{t('clientSelection')}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <ClientSearchInput selected={client} onSelect={setClient} error={attempted && !client ? e('selectCustomer') : undefined} />
                 <Input
@@ -115,7 +115,7 @@ const AppointmentsPage = () => {
 
           <Card className="p-5">
             <div className="flex items-center justify-between mb-4">
-              <div className="font-semibold text-sm text-text">{t('servicesProvided')}</div>
+              <h2 className="text-base font-semibold text-text">{t('servicesProvided')}</h2>
               <Button
                 variant="outline"
                 size="sm"

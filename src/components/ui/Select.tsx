@@ -26,7 +26,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           aria-describedby={error ? fieldId + '-error' : props['aria-describedby']}
         disabled={disabled}
         className={cn(
-          'w-full border rounded-lg px-3 py-2.5 text-sm text-text bg-surface transition-colors appearance-none',
+          'min-h-11 w-full rounded-xl border px-3 py-2.5 text-sm text-text bg-surface transition-colors appearance-none',
           disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
           error ? 'border-danger' : 'border-border',
           className,

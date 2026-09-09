@@ -48,7 +48,7 @@ const ProfessionalsPage = () => {
       : createMutation.mutate(data);
 
   return (
-    <div className="p-5 sm:p-8 flex flex-col gap-5">
+    <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 p-4 sm:p-8">
       <ConfirmDelete open={!!deleteTarget} detail={deleteTarget?.name} busy={deleteMutation.isPending} onClose={() => setDeleteTarget(null)} onConfirm={() => {
         if (deleteTarget && !deleteMutation.isPending) deleteMutation.mutate(deleteTarget.id, { onSuccess: () => { setDeleteTarget(null);  } })
       }}/>
@@ -58,13 +58,13 @@ const ProfessionalsPage = () => {
         title={t("title")}
         subtitle={t("subtitle")}
         actions={
-          <Button variant="primary" size="sm" onClick={() => handleOpen()}>
-            <Plus size={14} /> {t("newProfessional")}
+          <Button variant="primary" onClick={() => handleOpen()}>
+            <Plus size={16} /> {t("newProfessional")}
           </Button>
         }
       />
 
-      <div className="relative">
+      <div className="relative w-full sm:max-w-sm">
         <Search
           size={14}
           className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light"
@@ -75,12 +75,12 @@ const ProfessionalsPage = () => {
           placeholder={`${t("tableNameCol")}…`}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border border-border rounded-lg pl-8 pr-3 py-2 text-sm bg-surface w-48 focus:w-60 transition-all"
+          className="min-h-11 w-full rounded-xl border border-border bg-surface pl-9 pr-3 py-2.5 text-sm"
         />
       </div>
 
       <Card className={`relative hidden sm:block transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}>
-        <div className="px-5 py-4 border-b border-border font-semibold text-sm text-text">
+        <div className="border-b border-border px-5 py-4 text-base font-semibold text-text">
           {t("activeProfessionals")} ({professionals.length})
         </div>
         {isError ? null : isLoading ? (

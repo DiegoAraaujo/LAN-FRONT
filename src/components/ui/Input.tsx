@@ -27,7 +27,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           aria-invalid={!!error}
           aria-describedby={error ? fieldId + '-error' : props['aria-describedby']}
           className={cn(
-            'w-full border rounded-lg py-2.5 text-sm text-text bg-surface placeholder:text-text-light transition-colors',
+            'min-h-11 w-full rounded-xl border py-2.5 text-sm text-text bg-surface placeholder:text-text-light transition-colors',
             error ? 'border-danger' : 'border-border',
             icon      ? 'pl-9 pr-3' : 'px-3',
             rightIcon ? 'pr-9'      : '',

@@ -79,18 +79,20 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   actions?: React.ReactNode;
+  eyebrow?: string;
 }
 
-export const PageHeader = ({ title, subtitle, actions }: PageHeaderProps) => (
-  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
+export const PageHeader = ({ title, subtitle, actions, eyebrow = 'LAN / Gestão' }: PageHeaderProps) => (
+  <header className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
     <div>
-      <h1 className="text-2xl sm:text-3xl font-bold text-text">{title}</h1>
-      {subtitle && <p className="text-sm text-text-muted mt-1">{subtitle}</p>}
+      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-gold">{eyebrow}</p>
+      <h1 className="text-3xl font-semibold tracking-tight text-text sm:text-4xl">{title}</h1>
+      {subtitle && <p className="mt-2 text-sm text-text-muted">{subtitle}</p>}
     </div>
     {actions && (
-      <div className="flex items-center gap-2 shrink-0">{actions}</div>
+      <div className="flex flex-wrap items-center gap-2 shrink-0">{actions}</div>
     )}
-  </div>
+  </header>
 );
 
 interface PaginationProps {
