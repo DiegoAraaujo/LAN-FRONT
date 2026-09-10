@@ -25,6 +25,7 @@ export const useUpdateCustomer = (onSuccess?: () => void) => {
           contacts.push({ type: 'INSTAGRAM', value: normalizeInstagram(input.instagram) })
 
         return customersApi.update(id, {
+          status:   input.status,
           name:     input.name,
           phone:    fullWhatsapp ?? undefined,
           address:  input.address?.trim() || undefined,

@@ -25,7 +25,7 @@ import { useUpdateCustomer } from "@/features/customers/hooks/useUpdateCustomer"
 import { useDeleteCustomer } from "@/features/customers/hooks/useDeleteCustomer";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { CustomerInput } from "@/features/customers/schemas/customer.schemas";
-import type { Customer } from "@/features/customers/api/customers.api";
+import type { Customer, CustomerStatus } from "@/features/customers/api/customers.api";
 
 const LIMIT = 10;
 
@@ -34,6 +34,9 @@ const CustomersPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<Customer | null>(null)
   const { params, setFilters } = useUrlFilters()
 
+  const statusParam = params.get('status')
+  const status: CustomerStatus | undefined = statusParam === 'ACTIVE' || statusParam === 'INACTIVE' || statusParam === 'OCCASIONAL' ? statusParam : undefined
+  const setStatus = (value?: CustomerStatus) => setFilters({ status: value, page: 1 })
   const search = params.get('search') ?? ''
   const setSearch = (value: string) => setFilters({ search: value, page: 1 })
   const page = Math.max(1, Number(params.get('page')) || 1)
@@ -47,6 +50,7 @@ const CustomersPage = () => {
 
   const { data, isLoading, isFetching, isError, refetch } = useCustomers({
     search: debounced,
+    status,
     page,
     limit: LIMIT,
   });
@@ -68,17 +72,24 @@ const CustomersPage = () => {
 
   const handleSubmit = (formData: CustomerInput) => {
     if (editTarget) {
-      updateMutation.mutate({ id: editTarget.id, data: formData });
+      updateMutation.mutate({ id: editTarget.id, data: formData }, {
+        onSuccess: () => {
+          if (status && formData.status && status !== formData.status && customers.length === 1 && page > 1) setPage(page - 1);
+        },
+      });
     } else {
       createMutation.mutate(formData);
     }
   };
 
-  const handleToggle = (c: Customer) =>
-    toggleMutation.mutate({
-      id: c.id,
-      data: { status: c.status === "ACTIVE" ? "INACTIVE" : "ACTIVE" },
+  const handleStatusChange = (customer: Customer, nextStatus: CustomerStatus) => {
+    if (toggleMutation.isPending || customer.status === nextStatus) return;
+    toggleMutation.mutate({ id: customer.id, data: { status: nextStatus } }, {
+      onSuccess: () => {
+        if (status && status !== nextStatus && customers.length === 1 && page > 1) setPage(page - 1);
+      },
     });
+  };
 
   const handleEditFromDetail = () => {
     setEditTarget(detailTarget);
@@ -104,8 +115,9 @@ const CustomersPage = () => {
         }
       />
 
-      <CustomerStatsBar data={dashData} />
+      <CustomerStatsBar data={dashData} selected={status} onSelect={setStatus} />
 
+      <div className="flex flex-wrap items-center gap-3">
       <CustomerSearchBar
         value={search}
         onChange={(v) => {
@@ -114,6 +126,14 @@ const CustomersPage = () => {
         }}
       />
 
+      <select aria-label={t('statusFilter')} value={status ?? ''} onChange={event => setStatus((event.target.value || undefined) as CustomerStatus | undefined)} className="min-h-11 rounded-xl border border-border bg-surface px-3 py-2.5 text-sm">
+        <option value="">{t('allStatuses')}</option>
+        <option value="ACTIVE">{t('active')}</option>
+        <option value="INACTIVE">{t('inactive')}</option>
+        <option value="OCCASIONAL">{t('occasional')}</option>
+      </select>
+      </div>
+
       <div className="relative hidden sm:block" aria-busy={isFetching}>
         <div className={`transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}><CustomerTable
           customers={customers}
@@ -121,7 +141,8 @@ const CustomersPage = () => {
           page={page}
           totalPages={totalPages}
           isLoading={isLoading}
-          onToggle={handleToggle}
+          onStatusChange={handleStatusChange}
+          statusBusy={toggleMutation.isPending}
           onEdit={setEditTarget}
           onDelete={(id) => setDeleteTarget(customers.find(c => c.id === id) ?? null)}
           onPageChange={setPage}
@@ -134,10 +155,12 @@ const CustomersPage = () => {
           <div className="min-h-40" />
         ) : customers.length === 0 ? (
           <div className="text-center py-10 text-sm text-text-light">
-            {t("noResults")}
+            {t("noClientsFound")}
           </div>
         ) : (
           <div className="relative" aria-busy={isFetching}><div className={`transition-opacity ${isFetching ? 'opacity-45 pointer-events-none' : ''}`}><CustomerMobileList
+            onStatusChange={handleStatusChange}
+            statusBusy={toggleMutation.isPending}
             customers={customers}
             isLoading={isLoading}
             onEdit={setEditTarget}

@@ -120,7 +120,12 @@
     "whatsapp": "WhatsApp",
     "instagram": "Instagram",
     "clientDetails": "Client Details",
-    "registeredSince": "Client since"
+    "registeredSince": "Client since",
+    "occasional": "Occasional",
+    "inactiveClients": "Inactive",
+    "occasionalClients": "Occasional",
+    "allStatuses": "All statuses",
+    "statusFilter": "Filter by status"
   },
   "professionals": {
     "title": "Professional Management",

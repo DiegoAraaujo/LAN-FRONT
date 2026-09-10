@@ -1,6 +1,7 @@
 import { api } from '@/lib/api'
 
 export type ContactType = 'WHATSAPP' | 'INSTAGRAM'
+export type CustomerStatus = 'ACTIVE' | 'INACTIVE' | 'OCCASIONAL'
 
 export interface CustomerContact {
   type:  ContactType
@@ -12,7 +13,7 @@ export interface Customer {
   name:               string
   phone:              string
   address?:           string | null
-  status:             'ACTIVE' | 'INACTIVE'
+  status:             CustomerStatus
   createdAt:          string
   whatsapp?:          string | null
   instagram?:         string | null
@@ -21,7 +22,7 @@ export interface Customer {
 }
 
 export interface CustomersDashboard {
-  total: number; active: number; inactive: number; newThisMonth: number
+  total: number; active: number; inactive: number; occasional: number; newThisMonth: number
 }
 
 export interface LoyaltyCustomer extends Customer {
@@ -37,6 +38,7 @@ export interface CustomersListResponse {
 }
 
 export interface CreateCustomerPayload {
+  status?: CustomerStatus
   name:      string
   phone:     string
   address?:  string
@@ -47,11 +49,11 @@ export interface UpdateCustomerPayload {
   name?:     string
   phone?:    string
   address?:  string
-  status?:   'ACTIVE' | 'INACTIVE'
+  status?:   CustomerStatus
   contacts?: CustomerContact[]
 }
 
-export interface CustomersParams { search?: string; limit?: number; page?: number }
+export interface CustomersParams { search?: string; status?: CustomerStatus; limit?: number; page?: number }
 
 export const customersApi = {
   list:      (p?: CustomersParams)                     => api.get<CustomersListResponse>('/customers/', { params: p }),

@@ -4,18 +4,21 @@ import { useTranslations } from 'next-intl'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Avatar } from '@/components/ui/Display'
+import { CustomerStatusBadge, CustomerStatusSelect } from './CustomerStatus'
 import { CustomerContactBadges } from './CustomerContactBadges'
-import { getInitials, getAvatarColor, formatCurrency, cn } from '@/lib/utils'
-import type { Customer } from '../api/customers.api'
+import { getInitials, getAvatarColor, formatCurrency } from '@/lib/utils'
+import type { Customer, CustomerStatus } from '../api/customers.api'
 
 interface Props {
+  onStatusChange: (status: CustomerStatus) => void
+  statusBusy?: boolean
   customer:     Customer
   onEdit:       () => void
   onDelete:     () => void
   onViewDetail: () => void
 }
 
-export const CustomerCard = ({ customer, onEdit, onDelete, onViewDetail }: Props) => {
+export const CustomerCard = ({ customer, onStatusChange, statusBusy, onEdit, onDelete, onViewDetail }: Props) => {
   const t  = useTranslations('clients')
   const tc = useTranslations('common')
 
@@ -27,10 +30,7 @@ export const CustomerCard = ({ customer, onEdit, onDelete, onViewDetail }: Props
           <div className="font-semibold text-sm text-text group-hover:text-gold transition-colors group-hover:underline underline-offset-2">
             {customer.name}
           </div>
-          <span className={cn('text-[10px] px-2 py-0.5 rounded-full font-semibold',
-            customer.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500')}>
-            {customer.status === 'ACTIVE' ? t('active') : t('inactive')}
-          </span>
+          <CustomerStatusBadge status={customer.status} />
         </div>
       </button>
 
@@ -51,6 +51,7 @@ export const CustomerCard = ({ customer, onEdit, onDelete, onViewDetail }: Props
         </div>
       </div>
 
+      <div className="mb-3"><CustomerStatusSelect value={customer.status} name={customer.name} onChange={onStatusChange} disabled={statusBusy} /></div>
       <div className="grid grid-cols-2 gap-2">
         <Button variant="primary" size="sm" className="justify-center" onClick={onEdit}>
           <Pencil size={12} /> {tc('edit')}

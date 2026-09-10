@@ -1,21 +1,23 @@
 'use client'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
-import { Toggle, Avatar } from '@/components/ui/Display'
+import { Avatar } from '@/components/ui/Display'
+import { CustomerStatusSelect } from './CustomerStatus'
 import { CustomerContactBadges } from './CustomerContactBadges'
 import { getInitials, getAvatarColor, formatCurrency } from '@/lib/utils'
-import type { Customer } from '../api/customers.api'
+import type { Customer, CustomerStatus } from '../api/customers.api'
 
 interface Props {
   customer:   Customer
   index:      number
-  onToggle:   () => void
+  onStatusChange: (status: CustomerStatus) => void
+  statusBusy?: boolean
   onEdit:     () => void
   onDelete:   () => void
   onViewDetail: () => void
 }
 
-export const CustomerTableRow = ({ customer, index, onToggle, onEdit, onDelete, onViewDetail }: Props) => {
+export const CustomerTableRow = ({ customer, index, onStatusChange, statusBusy, onEdit, onDelete, onViewDetail }: Props) => {
   const t = useTranslations('clients')
   const common = useTranslations('common')
 
@@ -54,7 +56,7 @@ export const CustomerTableRow = ({ customer, index, onToggle, onEdit, onDelete, 
       </td>
 
       <td className="px-5 py-4">
-        <Toggle checked={customer.status === 'ACTIVE'} onChange={onToggle} />
+        <CustomerStatusSelect value={customer.status} name={customer.name} onChange={onStatusChange} disabled={statusBusy} />
       </td>
 
       <td className="px-5 py-4">

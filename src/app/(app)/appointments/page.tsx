@@ -1,5 +1,4 @@
 'use client'
-import Link from 'next/link'
 import { PaymentModal } from '@/features/finance/PaymentModal'
 import type { Appointment } from '@/features/appointments/api/appointments.api'
 import { useState } from 'react'
@@ -88,7 +87,6 @@ const AppointmentsPage = () => {
     <div className="mx-auto w-full max-w-[1600px] space-y-6 p-4 sm:p-8">
       {payTarget && <PaymentModal key={payTarget.id} appointment={payTarget} onClose={() => setPayTarget(null)}/>}
       <PageHeader title={t('title')} subtitle={t('subtitle')} />
-      <Link href="/activities" className="inline-flex min-h-11 items-center rounded-xl border border-border bg-surface px-4 text-sm font-medium text-text hover:border-gold-btn">Consultar atendimentos e pagamentos</Link>
       {isError && <QueryError onRetry={() => refetch()}/>}
       {formError && <p role="alert" className="mb-4 rounded-xl bg-rose-50 border border-rose-200 p-4 text-sm text-danger">{formError}</p>}
 

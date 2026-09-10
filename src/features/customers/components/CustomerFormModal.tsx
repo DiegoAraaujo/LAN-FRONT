@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button'
 import { customerSchema, type CustomerInput, WHATSAPP_DDI_OPTIONS } from '../schemas/customer.schemas'
 import { digitsOnly, normalizeInstagram } from '@/lib/utils'
 import type { Customer } from '../api/customers.api'
+import { statusKeys } from './CustomerStatus'
 
 const InstagramIcon = ({ size = 14 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -69,6 +70,7 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
     if (defaultValues) {
       const ddi = detectDdi(defaultValues.whatsapp)
       reset({
+        status:      defaultValues.status,
         name:        defaultValues.name,
         address:     defaultValues.address   ?? '',
         whatsappDdi: ddi,
@@ -76,7 +78,7 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
         instagram:   defaultValues.instagram ? normalizeInstagram(defaultValues.instagram) : '',
       })
     } else {
-      reset({ name: '', address: '', whatsappDdi: '+55', whatsapp: '', instagram: '' })
+      reset({ name: '', status: 'ACTIVE', address: '', whatsappDdi: '+55', whatsapp: '', instagram: '' })
     }
   }, [defaultValues, reset, open])
 
@@ -106,6 +108,12 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
       }
     >
       <div className="flex flex-col gap-4">
+        <label className="flex flex-col gap-1.5 text-sm">
+          {t('tableStatusCol')}
+          <select {...register('status')} disabled={isLoading} className="min-h-11 rounded-xl border border-border bg-surface px-3 py-2.5">
+            {Object.entries(statusKeys).map(([value, key]) => <option key={value} value={value}>{t(key)}</option>)}
+          </select>
+        </label>
 
         <Input
           label={tc('name')}

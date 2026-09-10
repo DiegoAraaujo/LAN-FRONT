@@ -6,10 +6,11 @@ import { useLocale } from 'next-intl'
 
 interface Props {
   items: { label: string; value: ReactNode; className?: string }[]
+  mobileItems?: Props['items']
   children: ReactNode
 }
 
-export function CollapsibleStats({ items, children }: Props) {
+export function CollapsibleStats({ items, mobileItems, children }: Props) {
   const [expanded, setExpanded] = useState(true)
   const id = useId()
   const en = useLocale() === 'en'
@@ -23,12 +24,20 @@ export function CollapsibleStats({ items, children }: Props) {
       </button>
     </div>
       {!expanded &&
-        <dl className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
-          {items.map(item => <div key={item.label} className="flex flex-wrap items-baseline gap-x-1 text-[13px] leading-snug">
+        <div>
+        {mobileItems && <dl className="flex flex-wrap items-center gap-x-4 gap-y-1 sm:hidden">
+          {mobileItems.map(item => <div key={item.label} className="flex flex-wrap items-baseline gap-x-1 text-[13px] leading-snug">
             <dt className="text-text-muted">{item.label}:</dt>
             <dd className={`font-semibold tabular-nums ${item.className ?? 'text-text'}`}>{item.value}</dd>
           </div>)}
         </dl>}
+        <dl className={`${mobileItems ? 'hidden sm:flex' : 'flex'} min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1`}>
+          {items.map(item => <div key={item.label} className="flex flex-wrap items-baseline gap-x-1 text-[13px] leading-snug">
+            <dt className="text-text-muted">{item.label}:</dt>
+            <dd className={`font-semibold tabular-nums ${item.className ?? 'text-text'}`}>{item.value}</dd>
+          </div>)}
+        </dl>
+        </div>}
     <div id={id} hidden={!expanded}>
       <div className="space-y-6">{children}</div>
     </div>

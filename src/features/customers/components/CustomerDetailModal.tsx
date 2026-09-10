@@ -11,8 +11,8 @@ import {
   getAvatarColor,
   formatCurrency,
   formatBRPhone,
-  cn,
 } from "@/lib/utils";
+import { CustomerStatusBadge } from "./CustomerStatus";
 import type { Customer } from "../api/customers.api";
 
 const InstagramIcon = ({ size = 14 }: { size?: number }) => (
@@ -119,16 +119,7 @@ export const CustomerDetailModal = ({
         <div>
           <h3 className="font-bold text-base text-text">{customer.name}</h3>
 
-          <span
-            className={cn(
-              "text-[10px] px-2 py-0.5 rounded-full font-semibold",
-              customer.status === "ACTIVE"
-                ? "bg-green-100 text-green-700"
-                : "bg-gray-100 text-gray-500",
-            )}
-          >
-            {customer.status === "ACTIVE" ? t("active") : t("inactive")}
-          </span>
+          <CustomerStatusBadge status={customer.status} />
         </div>
       </div>
 

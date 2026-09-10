@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/Card";
 import { CustomerTableRow } from "./CustomerTableRow";
-import type { Customer } from "../api/customers.api";
+import type { Customer, CustomerStatus } from "../api/customers.api";
 
 interface Props {
   customers: Customer[];
@@ -10,7 +10,8 @@ interface Props {
   page: number;
   totalPages: number;
   isLoading: boolean;
-  onToggle: (c: Customer) => void;
+  onStatusChange: (c: Customer, status: CustomerStatus) => void;
+  statusBusy?: boolean;
   onEdit: (c: Customer) => void;
   onDelete: (id: string) => void;
   onPageChange: (p: number) => void;
@@ -20,7 +21,8 @@ interface Props {
 export const CustomerTable = ({
   customers,
   isLoading,
-  onToggle,
+  onStatusChange,
+  statusBusy,
   onEdit,
   onDelete,
   onViewDetail,
@@ -72,7 +74,8 @@ export const CustomerTable = ({
                     key={c.id}
                     customer={c}
                     index={i}
-                    onToggle={() => onToggle(c)}
+                    onStatusChange={status => onStatusChange(c, status)}
+                    statusBusy={statusBusy}
                     onEdit={() => onEdit(c)}
                     onDelete={() => onDelete(c.id)}
                     onViewDetail={() => onViewDetail(c)}

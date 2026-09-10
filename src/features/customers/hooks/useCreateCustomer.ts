@@ -19,6 +19,7 @@ const buildPayload = (input: CustomerInput) => {
     contacts.push({ type: 'INSTAGRAM', value: normalizeInstagram(input.instagram) })
 
   return {
+    status:   input.status ?? 'ACTIVE',
     name:     input.name,
     phone:    fullWhatsapp ?? '',
     address:  input.address?.trim() || undefined,

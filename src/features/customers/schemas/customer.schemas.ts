@@ -9,6 +9,7 @@ export const WHATSAPP_DDI_OPTIONS = [
 ]
 
 export const customerSchema = z.object({
+  status:       z.enum(['ACTIVE', 'INACTIVE', 'OCCASIONAL']).optional(),
   name:         z.string().min(2, 'Nome deve ter ao menos 2 caracteres'),
   address:      z.string().optional(),
   whatsappDdi:  z.string().optional(),
