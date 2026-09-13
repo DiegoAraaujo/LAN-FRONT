@@ -21,7 +21,6 @@ const buildPayload = (input: CustomerInput) => {
   return {
     status:   input.status ?? 'ACTIVE',
     name:     input.name,
-    profileImage: input.profileImage ?? null,
     phone:    fullWhatsapp ?? '',
     address:  input.address?.trim() || undefined,
     contacts: contacts.length > 0 ? contacts : undefined,

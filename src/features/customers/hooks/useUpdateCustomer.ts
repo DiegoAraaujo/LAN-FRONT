@@ -27,7 +27,6 @@ export const useUpdateCustomer = (onSuccess?: () => void) => {
         return customersApi.update(id, {
           status:   input.status,
           name:     input.name,
-          profileImage: input.profileImage ?? null,
           phone:    fullWhatsapp ?? undefined,
           address:  input.address?.trim() || undefined,
           contacts,
