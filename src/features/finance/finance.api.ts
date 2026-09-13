@@ -4,7 +4,7 @@ export interface FinanceEntry {
   id: string; kind: string; status: string; description: string; category: string;
   cashCents: number; creditCents: number; appliedCents: number; occurredAt: string; dueAt: string | null;
   method: PaymentMethod | null; appointmentId: string | null; customerId: string | null;
-  customer?: { name: string } | null; reversal?: { id: string } | null;
+  customer?: { name: string } | null; appointment?: { appointmentDate: string } | null; reversal?: { id: string } | null;
 }
 export interface CustomerAccount { credit: number; outstanding: number; appointments: Appointment[]; history: FinanceEntry[] }
 export interface CashSummary { opening: number; incoming: number; outgoing: number; balance: number; receivable: number; payable: number }

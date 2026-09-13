@@ -67,7 +67,7 @@ const CustomersPage = () => {
   const totalPages = data?.meta.totalPages ?? 1;
 
   const pagination = (
-    <Pagination current={page} total={totalPages} onPageChange={setPage} loading={isFetching} />
+    <Pagination current={page} total={totalPages} onPageChange={setPage} loading={isFetching} scrollTargetId="clients-results" />
   );
 
   const handleSubmit = (formData: CustomerInput) => {
@@ -134,6 +134,7 @@ const CustomersPage = () => {
       </select>
       </div>
 
+      <div id="clients-results" className="scroll-mt-4" />
       <div className="relative hidden sm:block" aria-busy={isFetching}>
         <div className={`transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}><CustomerTable
           customers={customers}

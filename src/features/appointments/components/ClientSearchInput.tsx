@@ -20,6 +20,7 @@ export const ClientSearchInput = ({ selected, onSelect, error }: Props) => {
   const query = useCustomers({ search: debounced, limit: 8 })
   const create = useCreateCustomer(() => setCreateOpen(false))
   const suggestions = query.data?.data ?? []
+  const searching = query.isLoading || query.isFetching || search !== debounced
   const select = (c: Customer) => { onSelect(c); setSearch(''); setOpen(false); setActive(-1) }
   return <div className="relative">
     {selected ? <div className="border border-emerald-200 bg-emerald-50/50 rounded-xl p-3 flex items-center gap-3"><div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 grid place-items-center font-semibold">{selected.name.charAt(0)}</div><div className="min-w-0 flex-1"><p className="font-medium text-sm truncate">{selected.name}</p><p className="text-xs text-text-muted">{selected.whatsapp ?? selected.phone}</p></div><button type="button" aria-label={e('removeCustomer')} className="p-2 text-text-muted" onClick={() => onSelect(null)}><X size={16}/></button></div> :
@@ -35,8 +36,7 @@ export const ClientSearchInput = ({ selected, onSelect, error }: Props) => {
       </div>
       {error && <p id={id+'-error'} className="mt-1.5 text-xs text-danger">{error}</p>}
       {open && <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-xl border border-border bg-surface shadow-xl p-1">
-        {query.isLoading || search !== debounced ? <p role="status" className="p-3 text-sm text-text-muted">{e('searching')}</p> : query.isError ? <button type="button" onClick={() => query.refetch()} className="p-3 text-sm text-danger">{e('loadError')} {e('retry')}</button> : suggestions.length === 0 ? <p role="status" className="p-3 text-sm text-text-muted">{e('noCustomers')}</p> : null}
-        <ul id={id+'-list'} role="listbox" aria-label={t('searchClient')}>{suggestions.map((c,i) => <li id={id+'-option-'+i} role="option" aria-selected={active === i} key={c.id} className={'rounded-lg '+(active === i ? 'bg-bg' : '')}><button tabIndex={-1} type="button" onMouseDown={ev => ev.preventDefault()} onClick={() => select(c)} className="w-full text-left p-3 hover:bg-bg rounded-lg"><p className="font-medium text-sm">{c.name}</p><p className="text-xs text-text-muted">{c.whatsapp ?? c.phone}</p></button></li>)}</ul>
+        {searching ? <p role="status" className="p-3 text-sm text-text-muted">{e('searching')}</p> : query.isError ? <button type="button" onClick={() => query.refetch()} className="p-3 text-sm text-danger">{e('loadError')} {e('retry')}</button> : suggestions.length === 0 ? <p role="status" className="p-3 text-sm text-text-muted">{e('noCustomers')}</p> : <ul id={id+'-list'} role="listbox" aria-label={t('searchClient')}>{suggestions.map((c,i) => <li id={id+'-option-'+i} role="option" aria-selected={active === i} key={c.id} className={'rounded-lg '+(active === i ? 'bg-bg' : '')}><button tabIndex={-1} type="button" onMouseDown={ev => ev.preventDefault()} onClick={() => select(c)} className="w-full text-left p-3 hover:bg-bg rounded-lg"><p className="font-medium text-sm">{c.name}</p><p className="text-xs text-text-muted">{c.whatsapp ?? c.phone}</p></button></li>)}</ul>}
         <button type="button" onClick={() => { setCreateOpen(true); setOpen(false) }} className="w-full border-t border-border p-3 text-sm font-medium text-gold flex items-center gap-2"><Plus size={16}/>{e('newCustomer')}</button>
       </div>}
     </div>}

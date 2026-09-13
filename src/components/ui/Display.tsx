@@ -100,6 +100,7 @@ interface PaginationProps {
   total: number;
   onPageChange: (p: number) => void;
   loading?: boolean;
+  scrollTargetId?: string;
 }
 
 export const Pagination = ({
@@ -107,6 +108,7 @@ export const Pagination = ({
   total: requestedTotal,
   onPageChange,
   loading = false,
+  scrollTargetId,
 }: PaginationProps) => {
   const t = useTranslations('experience')
   const total = Math.max(1, requestedTotal)
@@ -120,12 +122,16 @@ export const Pagination = ({
   };
 
   const pages = getPages();
+  const changePage = (page: number) => {
+    onPageChange(page)
+    if (scrollTargetId) requestAnimationFrame(() => document.getElementById(scrollTargetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
 
   return (
     <div className={cn("flex items-center gap-1 transition-opacity", loading && "opacity-45")} aria-busy={loading}>
       <button
         aria-label={t('previous')}
-        onClick={() => onPageChange(Math.max(1, current - 1))}
+        onClick={() => changePage(Math.max(1, current - 1))}
         disabled={loading || current === 1}
         className="w-9 h-9 flex items-center justify-center rounded-md border border-border text-text-muted text-sm hover:border-gold-btn transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >
@@ -143,7 +149,7 @@ export const Pagination = ({
           <button
             key={p}
             aria-current={p === current ? 'page' : undefined}
-            onClick={() => onPageChange(p as number)}
+            onClick={() => changePage(p as number)}
             disabled={loading}
             className={cn(
               "w-9 h-9 flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:cursor-wait",
@@ -158,7 +164,7 @@ export const Pagination = ({
       )}
       <button
         aria-label={t('next')}
-        onClick={() => onPageChange(Math.min(total, current + 1))}
+        onClick={() => changePage(Math.min(total, current + 1))}
         disabled={loading || current === total}
         className="w-9 h-9 flex items-center justify-center rounded-md border border-border text-text-muted text-sm hover:border-gold-btn transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
       >

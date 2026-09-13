@@ -63,6 +63,7 @@ const ActivitiesPage = () => {
         : params.get("paymentStatus") === "PENDING"
           ? "PENDING"
           : undefined;
+  const serviceIds = params.get("serviceIds") || params.get("serviceId") || undefined;
   const setMonth = (value: number | undefined) =>
     setFilters({
       month: value,
@@ -99,7 +100,7 @@ const ActivitiesPage = () => {
   const { data, isLoading, isFetching, isError, refetch } = useAppointments({
     search: debounced || undefined,
     openOnly: params.get("openOnly") === "true" ? "true" : undefined,
-    serviceId: params.get("serviceId") || undefined,
+    serviceIds,
     professionalId: params.get("professionalId") || undefined,
     paymentMethod: (params.get("paymentMethod") || undefined) as
       | PaymentMethod
@@ -131,6 +132,7 @@ const ActivitiesPage = () => {
       dateTo: undefined,
       dateType: undefined,
       serviceId: undefined,
+      serviceIds: undefined,
       professionalId: undefined,
       paymentMethod: undefined,
       openOnly: undefined,
@@ -162,6 +164,7 @@ const ActivitiesPage = () => {
       total={totalPages}
       onPageChange={setPage}
       loading={isFetching}
+      scrollTargetId="activities-results"
     />
   );
 
@@ -328,13 +331,14 @@ const ActivitiesPage = () => {
           ))}
         </div>
       </CollapsibleStats>
-      {(params.get("serviceId") || params.get("professionalId")) && (
+      {(serviceIds || params.get("professionalId")) && (
         <p className="rounded-xl bg-amber-50 p-4 text-sm">
           Somente os itens filtrados, após descontos:{" "}
           <strong>{formatCurrency(data?.summary?.serviceValue ?? 0)}</strong>.
           As estatísticas incluem o valor completo dos atendimentos encontrados.
         </p>
       )}
+      <div id="activities-results" className="scroll-mt-4" />
       <Card
         className={`relative hidden sm:block transition-opacity ${isFetching && !isLoading ? "opacity-45 pointer-events-none" : ""}`}
       >
