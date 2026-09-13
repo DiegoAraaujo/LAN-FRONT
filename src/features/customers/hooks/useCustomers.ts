@@ -9,7 +9,7 @@ export const customersKeys = {
 }
 
 export const useCustomers = (params: CustomersParams = {}) =>
-  useQuery({ queryKey: customersKeys.list(params), queryFn: () => customersApi.list(params).then(r => r.data), placeholderData: keepPreviousData })
+  useQuery({ queryKey: customersKeys.list(params), queryFn: () => customersApi.list(params).then(r => r.data), placeholderData: keepPreviousData, meta: { backgroundWhenCached: 'customers-list' } })
 
 export const useCustomersDashboard = () =>
   useQuery({ queryKey: customersKeys.dashboard(), queryFn: () => customersApi.dashboard().then(r => r.data) })

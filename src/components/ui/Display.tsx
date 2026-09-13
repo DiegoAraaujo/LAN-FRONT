@@ -29,12 +29,16 @@ export const Toggle = ({ checked, onChange }: ToggleProps) => (
 
 interface AvatarProps {
   initials: string;
+  src?: string | null;
+  alt?: string;
   color?: string;
   size?: "sm" | "md" | "lg";
 }
 
 export const Avatar = ({
   initials,
+  src,
+  alt = '',
   color = "bg-amber-500",
   size = "sm",
 }: AvatarProps) => (
@@ -49,7 +53,7 @@ export const Avatar = ({
           : "w-12 h-12 text-base",
     )}
   >
-    {initials}
+    {src ? <img src={src} alt={alt} className="size-full rounded-full object-cover" /> : initials}
   </div>
 );
 

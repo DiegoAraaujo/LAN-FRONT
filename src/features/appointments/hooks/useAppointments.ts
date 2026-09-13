@@ -7,4 +7,4 @@ export const appointmentsKeys = {
 }
 
 export const useAppointments = (params: AppointmentsParams = {}) =>
-  useQuery({ queryKey: appointmentsKeys.list(params), queryFn: () => appointmentsApi.list(params).then(r => r.data), placeholderData: keepPreviousData })
+  useQuery({ queryKey: appointmentsKeys.list(params), queryFn: () => appointmentsApi.list(params).then(r => r.data), placeholderData: keepPreviousData, meta: { backgroundWhenCached: 'appointments-list' } })

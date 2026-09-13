@@ -1,11 +1,19 @@
 'use client'
 
-import { useIsFetching } from '@tanstack/react-query'
+import { useIsFetching, useQueryClient } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { LumaSpin } from '@/components/ui/luma-spin'
 
 export const ContentLoadingOverlay = () => {
-  const fetching = useIsFetching()
+  const queryClient = useQueryClient()
+  const fetching = useIsFetching({ predicate: query => {
+    const group = query.meta?.backgroundWhenCached
+    if (typeof group !== 'string') return true
+    const groupAlreadyHasData = queryClient.getQueryCache().findAll({
+      predicate: candidate => candidate.meta?.backgroundWhenCached === group && candidate.state.data !== undefined,
+    }).length > 0
+    return !groupAlreadyHasData
+  } })
   const t = useTranslations('common')
 
   if (!fetching) return null

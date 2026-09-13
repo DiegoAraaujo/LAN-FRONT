@@ -25,7 +25,7 @@ export const CustomerCard = ({ customer, onStatusChange, statusBusy, onEdit, onD
   return (
     <Card className="p-4">
       <button onClick={onViewDetail} className="flex items-center gap-2.5 mb-3 w-full text-left group">
-        <Avatar initials={getInitials(customer.name)} color={getAvatarColor(customer.name)} size="md" />
+        <Avatar initials={getInitials(customer.name)} src={customer.profileImage} alt={customer.name} color={getAvatarColor(customer.name)} size="md" />
         <div>
           <div className="font-semibold text-sm text-text group-hover:text-gold transition-colors group-hover:underline underline-offset-2">
             {customer.name}

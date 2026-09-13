@@ -11,6 +11,7 @@ export interface CustomerContact {
 export interface Customer {
   id:                 string
   name:               string
+  profileImage?:      string | null
   phone:              string
   address?:           string | null
   status:             CustomerStatus
@@ -40,6 +41,7 @@ export interface CustomersListResponse {
 export interface CreateCustomerPayload {
   status?: CustomerStatus
   name:      string
+  profileImage?: string | null
   phone:     string
   address?:  string
   contacts?: CustomerContact[]
@@ -47,6 +49,7 @@ export interface CreateCustomerPayload {
 
 export interface UpdateCustomerPayload {
   name?:     string
+  profileImage?: string | null
   phone?:    string
   address?:  string
   status?:   CustomerStatus
