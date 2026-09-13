@@ -34,7 +34,7 @@ export interface AppointmentsListResponse {
 }
 export interface AppointmentsParams {
   openOnly?: "true";
-  serviceId?: string; professionalId?: string; customerId?: string; paymentMethod?: PaymentMethod;
+  serviceId?: string; serviceIds?: string; professionalId?: string; customerId?: string; paymentMethod?: PaymentMethod;
   dateFrom?: string; dateTo?: string; dateType?: "appointment" | "payment";
   search?: string;
   paymentStatus?: PaymentStatus;
