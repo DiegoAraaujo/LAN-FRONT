@@ -113,8 +113,6 @@ export const CustomerDetailModal = ({
       <div className="flex items-center gap-4 mb-5 pb-5 border-b border-border">
         <Avatar
           initials={getInitials(customer.name)}
-          src={customer.profileImage}
-          alt={customer.name}
           color={getAvatarColor(customer.name)}
           size="lg"
         />

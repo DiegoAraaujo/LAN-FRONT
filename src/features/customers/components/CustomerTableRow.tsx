@@ -26,7 +26,7 @@ export const CustomerTableRow = ({ customer, index, onStatusChange, statusBusy, 
 
       <td className="px-5 py-4">
         <button onClick={onViewDetail} className="flex items-center gap-3 group text-left cursor-pointer">
-          <Avatar initials={getInitials(customer.name)} src={customer.profileImage} alt={customer.name} color={getAvatarColor(customer.name)} />
+          <Avatar initials={getInitials(customer.name)} color={getAvatarColor(customer.name)} />
           <span className="font-semibold text-sm text-text group-hover:text-gold transition-colors underline-offset-2 group-hover:underline">
             {customer.name}
           </span>

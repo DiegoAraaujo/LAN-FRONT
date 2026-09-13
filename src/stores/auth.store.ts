@@ -1,7 +1,7 @@
 'use client'
 import { create } from 'zustand'
 import axios from 'axios'
-export interface AuthUser { name: string; email: string; createdAt: string }
+export interface AuthUser { name: string; email: string; profileImage?: string | null; createdAt: string }
 interface AuthState {
   user: AuthUser | null; authenticated: boolean; ready: boolean; error: boolean;
   setSession: (user: AuthUser) => void;
