@@ -28,7 +28,7 @@ export const CustomerLoyaltyModal = ({ open, onClose }: Props) => {
           {top.map(c => {
             return (
               <div key={c.id} className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-gold-btn transition-colors">
-                <Avatar initials={getInitials(c.name)} color={getAvatarColor(c.name)} size="md" />
+                <Avatar initials={getInitials(c.name)} src={c.profileImage} alt={c.name} color={getAvatarColor(c.name)} size="md" />
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-sm truncate">{c.name}</div>
                   <div className="text-xs text-text-light mb-1">{c.totalAppointments ?? 0} {t('visits')}</div>

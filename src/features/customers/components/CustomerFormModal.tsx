@@ -1,9 +1,9 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslations } from 'next-intl'
-import { MessageCircle } from 'lucide-react'
+import { Camera, MessageCircle, Trash2 } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -11,6 +11,7 @@ import { customerSchema, type CustomerInput, WHATSAPP_DDI_OPTIONS } from '../sch
 import { digitsOnly, normalizeInstagram } from '@/lib/utils'
 import type { Customer } from '../api/customers.api'
 import { statusKeys } from './CustomerStatus'
+import { prepareProfileImage } from '../profileImage'
 
 const InstagramIcon = ({ size = 14 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -65,6 +66,9 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
     useForm<CustomerInput>({ resolver: zodResolver(customerSchema), defaultValues: { whatsappDdi: '+55' } })
 
   const selectedDdi = useWatch({ control, name: 'whatsappDdi' })
+  const profileImage = useWatch({ control, name: 'profileImage' })
+  const photoInput = useRef<HTMLInputElement>(null)
+  const [photoError, setPhotoError] = useState('')
 
   useEffect(() => {
     if (defaultValues) {
@@ -72,14 +76,16 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
       reset({
         status:      defaultValues.status,
         name:        defaultValues.name,
+        profileImage: defaultValues.profileImage ?? null,
         address:     defaultValues.address   ?? '',
         whatsappDdi: ddi,
         whatsapp:    extractLocalFormatted(defaultValues.whatsapp),
         instagram:   defaultValues.instagram ? normalizeInstagram(defaultValues.instagram) : '',
       })
     } else {
-      reset({ name: '', status: 'ACTIVE', address: '', whatsappDdi: '+55', whatsapp: '', instagram: '' })
+      reset({ name: '', profileImage: null, status: 'ACTIVE', address: '', whatsappDdi: '+55', whatsapp: '', instagram: '' })
     }
+    setPhotoError('')
   }, [defaultValues, reset, open])
 
   const handleWhatsappInput = (e: React.ChangeEvent<HTMLInputElement>, onChange: (v: string) => void) => {
@@ -108,6 +114,19 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
       }
     >
       <div className="flex flex-col gap-4">
+        <div className="flex flex-col items-center gap-2">
+          <button type="button" disabled={isLoading} onClick={()=>photoInput.current?.click()} className="group relative size-24 overflow-hidden rounded-full border-2 border-border bg-bg">
+            {profileImage ? <img src={profileImage} alt="Pré-visualização da foto" className="size-full object-cover"/> : <span className="grid size-full place-items-center text-text-muted"><Camera size={28}/></span>}
+            <span className="absolute inset-x-0 bottom-0 bg-black/60 py-1 text-[10px] text-white">{profileImage?'Editar':'Adicionar'}</span>
+          </button>
+          <input ref={photoInput} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={async event=>{
+            const file=event.target.files?.[0]; event.target.value=''; if(!file)return
+            setPhotoError('')
+            try{setValue('profileImage',await prepareProfileImage(file),{shouldDirty:true,shouldValidate:true})}catch(error){setPhotoError(error instanceof Error?error.message:'Não foi possível preparar a imagem.')}
+          }}/>
+          {profileImage&&<button type="button" disabled={isLoading} onClick={()=>setValue('profileImage',null,{shouldDirty:true})} className="flex items-center gap-1 text-xs text-danger"><Trash2 size={13}/>Remover foto</button>}
+          {(photoError||errors.profileImage?.message)&&<p className="text-xs text-danger">{photoError||errors.profileImage?.message}</p>}
+        </div>
         <label className="flex flex-col gap-1.5 text-sm">
           {t('tableStatusCol')}
           <select {...register('status')} disabled={isLoading} className="min-h-11 rounded-xl border border-border bg-surface px-3 py-2.5">

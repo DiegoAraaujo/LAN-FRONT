@@ -54,7 +54,7 @@ export default function CashFlowPage() {
   const [kind,setKind]=useState(''),[method,setMethod]=useState(''),[status,setStatus]=useState(''),[page,setPage]=useState(1)
   const [entryMode,setEntryMode]=useState<EntryMode|null>(null)
   const valid=!!from&&!!to&&from<=to
-  const query=useQuery({queryKey:['finance','cash',{from,to,kind,method,status,page}],queryFn:()=>financeApi.list({from,to,page,kind:kind||undefined,method:method||undefined,status:status||undefined}),enabled:valid,placeholderData:keepPreviousData})
+  const query=useQuery({queryKey:['finance','cash',{from,to,kind,method,status,page}],queryFn:()=>financeApi.list({from,to,page,kind:kind||undefined,method:method||undefined,status:status||undefined}),enabled:valid,placeholderData:keepPreviousData,meta:{backgroundWhenCached:'finance-list'}})
   const summary=query.data?.summary
   const cards=[['Saldo inicial do período',summary?.opening],['Entradas no período',summary?.incoming],['Saídas no período',summary?.outgoing],['Saldo final',summary?.balance],['Total a receber',summary?.receivable],['Total a pagar',summary?.payable]] as const
   return <div className="mx-auto w-full max-w-[1600px] space-y-6 p-4 sm:p-8"><PageHeader title="Fluxo de caixa" subtitle="Recebimentos, despesas e valores em aberto." actions={
