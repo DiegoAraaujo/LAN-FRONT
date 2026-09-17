@@ -1,12 +1,20 @@
 'use client'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
 import { useLocale, useTranslations } from 'next-intl'
-export const RevenueChart = ({ data = [], daily = false }: { data?: { month: string; revenue: number; pending?: number }[]; daily?: boolean }) => {
+type LabelMode = 'day' | 'month' | 'monthYear'
+export const RevenueChart = ({ data = [], labelMode = 'month' }: { data?: { month: string; revenue: number; pending?: number }[]; labelMode?: LabelMode }) => {
   const locale = useLocale()
   const t = useTranslations('overview')
   const currency = (n: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL', maximumFractionDigits: 2 }).format(n)
-  const chartData = data.map(b => ({ ...b, label: daily ? b.month : new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(2026, Number(b.month)-1, 1))) }))
-  const minimumWidth = daily ? Math.max(640, chartData.length * 46) : 600
+  const label = (value: string) => {
+    if (labelMode === 'day') return String(Number(value.includes('-') ? value.slice(-2) : value))
+    const parts = value.split('-').map(Number)
+    const year = parts.length > 1 ? parts[0] : 2026
+    const month = parts.length > 1 ? parts[1] : parts[0]
+    return new Intl.DateTimeFormat(locale, { month: 'short', ...(labelMode === 'monthYear' ? { year: '2-digit' as const } : {}), timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)))
+  }
+  const chartData = data.map(b => ({ ...b, label: label(b.month) }))
+  const minimumWidth = labelMode === 'day' ? Math.max(640, chartData.length * 46) : Math.max(600, chartData.length * 58)
   return <div className="w-full min-w-0 overflow-x-auto overscroll-x-contain pb-2 touch-pan-x">
     <div role="img" aria-label={t('chartDescription')} className="h-72" style={{ minWidth: minimumWidth }}>
     <ResponsiveContainer width="100%" height="100%" minWidth={0} initialDimension={{ width: minimumWidth, height: 288 }}>

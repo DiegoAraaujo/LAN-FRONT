@@ -40,13 +40,10 @@ export function DashboardClient() {
     Number.isInteger(rawYear) && rawYear >= 2000 && rawYear <= 2100
       ? rawYear
       : now.getFullYear();
+  const mode = params.get("dateMode") === "custom" ? "custom" : params.get("month") === "all" ? "year" : "month";
   const rawMonth = Number(params.get("month"));
-  const month =
-    params.get("month") === "all"
-      ? undefined
-      : Number.isInteger(rawMonth) && rawMonth >= 1 && rawMonth <= 12
-        ? rawMonth
-        : now.getMonth() + 1;
+  const selectedMonth = Number.isInteger(rawMonth) && rawMonth >= 1 && rawMonth <= 12 ? rawMonth : now.getMonth() + 1;
+  const month = mode === "year" ? undefined : selectedMonth;
   const dateFrom =
     params.get("dateFrom") ??
     `${year}-${String(month ?? 1).padStart(2, "0")}-01`;
@@ -67,7 +64,9 @@ export function DashboardClient() {
         new URLSearchParams({ dateMode: "custom", dateFrom: from, dateTo: to }),
       { scroll: false },
     );
-  const query = useDashboard({ dateFrom, dateTo }, validPeriod);
+  const setCalendarPeriod = (nextMode: "month" | "year", nextYear = year, nextMonth = selectedMonth) => router.replace("/dashboard?" + new URLSearchParams({ year:String(nextYear), month:nextMode === "year" ? "all" : String(nextMonth) }), { scroll:false });
+  const setMode = (nextMode: "month" | "year" | "custom") => nextMode === "custom" ? setCustomDates(dateFrom,dateTo) : setCalendarPeriod(nextMode);
+  const query = useDashboard(mode === "custom" ? { dateFrom, dateTo } : { year, ...(month ? { month } : {}) }, validPeriod);
   const [target, setTarget] = useState<DashboardAppointment | null>(null);
   const currency = (n: number) =>
     new Intl.NumberFormat(locale, {
@@ -86,6 +85,17 @@ export function DashboardClient() {
     "/activities?" +
     new URLSearchParams({ dateMode: "custom", dateFrom, dateTo });
   const data = validPeriod ? query.data : undefined;
+  const customDays = mode === "custom" ? Math.round((Date.parse(dateTo) - Date.parse(dateFrom)) / 86400000) + 1 : 0;
+  const chartLabelMode = mode === "month" || (mode === "custom" && customDays <= 31)
+    ? "day"
+    : mode === "custom" && customDays > 366
+      ? "monthYear"
+      : "month";
+  const evolutionLabel = (value: string) => {
+    if (chartLabelMode === "day") return String(Number(value.includes("-") ? value.slice(-2) : value));
+    const parts = value.split("-").map(Number);
+    return new Intl.DateTimeFormat(locale, { month: "short", ...(chartLabelMode === "monthYear" ? { year: "2-digit" as const } : {}), timeZone: "UTC" }).format(new Date(Date.UTC(parts.length > 1 ? parts[0] : year, (parts.length > 1 ? parts[1] : parts[0]) - 1, 1)));
+  };
   const ranking = (
     title: string,
     rows: { name: string; count: number; revenue: number }[],
@@ -134,14 +144,22 @@ export function DashboardClient() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <DashboardPeriodFilter
+            mode={mode}
+            year={year}
+            month={selectedMonth}
             dateFrom={dateFrom}
             dateTo={dateTo}
+            active={mode !== "month" || year !== now.getFullYear() || selectedMonth !== now.getMonth()+1}
+            onModeChange={setMode}
+            onYearChange={value=>setCalendarPeriod(mode === "year" ? "year" : "month",value)}
+            onMonthChange={value=>setCalendarPeriod("month",year,value)}
             onDateChange={(key, value) =>
               setCustomDates(
                 key === "dateFrom" ? value : dateFrom,
                 key === "dateTo" ? value : dateTo,
               )
             }
+            onReset={()=>setCalendarPeriod("month",now.getFullYear(),now.getMonth()+1)}
           />
           <button
             aria-label={t("refresh")}
@@ -173,6 +191,26 @@ export function DashboardClient() {
       {data && (
         <>
           <DashboardStatCards data={data} />
+          <Card className="p-5 sm:p-6">
+            <div className="mb-5">
+              <h2 className="font-semibold text-lg">Comparativo mensal até hoje</h2>
+              <p className="text-xs text-text-muted mt-1">Uma visão fixa dos últimos 12 meses, independente do período selecionado.</p>
+            </div>
+            <div className="flex gap-3 overflow-x-auto overscroll-x-contain pb-2">
+              {data.monthToDate.map((item) => {
+                const monthName = new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(item.year, item.month - 1, 1)));
+                return <div key={`${item.year}-${item.month}`} className="min-w-[220px] rounded-2xl border border-border bg-bg/50 p-4">
+                  <p className="text-sm font-semibold capitalize">Neste mesmo dia em {monthName}</p>
+                  <p className="text-[11px] text-text-muted mt-1">Dados do dia 1 ao dia {item.throughDay}</p>
+                  <dl className="mt-4 space-y-2 text-sm">
+                    <div className="flex justify-between gap-3"><dt className="text-text-muted">Atendimentos</dt><dd className="font-semibold tabular-nums">{item.appointments}</dd></div>
+                    <div className="flex justify-between gap-3"><dt className="text-text-muted">Recebido</dt><dd className="font-semibold tabular-nums text-emerald-700">{currency(item.received)}</dd></div>
+                    <div className="flex justify-between gap-3"><dt className="text-text-muted">Pendente</dt><dd className="font-semibold tabular-nums text-amber-700">{currency(item.pending)}</dd></div>
+                  </dl>
+                </div>;
+              })}
+            </div>
+          </Card>
           <p className="text-xs text-text-muted mb-4">
             Valores por data do atendimento, incluindo pagamentos parciais e
             crédito aplicado. Consulte o Fluxo de caixa para entradas por data
@@ -184,7 +222,7 @@ export function DashboardClient() {
                 <h2 className="font-semibold text-lg">{t("evolution")}</h2>
                 <p className="text-xs text-text-muted mt-1">{t("period")}</p>
               </div>
-              <RevenueChart data={data.evolutionGraph} daily />
+              <RevenueChart data={data.evolutionGraph} labelMode={chartLabelMode} />
               {data.cards.totalAppointments === 0 && (
                 <p className="text-sm text-text-muted text-center mt-3">
                   {t("empty")}
@@ -204,7 +242,7 @@ export function DashboardClient() {
                     <tbody>
                       {data.evolutionGraph.map((r) => (
                         <tr key={r.month}>
-                          <td className="py-1">{r.month}</td>
+                          <td className="py-1 capitalize">{evolutionLabel(r.month)}</td>
                           <td>{currency(r.revenue)}</td>
                           <td>{currency(r.pending)}</td>
                         </tr>

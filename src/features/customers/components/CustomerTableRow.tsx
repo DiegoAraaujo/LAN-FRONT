@@ -41,7 +41,7 @@ export const CustomerTableRow = ({ customer, index, onStatusChange, statusBusy, 
 
       <td className="px-5 py-4">
         {customer.whatsapp || customer.instagram ? (
-          <CustomerContactBadges whatsapp={customer.whatsapp} instagram={customer.instagram} compact />
+          <CustomerContactBadges whatsapp={customer.whatsapp} instagram={customer.instagram} iconOnly />
         ) : (
           <span className="text-xs italic text-text-light">{t('noContacts')}</span>
         )}

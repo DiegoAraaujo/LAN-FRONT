@@ -2,13 +2,14 @@
 import { Pencil, Trash2 } from 'lucide-react'
 import { ProfessionalServiceBadges } from './ProfessionalServiceBadges'
 import type { Professional } from '../api/professionals.api'
+import { formatBRPhone } from '@/lib/utils'
 
 interface Props { professional: Professional; index: number; onEdit: () => void; onDelete: () => void }
 
 export const ProfessionalTableRow = ({ professional, index, onEdit, onDelete }: Props) => (
   <tr className={index > 0 ? 'border-t border-border' : ''}>
     <td className="px-5 py-4 font-semibold text-sm text-text">{professional.name}</td>
-    <td className="px-5 py-4 text-sm text-text-muted">{professional.phone}</td>
+    <td className="px-5 py-4 text-sm text-text-muted">{formatBRPhone(professional.phone)}</td>
     <td className="px-5 py-4 text-sm text-text-muted">{professional.address}</td>
     <td className="px-5 py-4"><ProfessionalServiceBadges services={professional.services} /></td>
     <td className="px-5 py-4">
