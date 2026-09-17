@@ -11,6 +11,7 @@ import { ActivitiesFilterBar } from "@/features/activities/components/Activities
 import { ActivityTableRow } from "@/features/activities/components/ActivityTableRow";
 import { ActivityMobileCard } from "@/features/activities/components/ActivityMobileCard";
 import { AppointmentEditModal } from "@/features/appointments/components/AppointmentEditModal";
+import { AppointmentCreateModal } from "@/features/appointments/components/AppointmentCreateModal";
 import { PaymentModal } from "@/features/finance/PaymentModal";
 import { formatCurrency } from "@/lib/utils";
 import { useAppointments } from "@/features/appointments/hooks/useAppointments";
@@ -23,6 +24,8 @@ import type {
   PaymentStatus,
 } from "@/features/appointments/api/appointments.api";
 import { ActivityDetailModal } from "@/features/activities/components/ActivityDetailModal";
+import { Button } from "@/components/ui/Button";
+import { Plus } from "lucide-react";
 
 const LIMIT = 10;
 
@@ -89,6 +92,7 @@ const ActivitiesPage = () => {
     null,
   );
   const [detailTarget, setDetailTarget] = useState<Appointment | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const debounced = useDebounce(search, 300);
   const deleteMutation = useDeleteAppointment();
@@ -197,7 +201,9 @@ const ActivitiesPage = () => {
       />
       {isError && <QueryError onRetry={() => refetch()} />}
 
-      <PageHeader title={t("title")} subtitle={t("subtitle")} />
+      <PageHeader title={t("title")} subtitle={t("subtitle")} actions={
+        <Button variant="primary" onClick={() => setCreateOpen(true)}><Plus size={16}/>Novo atendimento</Button>
+      } />
       <ActivitiesFilterBar
         search={search}
         month={month}
@@ -438,6 +444,12 @@ const ActivitiesPage = () => {
           setMarkPaidTarget(detailTarget);
           setDetailTarget(null);
         }}
+      />
+
+      <AppointmentCreateModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onPaymentNeeded={appointment => setMarkPaidTarget(appointment)}
       />
 
       {markPaidTarget && (

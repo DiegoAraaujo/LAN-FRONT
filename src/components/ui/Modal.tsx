@@ -3,8 +3,8 @@ import { useEffect, useId, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-interface ModalProps { open: boolean; onClose: () => void; title: string; children: React.ReactNode; footer?: React.ReactNode; size?: 'sm' | 'md' | 'lg' | 'xl'; busy?: boolean }
-const sizes = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-xl', xl: 'max-w-2xl' }
+interface ModalProps { open: boolean; onClose: () => void; title: string; children: React.ReactNode; footer?: React.ReactNode; size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl'; busy?: boolean }
+const sizes = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-xl', xl: 'max-w-2xl', '2xl': 'max-w-5xl' }
 export const Modal = ({ open, onClose, title, children, footer, size = 'md', busy = false }: ModalProps) => {
   const dialog = useRef<HTMLDialogElement>(null)
   const titleId = useId()
