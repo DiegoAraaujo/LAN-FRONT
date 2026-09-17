@@ -21,9 +21,10 @@ export const formatDate = (date: Date): string =>
   new Intl.DateTimeFormat('pt-BR').format(date)
 
 
-export const digitsOnly = (value: string): string => value.replace(/\D/g, '')
+export const digitsOnly = (value?: string | null): string => (value ?? '').replace(/\D/g, '')
 
-export const formatBRPhone = (raw: string): string => {
+export const formatBRPhone = (raw?: string | null): string => {
+  if (!raw) return ''
   const digits = digitsOnly(raw)
   const d = digits.length === 13 && digits.startsWith('55') ? digits.slice(2) : digits
   if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,3)} ${d.slice(3,7)}-${d.slice(7)}`

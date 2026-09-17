@@ -9,6 +9,8 @@ import {
   Users,
   CheckCircle2,
   CalendarDays,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react";
 import { useState } from "react";
 import { useDashboard } from "../hooks/useDashboard";
@@ -96,6 +98,8 @@ export function DashboardClient() {
     const parts = value.split("-").map(Number);
     return new Intl.DateTimeFormat(locale, { month: "short", ...(chartLabelMode === "monthYear" ? { year: "2-digit" as const } : {}), timeZone: "UTC" }).format(new Date(Date.UTC(parts.length > 1 ? parts[0] : year, (parts.length > 1 ? parts[1] : parts[0]) - 1, 1)));
   };
+  const visibleMonthToDate = data?.monthToDate.filter(item => item.appointments > 0 || item.received > 0 || item.pending > 0) ?? [];
+  const currentMonthToDate = data?.monthToDate[0];
   const ranking = (
     title: string,
     rows: { name: string; count: number; revenue: number }[],
@@ -197,8 +201,12 @@ export function DashboardClient() {
               <p className="text-xs text-text-muted mt-1">Uma visão fixa dos últimos 12 meses, independente do período selecionado.</p>
             </div>
             <div className="flex gap-3 overflow-x-auto overscroll-x-contain pb-2">
-              {data.monthToDate.map((item) => {
+              {visibleMonthToDate.map((item) => {
                 const monthName = new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(item.year, item.month - 1, 1)));
+                const isCurrentMonth = item.year === currentMonthToDate?.year && item.month === currentMonthToDate.month;
+                const receivedChange = currentMonthToDate?.received
+                  ? Math.round((item.received - currentMonthToDate.received) / currentMonthToDate.received * 1000) / 10
+                  : null;
                 return <div key={`${item.year}-${item.month}`} className="min-w-[220px] rounded-2xl border border-border bg-bg/50 p-4">
                   <p className="text-sm font-semibold capitalize">Neste mesmo dia em {monthName}</p>
                   <p className="text-[11px] text-text-muted mt-1">Dados do dia 1 ao dia {item.throughDay}</p>
@@ -207,8 +215,21 @@ export function DashboardClient() {
                     <div className="flex justify-between gap-3"><dt className="text-text-muted">Recebido</dt><dd className="font-semibold tabular-nums text-emerald-700">{currency(item.received)}</dd></div>
                     <div className="flex justify-between gap-3"><dt className="text-text-muted">Pendente</dt><dd className="font-semibold tabular-nums text-amber-700">{currency(item.pending)}</dd></div>
                   </dl>
+                  <div className="mt-4 border-t border-border pt-3">
+                    {isCurrentMonth ? (
+                      <span className="inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700">Mês atual · referência</span>
+                    ) : receivedChange === null ? (
+                      <span className="text-[11px] text-text-muted">Sem base para comparar recebimentos</span>
+                    ) : (
+                      <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold ${receivedChange >= 0 ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>
+                        {receivedChange >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+                        {Math.abs(receivedChange).toLocaleString(locale, { maximumFractionDigits: 1 })}% {receivedChange >= 0 ? "acima" : "abaixo"} do mês atual
+                      </span>
+                    )}
+                  </div>
                 </div>;
               })}
+              {visibleMonthToDate.length === 0 && <p className="py-6 text-sm text-text-muted">Ainda não há dados mensais para comparar.</p>}
             </div>
           </Card>
           <p className="text-xs text-text-muted mb-4">
