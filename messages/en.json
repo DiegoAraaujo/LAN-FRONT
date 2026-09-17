@@ -41,7 +41,7 @@
     "clients": "Clients",
     "professionals": "Professionals",
     "services": "Services",
-    "activities": "Activities",
+    "activities": "Appointments",
     "settings": "Settings",
     "cashFlow": "Cash flow"
   },
@@ -215,7 +215,7 @@
     "editAppointment": "Edit Appointment"
   },
   "activities": {
-    "title": "Activities",
+    "title": "Appointments",
     "subtitle": "Track and manage all appointments.",
     "searchPlaceholder": "Search by client…",
     "clientLabel": "Client",

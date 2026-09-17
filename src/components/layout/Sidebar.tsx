@@ -5,7 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import sidebarLogo from '../../../public/assets/browser-favicon-source.png'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Briefcase, Users, UserCheck, Clock, LogOut, X, Menu, Wrench, Wallet } from 'lucide-react'
+import { LayoutDashboard, Briefcase, Users, UserCheck, LogOut, X, Menu, Wrench, Wallet } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslations } from 'next-intl'
 import { useUIStore } from '@/stores/ui.store'
@@ -15,12 +15,11 @@ import { ROUTES } from '@/constants'
 
 const NAV_KEYS = [
   { key: 'dashboard',     href: ROUTES.dashboard,     icon: LayoutDashboard },
-  { key: 'appointments',  href: ROUTES.appointments,  icon: Briefcase       },
+  { key: 'appointments',  href: ROUTES.activities,    icon: Briefcase       },
   { key: 'clients',       href: ROUTES.clients,       icon: Users           },
   { key: 'professionals', href: ROUTES.professionals, icon: UserCheck       },
   { key: 'services',      href: ROUTES.services,      icon: Wrench          },
   { key: 'cashFlow', href: ROUTES.cashFlow, icon: Wallet },
-  { key: 'activities',    href: ROUTES.activities,    icon: Clock           },
 ] as const
 
 const SidebarContent = ({ pathname, onNav }: { pathname: string; onNav?: () => void }) => {

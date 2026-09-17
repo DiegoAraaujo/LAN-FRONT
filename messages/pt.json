@@ -41,7 +41,7 @@
     "clients": "Clientes",
     "professionals": "Profissionais",
     "services": "Serviços",
-    "activities": "Atividades",
+    "activities": "Atendimentos",
     "settings": "Configurações",
     "cashFlow": "Fluxo de caixa"
   },
@@ -215,7 +215,7 @@
     "editAppointment": "Editar Atendimento"
   },
   "activities": {
-    "title": "Atividades",
+    "title": "Atendimentos",
     "subtitle": "Acompanhe e gerencie todos os atendimentos realizados.",
     "searchPlaceholder": "Buscar por cliente…",
     "clientLabel": "Cliente",
