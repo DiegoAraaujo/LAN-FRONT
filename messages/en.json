@@ -248,6 +248,23 @@
     "editAppointment": "Edit",
     "deleteAppointment": "Delete"
   },
+  "finance": {
+    "title": "Cash flow", "subtitle": "Payments, expenses, and outstanding amounts.",
+    "newExpense": "New expense", "newIncome": "New income", "saveExpense": "Save expense", "saveIncome": "Save income",
+    "expenseSaved": "Expense recorded.", "incomeSaved": "Income recorded.", "checkFields": "Check the description, category, amount, date, and customer.",
+    "incomeType": "Income type", "otherIncome": "Other income", "customerAdvance": "Customer advance", "openingContribution": "Opening balance / contribution",
+    "openingHint": "Enter only funds from before tracking began that are not yet shown in the records. Previously paid appointments are already included in history.",
+    "incomeHint": "To receive payment for an appointment, use Record payment in its history to avoid counting it twice.",
+    "description": "Description", "category": "Category", "amount": "Amount", "situation": "Status", "paidExpense": "Already paid", "receivedIncome": "Already received", "toPay": "To pay", "toReceive": "To receive", "dueDate": "Due date", "movementDate": "Transaction date", "paymentMethod": "Payment method",
+    "period": "Period", "monthYear": "Month and year", "custom": "Custom", "from": "From", "to": "To", "month": "Month", "year": "Year", "allMonths": "All months", "invalidPeriod": "Enter a valid period.",
+    "movement": "Transaction", "type": "Type", "all": "All", "allFeminine": "All", "method": "Method", "appointments": "Appointments", "expenses": "Expenses", "otherEntries": "Other income", "advances": "Advances", "openingBalance": "Opening balance", "reversals": "Reversals", "confirmed": "Confirmed", "pending": "Pending", "cancelled": "Cancelled",
+    "openingPeriod": "Opening balance for period", "incomingPeriod": "Income for period", "outgoingPeriod": "Expenses for period", "closingBalance": "Closing balance", "totalReceivable": "Total receivable", "totalPayable": "Total payable",
+    "summaryHint": "Balances and inflows/outflows cover the entire period regardless of list filters. Receivable and payable show all outstanding amounts. Customer credit does not create a new cash inflow.", "movements": "Transactions",
+    "noMovements": "No transactions found.", "movementUpdated": "Transaction updated.", "paymentConfirmed": "Payment confirmed.", "outsidePeriod": "Appointment outside the period", "movementLabel": "Transaction", "appointmentLabel": "Appointment", "reversal": "Reversal", "reversed": "Reversed", "realEntry": "Actual cash entry", "applied": "Applied", "creditUsed": "Credit used", "creditGenerated": "Credit generated", "outsidePeriodHint": "This entry appears in Cash flow for this period, but the appointment is counted in another period in Appointments and Dashboard.",
+    "confirm": "Confirm", "cancelEntry": "Cancel", "reverse": "Reverse", "cancelEntryTitle": "Cancel entry", "reverseTitle": "Reverse transaction", "cancelEntryHint": "The entry will remain recorded as cancelled.", "reverseHint": "The reversal will be recorded today and will reverse the related cash, credit, and payment amounts.", "reason": "Reason",
+    "recordPayment": "Record payment", "paymentSaved": "Payment recorded.", "checkPayment": "Check the amounts, credit, and payment date.", "confirmPayment": "Confirm payment", "outstanding": "Outstanding", "availableCredit": "Available credit", "paymentMethods": "Payment methods", "addMethod": "Add method", "methodLabel": "Method", "removeMethod": "Remove method", "splitHint": "Each method is recorded separately in cash flow without duplicating the appointment.", "useCredit": "Use customer credit", "paymentDate": "Payment date", "surplus": "{value} remaining", "returnChange": "Return as change", "saveCredit": "Save as customer credit", "informedTotal": "Amount entered", "cashEntry": "Cash inflow", "remainingOpen": "Outstanding after payment", "creditAfter": "Credit after payment", "creditHint": "Credit is applied separately and does not create a new cash inflow.", "appointmentValue": "Appointment value",
+    "methods": { "PIX": "Pix", "CASH": "Cash", "DEBIT_CARD": "Debit card", "CREDIT_CARD": "Credit card", "OTHER": "Other" }
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account data and preferences.",

@@ -248,6 +248,23 @@
     "editAppointment": "Editar",
     "deleteAppointment": "Excluir"
   },
+  "finance": {
+    "title": "Fluxo de caixa", "subtitle": "Recebimentos, despesas e valores em aberto.",
+    "newExpense": "Nova despesa", "newIncome": "Nova receita", "saveExpense": "Salvar despesa", "saveIncome": "Salvar receita",
+    "expenseSaved": "Despesa registrada.", "incomeSaved": "Receita registrada.", "checkFields": "Confira descrição, categoria, valor, data e cliente.",
+    "incomeType": "Tipo de receita", "otherIncome": "Outra receita", "customerAdvance": "Adiantamento de cliente", "openingContribution": "Saldo inicial / aporte",
+    "openingHint": "Informe somente dinheiro anterior ao controle que ainda não aparece nos lançamentos. Atendimentos antigos pagos já entram no histórico.",
+    "incomeHint": "Para receber um atendimento, use Registrar pagamento no histórico e evite contar o valor duas vezes.",
+    "description": "Descrição", "category": "Categoria", "amount": "Valor (R$)", "situation": "Situação", "paidExpense": "Já paga", "receivedIncome": "Já recebida", "toPay": "A pagar", "toReceive": "A receber", "dueDate": "Vencimento", "movementDate": "Data da movimentação", "paymentMethod": "Forma de pagamento",
+    "period": "Período", "monthYear": "Mês e ano", "custom": "Personalizado", "from": "De", "to": "Até", "month": "Mês", "year": "Ano", "allMonths": "Todos os meses", "invalidPeriod": "Informe um período válido.",
+    "movement": "Movimentação", "type": "Tipo", "all": "Todos", "allFeminine": "Todas", "method": "Forma", "appointments": "Atendimentos", "expenses": "Despesas", "otherEntries": "Outras entradas", "advances": "Adiantamentos", "openingBalance": "Saldo inicial", "reversals": "Estornos", "confirmed": "Confirmado", "pending": "Pendente", "cancelled": "Cancelado",
+    "openingPeriod": "Saldo inicial do período", "incomingPeriod": "Entradas no período", "outgoingPeriod": "Saídas no período", "closingBalance": "Saldo final", "totalReceivable": "Total a receber", "totalPayable": "Total a pagar",
+    "summaryHint": "Saldos e entradas/saídas consideram todo o período, independentemente dos filtros da lista. A receber e a pagar mostram todos os valores ainda em aberto. Uso de crédito não gera nova entrada.", "movements": "Movimentações",
+    "noMovements": "Nenhuma movimentação encontrada.", "movementUpdated": "Movimentação atualizada.", "paymentConfirmed": "Pagamento confirmado.", "outsidePeriod": "Atendimento fora do período", "movementLabel": "Movimentação", "appointmentLabel": "Atendimento", "reversal": "Estorno", "reversed": "Estornado", "realEntry": "Entrada real", "applied": "Aplicado", "creditUsed": "Crédito usado", "creditGenerated": "Crédito gerado", "outsidePeriodHint": "Esta entrada aparece no Fluxo deste período, mas o atendimento é contabilizado em outro período em Atendimentos e no Painel.",
+    "confirm": "Confirmar", "cancelEntry": "Cancelar", "reverse": "Estornar", "cancelEntryTitle": "Cancelar lançamento", "reverseTitle": "Estornar movimentação", "cancelEntryHint": "O lançamento ficará registrado como cancelado.", "reverseHint": "O estorno será registrado na data de hoje e reverterá os valores de caixa, crédito e pagamento relacionados.", "reason": "Motivo",
+    "recordPayment": "Registrar pagamento", "paymentSaved": "Pagamento registrado.", "checkPayment": "Confira os valores, o crédito e a data do pagamento.", "confirmPayment": "Confirmar pagamento", "outstanding": "Em aberto", "availableCredit": "Crédito disponível", "paymentMethods": "Formas de pagamento", "addMethod": "Adicionar forma", "methodLabel": "Forma", "removeMethod": "Remover forma", "splitHint": "Cada forma será registrada separadamente no caixa, sem duplicar o atendimento.", "useCredit": "Usar crédito do cliente (R$)", "paymentDate": "Data do pagamento", "surplus": "Sobram {value}", "returnChange": "Devolver como troco", "saveCredit": "Guardar como crédito do cliente", "informedTotal": "Total informado", "cashEntry": "Entrada no caixa", "remainingOpen": "Restará em aberto", "creditAfter": "Crédito após pagamento", "creditHint": "O crédito é aplicado separadamente e não gera uma nova entrada no caixa.", "appointmentValue": "Valor do atendimento",
+    "methods": { "PIX": "Pix", "CASH": "Dinheiro", "DEBIT_CARD": "Débito", "CREDIT_CARD": "Crédito", "OTHER": "Outro" }
+  },
   "settings": {
     "title": "Configurações",
     "subtitle": "Altere seus dados ou preferências do sistema.",
