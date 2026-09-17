@@ -12,7 +12,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useDashboard } from "../hooks/useDashboard";
 import { DashboardStatCards } from "./DashboardStatCards";
 import { DashboardPeriodFilter } from "./DashboardPeriodFilter";
@@ -70,6 +70,27 @@ export function DashboardClient() {
   const setMode = (nextMode: "month" | "year" | "custom") => nextMode === "custom" ? setCustomDates(dateFrom,dateTo) : setCalendarPeriod(nextMode);
   const query = useDashboard(mode === "custom" ? { dateFrom, dateTo } : { year, ...(month ? { month } : {}) }, validPeriod);
   const [target, setTarget] = useState<DashboardAppointment | null>(null);
+  const monthComparisonRef = useRef<HTMLDivElement>(null);
+  const monthDrag = useRef({ startX: 0, scrollLeft: 0 });
+  const [draggingMonths, setDraggingMonths] = useState(false);
+  const startMonthDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    const element = monthComparisonRef.current;
+    if (!element) return;
+    monthDrag.current = { startX: event.clientX, scrollLeft: element.scrollLeft };
+    setDraggingMonths(true);
+    element.setPointerCapture(event.pointerId);
+  };
+  const moveMonthDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggingMonths || !monthComparisonRef.current) return;
+    event.preventDefault();
+    monthComparisonRef.current.scrollLeft = monthDrag.current.scrollLeft - (event.clientX - monthDrag.current.startX);
+  };
+  const stopMonthDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const element = monthComparisonRef.current;
+    if (element?.hasPointerCapture(event.pointerId)) element.releasePointerCapture(event.pointerId);
+    setDraggingMonths(false);
+  };
   const currency = (n: number) =>
     new Intl.NumberFormat(locale, {
       style: "currency",
@@ -200,7 +221,14 @@ export function DashboardClient() {
               <h2 className="font-semibold text-lg">Comparativo mensal até hoje</h2>
               <p className="text-xs text-text-muted mt-1">Uma visão fixa dos últimos 12 meses, independente do período selecionado.</p>
             </div>
-            <div className="flex gap-3 overflow-x-auto overscroll-x-contain pb-2">
+            <div
+              ref={monthComparisonRef}
+              onPointerDown={startMonthDrag}
+              onPointerMove={moveMonthDrag}
+              onPointerUp={stopMonthDrag}
+              onPointerCancel={stopMonthDrag}
+              className={`flex select-none gap-3 overflow-x-auto overscroll-x-contain pb-2 touch-pan-x ${draggingMonths ? "cursor-grabbing" : "cursor-grab"}`}
+            >
               {visibleMonthToDate.map((item) => {
                 const monthName = new Intl.DateTimeFormat(locale, { month: "long", timeZone: "UTC" }).format(new Date(Date.UTC(item.year, item.month - 1, 1)));
                 const isCurrentMonth = item.year === currentMonthToDate?.year && item.month === currentMonthToDate.month;
