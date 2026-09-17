@@ -1,28 +1,10 @@
 "use client";
-import { MessageCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { digitsOnly, formatBRPhone } from "@/lib/utils";
-
-const InstagramIcon = ({ size = 10 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-    <circle cx="12" cy="12" r="4" />
-    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-  </svg>
-);
+import { InstagramIcon, WhatsAppIcon } from "./SocialIcons";
 
 const formatWhatsappShort = (raw: string): string => {
-  if (raw.startsWith("+55")) return formatBRPhone(raw.slice(3));
-  return raw;
+  return formatBRPhone(raw);
 };
 
 interface Props {
@@ -62,7 +44,7 @@ export const CustomerContactBadges = ({
           title={`WhatsApp: ${formatWhatsappShort(whatsapp)}`}
           className={iconOnly ? "inline-flex h-9 w-9 items-center justify-center rounded-lg border border-green-200 bg-green-50 text-green-700 hover:bg-green-100" : "inline-flex items-center gap-1 text-[11px] bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-full font-medium"}
         >
-          <MessageCircle size={iconOnly ? 17 : 10} />
+          <WhatsAppIcon size={iconOnly ? 19 : 12} />
           {!iconOnly && (compact
             ? formatWhatsappShort(whatsapp)
             : `WhatsApp: ${formatWhatsappShort(whatsapp)}`)}
