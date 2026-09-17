@@ -10,6 +10,7 @@ import { ServiceSelector } from './ServiceSelector'
 import { useServices } from '@/features/services/hooks/useServices'
 import { professionalSchema, type ProfessionalInput } from '../schemas/professional.schemas'
 import type { Professional } from '../api/professionals.api'
+import { digitsOnly, formatBRPhone } from '@/lib/utils'
 
 interface Props {
   open: boolean; onClose: () => void; isLoading: boolean
@@ -25,12 +26,12 @@ const ProfessionalForm = ({ open, onClose, onSave, isLoading, defaultValues }: P
   const [selectedIds, setSelectedIds] = useState<string[]>(defaultValues?.services.map(s => s.id) ?? [])
 
   const { register, handleSubmit, formState: { errors } } =
-    useForm<ProfessionalInput>({ resolver: zodResolver(professionalSchema), defaultValues: { name: defaultValues?.name ?? '', address: defaultValues?.address ?? '', phone: defaultValues?.phone ?? '' } })
+    useForm<ProfessionalInput>({ resolver: zodResolver(professionalSchema), defaultValues: { name: defaultValues?.name ?? '', address: defaultValues?.address ?? '', phone: defaultValues?.phone ? formatBRPhone(defaultValues.phone) : '' } })
 
   const toggleService = (id: string) =>
     setSelectedIds(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id])
 
-  const onSubmit = (data: ProfessionalInput) => onSave({ ...data, servicesIds: selectedIds })
+  const onSubmit = (data: ProfessionalInput) => onSave({ ...data, phone: digitsOnly(data.phone), servicesIds: selectedIds })
 
   return (
     <Modal busy={isLoading} open={open} onClose={onClose} size="lg"

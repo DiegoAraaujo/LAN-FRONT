@@ -9,7 +9,7 @@ export interface FinanceEntry {
 export interface CustomerAccount { credit: number; outstanding: number; appointments: Appointment[]; history: FinanceEntry[] }
 export interface CashSummary { opening: number; incoming: number; outgoing: number; balance: number; receivable: number; payable: number }
 export interface CashResponse { data: FinanceEntry[]; total: number; summary: CashSummary }
-export interface PaymentInput { requestId: string; received: number; useCredit: number; excess: 'CHANGE' | 'CREDIT'; method: PaymentMethod; occurredAt: string }
+export interface PaymentInput { requestId: string; payments: { amount: number; method: PaymentMethod }[]; useCredit: number; excess: 'CHANGE' | 'CREDIT'; occurredAt: string }
 export interface EntryInput { requestId: string; kind: string; amount: number; status: string; customerId?: string; description: string; category: string; method: PaymentMethod; occurredAt: string }
 export const financeApi = {
   customer: (id: string) => api.get<CustomerAccount>(`/finance/customers/${id}`).then(r => r.data),

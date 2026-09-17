@@ -24,8 +24,9 @@ export const formatDate = (date: Date): string =>
 export const digitsOnly = (value: string): string => value.replace(/\D/g, '')
 
 export const formatBRPhone = (raw: string): string => {
-  const d = digitsOnly(raw)
-  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`
+  const digits = digitsOnly(raw)
+  const d = digits.length === 13 && digits.startsWith('55') ? digits.slice(2) : digits
+  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,3)} ${d.slice(3,7)}-${d.slice(7)}`
   if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`
   return raw
 }

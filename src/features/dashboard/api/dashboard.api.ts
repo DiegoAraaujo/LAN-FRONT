@@ -12,6 +12,7 @@ export interface DashboardData {
   previous: Omit<DashboardCards, 'newCustomers'>;
   comparison: { totalValue: number | null; revenue: number | null; appointments: number | null; averageTicket: number | null };
   evolutionGraph: { month: string; revenue: number; pending: number }[];
+  monthToDate: { year: number; month: number; throughDay: number; appointments: number; received: number; pending: number }[];
   servicesPieGraph: { serviceName: string; count: number; revenue: number }[];
   professionals: { name: string; count: number; revenue: number }[];
   customers: { name: string; count: number; revenue: number }[];

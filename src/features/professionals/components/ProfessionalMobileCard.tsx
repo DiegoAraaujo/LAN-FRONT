@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { ProfessionalServiceBadges } from './ProfessionalServiceBadges'
 import type { Professional } from '../api/professionals.api'
+import { formatBRPhone } from '@/lib/utils'
 
 interface Props { professional: Professional; onEdit: () => void; onDelete: () => void }
 
@@ -13,7 +14,7 @@ export const ProfessionalMobileCard = ({ professional, onEdit, onDelete }: Props
   return (
     <Card className="p-4">
       <div className="font-semibold text-sm text-text mb-1">{professional.name}</div>
-      <div className="text-xs text-text-muted mb-2">{professional.phone} · {professional.address}</div>
+      <div className="text-xs text-text-muted mb-2">{formatBRPhone(professional.phone)} · {professional.address}</div>
       <div className="mb-3"><ProfessionalServiceBadges services={professional.services} /></div>
       <div className="grid grid-cols-2 gap-2">
         <Button variant="outline" size="sm" className="justify-center" onClick={onEdit}>
