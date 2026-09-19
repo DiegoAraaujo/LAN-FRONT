@@ -6,10 +6,8 @@ import { useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/components/ui/Display";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { ProfessionalFormModal } from "@/features/professionals/components/ProfessionalFormModal";
-import { ProfessionalTableRow } from "@/features/professionals/components/ProfessionalTableRow";
 import { ProfessionalMobileCard } from "@/features/professionals/components/ProfessionalMobileCard";
 import { useProfessionals } from "@/features/professionals/hooks/useProfessionals";
 import { useCreateProfessional } from "@/features/professionals/hooks/useCreateProfessional";
@@ -79,77 +77,20 @@ const ProfessionalsPage = () => {
         />
       </div>
 
-      <Card className={`relative hidden sm:block transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}>
-        <div className="border-b border-border px-5 py-4 text-base font-semibold text-text">
-          {t("activeProfessionals")} ({professionals.length})
-        </div>
+      <div className={`relative transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`} aria-busy={isFetching}>
         {isError ? null : isLoading ? (
           <div className="min-h-40" />
+        ) : professionals.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-text-light">{t('noProfessionalsFound')}</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-bg">
-                  {[
-                    t("tableNameCol"),
-                    "Telefone",
-                    t("tableAddressCol"),
-                    t("tableServicesCol"),
-                    t("tableActionsCol"),
-                  ].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-5 py-3 text-[11px] font-semibold text-text-light uppercase tracking-wide"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {professionals.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="px-5 py-10 text-center text-sm text-text-light"
-                    >
-                      Nenhum profissional encontrado.
-                    </td>
-                  </tr>
-                ) : (
-                  professionals.map((p, i) => (
-                    <ProfessionalTableRow
-                      key={p.id}
-                      professional={p}
-                      index={i}
-                      onEdit={() => handleOpen(p)}
-                      onDelete={() => setDeleteTarget(p)}
-                    />
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
-        <div className="px-5 py-3 border-t border-border bg-bg2">
-          <span className="text-xs text-text-light">
-            Exibindo {professionals.length} profissionais
-          </span>
-        </div>
-      </Card>
-
-      <div className={`relative sm:hidden flex flex-col gap-3 transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`} aria-busy={isFetching}>
-        {isError ? null : isLoading ? (
-          <div className="min-h-40" />
-        ) : (
-          professionals.map((p) => (
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{professionals.map((p) => (
             <ProfessionalMobileCard
               key={p.id}
               professional={p}
               onEdit={() => handleOpen(p)}
               onDelete={() => setDeleteTarget(p)}
             />
-          ))
+          ))}</div>
         )}
       </div>
 

@@ -148,7 +148,7 @@
     "noServicesYet": "No services registered yet.",
     "servicesSelected": "service selected",
     "servicesSelectedPlural": "services selected",
-    "noServicesLinked": "None"
+    "noServicesLinked": "None", "servicesCount": "linked services", "addPhoto": "Add photo", "editPhoto": "Edit photo", "removePhoto": "Remove photo", "photoError": "Unable to prepare the image."
   },
   "services": {
     "title": "Services",
@@ -212,7 +212,8 @@
     "finalizeNote": "Once finalized, the appointment will be recorded in the system.",
     "total": "Total",
     "pendingNote": "Payment method will be defined when payment is confirmed.",
-    "editAppointment": "Edit Appointment"
+    "editAppointment": "Edit Appointment",
+    "appointmentSaved": "Appointment recorded!", "clientAndDateHint": "Choose the customer and when the appointment took place.", "servicesHint": "Add services and assigned professionals.", "payment": "Payment", "paymentChoiceHint": "Choose how this appointment will be completed.", "simplePayment": "Simple payment", "simplePaymentHint": "Use a single payment method.", "customPayment": "Custom payment", "customPaymentHint": "Split amounts or use credit.", "leavePending": "Leave pending", "leavePendingHint": "Record it now and receive payment later."
   },
   "activities": {
     "title": "Appointments",

@@ -7,6 +7,7 @@ import { LumaSpin } from '@/components/ui/luma-spin'
 export const ContentLoadingOverlay = () => {
   const queryClient = useQueryClient()
   const fetching = useIsFetching({ predicate: query => {
+    if (query.meta?.suppressGlobalLoading === true) return false
     const group = query.meta?.backgroundWhenCached
     if (typeof group !== 'string') return true
     const groupAlreadyHasData = queryClient.getQueryCache().findAll({

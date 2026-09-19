@@ -148,7 +148,7 @@
     "noServicesYet": "Nenhum serviço cadastrado ainda.",
     "servicesSelected": "serviço selecionado",
     "servicesSelectedPlural": "serviços selecionados",
-    "noServicesLinked": "Nenhum"
+    "noServicesLinked": "Nenhum", "servicesCount": "serviços vinculados", "addPhoto": "Adicionar foto", "editPhoto": "Editar foto", "removePhoto": "Remover foto", "photoError": "Não foi possível preparar a imagem."
   },
   "services": {
     "title": "Serviços",
@@ -212,7 +212,8 @@
     "finalizeNote": "Ao finalizar, o atendimento será registrado no sistema.",
     "total": "Total",
     "pendingNote": "A forma de pagamento será definida ao confirmar o pagamento.",
-    "editAppointment": "Editar Atendimento"
+    "editAppointment": "Editar Atendimento",
+    "appointmentSaved": "Atendimento registrado!", "clientAndDateHint": "Escolha o cliente e quando o atendimento aconteceu.", "servicesHint": "Adicione os serviços e responsáveis.", "payment": "Pagamento", "paymentChoiceHint": "Escolha como este atendimento será concluído.", "simplePayment": "Pagamento simples", "simplePaymentHint": "Uma única forma de pagamento.", "customPayment": "Pagamento personalizado", "customPaymentHint": "Divida valores ou use crédito.", "leavePending": "Deixar pendente", "leavePendingHint": "Registre agora e receba depois."
   },
   "activities": {
     "title": "Atendimentos",
