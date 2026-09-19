@@ -449,7 +449,6 @@ const ActivitiesPage = () => {
       <AppointmentCreateModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
-        onPaymentNeeded={appointment => setMarkPaidTarget(appointment)}
       />
 
       {markPaidTarget && (

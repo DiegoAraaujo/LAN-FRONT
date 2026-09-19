@@ -1,10 +1,10 @@
 import { api } from '@/lib/api'
 
 export interface Professional {
-  id: string; name: string; phone: string; address: string; createdAt: string
+  id: string; name: string; phone: string; address: string; profileImage?: string | null; createdAt: string
   services: { id: string; name: string }[]
 }
-export interface CreateProfessionalPayload { name: string; address: string; phone: string; servicesIds?: string[] }
+export interface CreateProfessionalPayload { name: string; address: string; phone: string; profileImage?: string | null; servicesIds?: string[] }
 export type UpdateProfessionalPayload = Partial<CreateProfessionalPayload>
 
 export const professionalsApi = {
