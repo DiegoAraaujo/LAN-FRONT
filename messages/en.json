@@ -280,7 +280,12 @@
     "discard": "Discard",
     "langEnglish": "English",
     "langPortuguese": "Português (Brasil)",
-    "currentData": "Current Data"
+    "currentData": "Current Data",
+    "sessionSecurity": "Session security",
+    "sessionSecurityHint": "Sign this account out on every device. You will need to sign in again.",
+    "revokeSessions": "Sign out on all devices",
+    "revokingSessions": "Signing out...",
+    "sessionsRevoked": "All sessions have been signed out."
   },
   "overview": {
     "business": "Business management",

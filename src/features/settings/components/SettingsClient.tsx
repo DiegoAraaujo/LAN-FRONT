@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl'
 import { PageHeader } from '@/components/ui/Display'
 import { ProfileForm } from './ProfileForm'
 import { PreferencesForm } from './PreferencesForm'
+import { SecuritySessions } from './SecuritySessions'
 
 export const SettingsClient = () => {
   const t = useTranslations('settings')
@@ -12,6 +13,7 @@ export const SettingsClient = () => {
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <ProfileForm />
         <PreferencesForm />
+        <SecuritySessions />
       </div>
     </div>
   )

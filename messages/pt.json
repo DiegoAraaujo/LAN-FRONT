@@ -280,7 +280,12 @@
     "discard": "Descartar",
     "langEnglish": "English",
     "langPortuguese": "Português (Brasil)",
-    "currentData": "Dados Atuais"
+    "currentData": "Dados Atuais",
+    "sessionSecurity": "Segurança das sessões",
+    "sessionSecurityHint": "Encerre o acesso desta conta em todos os dispositivos. Será necessário entrar novamente.",
+    "revokeSessions": "Encerrar todas as sessões",
+    "revokingSessions": "Encerrando sessões...",
+    "sessionsRevoked": "Todas as sessões foram encerradas."
   },
   "overview": {
     "business": "Gestão do negócio",
