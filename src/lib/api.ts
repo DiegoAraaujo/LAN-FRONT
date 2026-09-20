@@ -27,6 +27,11 @@ export async function logoutSession(): Promise<void> {
     })
   } finally { signingOut = false }
 }
+export async function revokeAllSessions(): Promise<void> {
+  await api.post('/sessions/revoke-all')
+  useAuthStore.getState().clearSession()
+  localStorage.setItem('lan-session-event', JSON.stringify({ type: 'logout', id: crypto.randomUUID() }))
+}
 export const clearSession = () => {
   useAuthStore.getState().clearSession()
 }
