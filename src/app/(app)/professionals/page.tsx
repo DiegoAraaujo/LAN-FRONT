@@ -83,7 +83,7 @@ const ProfessionalsPage = () => {
         ) : professionals.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-text-light">{t('noProfessionalsFound')}</div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">{professionals.map((p) => (
+          <div className="grid gap-5 lg:grid-cols-2">{professionals.map((p) => (
             <ProfessionalMobileCard
               key={p.id}
               professional={p}
