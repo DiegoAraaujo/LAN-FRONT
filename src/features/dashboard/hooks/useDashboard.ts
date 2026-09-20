@@ -6,5 +6,4 @@ export const useDashboard = (params?: DashboardFilters, enabled = true) =>
     queryKey: ['dashboard', params],
     enabled,
     queryFn:  () => dashboardApi.get(params).then(r => r.data),
-    meta: { suppressGlobalLoading: true },
   })

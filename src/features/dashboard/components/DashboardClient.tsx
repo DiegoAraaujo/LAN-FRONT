@@ -210,9 +210,6 @@ export function DashboardClient() {
       {validPeriod && query.isError && (
         <QueryError onRetry={() => query.refetch()} />
       )}
-      {!data && query.isLoading && (
-        <LoadingState label={t("loading")} className="min-h-[420px]" />
-      )}
       {data && (
         <>
           <DashboardStatCards data={data} />
