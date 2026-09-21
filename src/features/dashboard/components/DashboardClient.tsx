@@ -235,26 +235,26 @@ export function DashboardClient() {
                   { label: t('pending'), value: item.pending, reference: currentMonthToDate?.pending ?? 0, money: true, pending: true },
                   { label: t('totalValueLabel'), value: item.received + item.pending, reference: (currentMonthToDate?.received ?? 0) + (currentMonthToDate?.pending ?? 0), money: true, pending: false },
                 ];
-                return <div key={`${item.year}-${item.month}`} className="w-[285px] shrink-0 rounded-2xl border border-border bg-bg/50 p-4">
-                  <p className="text-sm font-semibold capitalize">Neste mesmo dia em {monthName}</p>
-                  <p className="text-[11px] text-text-muted mt-1">Dados do dia 1 ao dia {item.throughDay}</p>
-                  <dl className="mt-4 divide-y divide-border/70 text-sm">
+                return <div key={`${item.year}-${item.month}`} className="w-[318px] shrink-0 rounded-2xl border border-border bg-surface p-4 shadow-sm">
+                  <div className="mb-4 flex items-start justify-between gap-2">
+                    <div><p className="text-sm font-semibold capitalize">Neste mesmo dia em {monthName}</p><p className="mt-1 text-[11px] text-text-muted">Dados do dia 1 ao dia {item.throughDay}</p></div>
+                    {isCurrentMonth&&<span className="shrink-0 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700">{t('currentMonthReference')}</span>}
+                  </div>
+                  <dl className="grid grid-cols-2 gap-2">
                     {comparisonRows.map(row => {
                       const change = row.reference > 0 ? Math.round((row.value - row.reference) / row.reference * 1000) / 10 : null;
-                      return <div key={row.label} className="flex items-center justify-between gap-2 py-2.5 first:pt-0">
-                        <dt className="text-text-muted">{row.label}</dt>
-                        <dd className="flex flex-col items-end gap-1">
-                          <span className="font-semibold tabular-nums">{row.money ? currency(row.value) : row.value}</span>
-                          {!isCurrentMonth && <span className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums ${change === null || change === 0 ? 'bg-slate-100 text-slate-600' : row.pending ? change > 0 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700' : change > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}`}>
+                      return <div key={row.label} className="min-w-0 rounded-xl bg-bg px-3 py-3">
+                        <dt className="truncate text-[11px] text-text-muted" title={row.label}>{row.label}</dt>
+                        <dd className="mt-1 min-w-0">
+                          <span className="block truncate text-sm font-semibold tabular-nums text-text" title={row.money ? currency(row.value) : String(row.value)}>{row.money ? currency(row.value) : row.value}</span>
+                          {!isCurrentMonth && <span className={`mt-1 inline-flex items-center gap-0.5 text-[11px] font-semibold tabular-nums ${change === null || change === 0 ? 'text-text-muted' : row.pending ? change > 0 ? 'text-amber-700' : 'text-emerald-700' : change > 0 ? 'text-emerald-700' : 'text-red-700'}`}>
                             {change === null ? t('noComparisonBase') : <>{change > 0 ? <TrendingUp size={11}/> : change < 0 ? <TrendingDown size={11}/> : null}{change > 0 ? '+' : ''}{change.toLocaleString(locale, { maximumFractionDigits: 1 })}%</>}
                           </span>}
                         </dd>
                       </div>;
                     })}
                   </dl>
-                  <div className="mt-2 border-t border-border pt-3 text-[11px] text-text-muted">
-                    {isCurrentMonth ? <span className="inline-flex rounded-full bg-blue-50 px-2.5 py-1 font-semibold text-blue-700">{t('currentMonthReference')}</span> : t('versusCurrentMonth')}
-                  </div>
+                  {!isCurrentMonth&&<p className="mt-3 text-[11px] text-text-muted">{t('versusCurrentMonth')}</p>}
                 </div>;
               })}
               {visibleMonthToDate.length === 0 && <p className="py-6 text-sm text-text-muted">Ainda não há dados mensais para comparar.</p>}
