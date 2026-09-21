@@ -113,7 +113,7 @@ export const AppointmentCreateModal = ({ open, onClose }: Props) => {
   ]
 
   return <Modal open={open} onClose={resetAndClose} busy={save.isPending} size="2xl" title={t('title')}>
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+    <div className="space-y-5">
       <div className="space-y-4">
         {isError && <QueryError onRetry={() => refetch()}/>}
         {formError && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-danger">{formError}</p>}
@@ -124,6 +124,10 @@ export const AppointmentCreateModal = ({ open, onClose }: Props) => {
         <section className="rounded-2xl border border-border p-5">
           <div className="mb-4 flex items-center justify-between gap-3"><div className="flex items-center gap-3"><span className="grid size-9 place-items-center rounded-xl bg-amber-50 text-amber-700"><Scissors size={16}/></span><div><h3 className="font-semibold">{t('servicesProvided')}</h3><p className="text-xs text-text-muted">{t('servicesHint')}</p></div></div><Button variant="outline" size="sm" onClick={()=>setItems(rows=>[...rows,newItem()])} disabled={items.length>=services.length||items.some(item=>!item.serviceId||!item.professionalId)}><Plus size={13}/>{t('addItem')}</Button></div>
           <div className="space-y-3">{items.map(item=><AppointmentItemRow key={item.id} item={item} services={services} usedServiceIds={selectedServiceIds.filter(id=>id!==item.serviceId)} showRemove={items.length>1} showErrors={attempted} onChange={(id,field,value)=>setItems(rows=>rows.map(row=>row.id===id?{...row,[field]:value}:row))} onRemove={id=>setItems(rows=>rows.filter(row=>row.id!==id))}/>)}</div>
+          <div className="mt-4 flex flex-col gap-3 rounded-xl bg-bg p-4 sm:flex-row sm:items-end sm:justify-between">
+            <div><p className="text-xs font-semibold uppercase tracking-wide text-text-muted">{t('subtotal')}</p><p className="mt-1 text-lg font-semibold tabular-nums">{formatCurrency(subtotal)}</p></div>
+            <div className="w-full sm:w-44"><Input label={t('discount')} type="number" min="0" max={subtotal} step="0.01" value={discount} error={attempted&&!discountValid?e('invalidDiscount'):undefined} onChange={event=>setDiscount(Number(event.target.value))}/></div>
+          </div>
           <Textarea label={t('notes')} placeholder={t('notesPlaceholder')} className="mt-4 min-h-20" value={notes} onChange={event=>setNotes(event.target.value)}/>
         </section>
         <section className="rounded-2xl border border-border p-5">
@@ -139,13 +143,15 @@ export const AppointmentCreateModal = ({ open, onClose }: Props) => {
           </div>}
         </section>
       </div>
-      <aside className="h-fit rounded-2xl bg-text p-5 text-white lg:sticky lg:top-0">
+      <section className="rounded-2xl bg-text p-5 text-white sm:p-6">
         <p className="mb-5 text-sm font-semibold text-gold-btn">{t('orderSummary')}</p>
-        <div className="space-y-3 text-sm"><p className="flex justify-between text-white/60"><span>{t('subtotal')}</span><strong className="text-white">{formatCurrency(subtotal)}</strong></p><label className="flex items-center justify-between gap-3 text-white/60"><span>{t('discount')}</span><input aria-label={t('discount')} type="number" min="0" max={subtotal} step="0.01" value={discount} onChange={event=>setDiscount(Number(event.target.value))} className="w-24 rounded-lg border border-white/20 bg-white/5 px-2 py-1.5 text-right text-white"/></label></div>
+        <div className="space-y-3 text-sm"><p className="flex justify-between gap-4 text-white/60"><span>{t('subtotal')}</span><strong className="text-white">{formatCurrency(subtotal)}</strong></p><p className="flex justify-between gap-4 text-white/60"><span>{t('discount')}</span><strong className="text-white">− {formatCurrency(discount)}</strong></p></div>
         <div className="my-5 flex items-end justify-between border-y border-white/10 py-4"><span className="text-xs uppercase tracking-wide text-white/40">{t('total')}</span><strong className="text-2xl text-gold-btn">{formatCurrency(total)}</strong></div>
-        {paymentMode==='CUSTOM'&&<div className="mb-5 space-y-2 rounded-xl bg-white/5 p-3 text-xs"><p className="flex justify-between"><span className="text-white/50">{tf('informedTotal')}</span><strong>{formatCurrency(received+credit)}</strong></p><p className="flex justify-between"><span className="text-white/50">{tf('remainingOpen')}</span><strong>{formatCurrency(remaining)}</strong></p></div>}
-        <Button variant="primary" className="w-full justify-center" disabled={save.isPending||isError} onClick={submit}><CheckCircle2 size={16}/>{save.isPending?t('finalizing'):t('finalize')}</Button>
-      </aside>
+        {paymentMode==='CUSTOM'&&<div className="space-y-2 rounded-xl bg-white/5 p-3 text-xs"><p className="flex justify-between"><span className="text-white/50">{tf('informedTotal')}</span><strong>{formatCurrency(received+credit)}</strong></p><p className="flex justify-between"><span className="text-white/50">{tf('remainingOpen')}</span><strong>{formatCurrency(remaining)}</strong></p></div>}
+      </section>
+      <div className="flex justify-end border-t border-border pt-4">
+        <Button variant="primary" className="w-full justify-center sm:w-auto" disabled={save.isPending||isError} onClick={submit}><CheckCircle2 size={16}/>{save.isPending?t('finalizing'):t('finalize')}</Button>
+      </div>
     </div>
   </Modal>
 }

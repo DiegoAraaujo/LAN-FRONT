@@ -288,6 +288,11 @@
     "sessionsRevoked": "Todas as sessões foram encerradas."
   },
   "overview": {
+    "appointmentsLabel": "Atendimentos",
+    "totalValueLabel": "Total (recebido + pendente)",
+    "noComparisonBase": "Sem base",
+    "currentMonthReference": "Mês atual · referência",
+    "versusCurrentMonth": "Variação em relação ao mês atual",
     "business": "Gestão do negócio",
     "title": "Seu negócio, em perspectiva.",
     "subtitle": "Acompanhe os resultados e cuide do próximo passo.",
