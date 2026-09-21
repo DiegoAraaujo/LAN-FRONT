@@ -288,6 +288,11 @@
     "sessionsRevoked": "All sessions have been signed out."
   },
   "overview": {
+    "appointmentsLabel": "Appointments",
+    "totalValueLabel": "Total (received + pending)",
+    "noComparisonBase": "No baseline",
+    "currentMonthReference": "Current month · baseline",
+    "versusCurrentMonth": "Change from the current month",
     "business": "Business management",
     "title": "Your business, in perspective.",
     "subtitle": "Track your results and plan the next step.",
