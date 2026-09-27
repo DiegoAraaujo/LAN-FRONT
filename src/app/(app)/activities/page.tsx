@@ -2,6 +2,8 @@
 import { ConfirmDelete } from "@/components/ui/ConfirmDelete";
 import { QueryError } from "@/components/ui/QueryError";
 import { useUrlFilters } from "@/hooks/useUrlFilters";
+import { usePageSize, PAGE_SIZES } from '@/hooks/usePageSize';
+import { PageSizeSelect } from '@/components/ui/PageSizeSelect';
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader, Pagination } from "@/components/ui/Display";
@@ -27,7 +29,6 @@ import { ActivityDetailModal } from "@/features/activities/components/ActivityDe
 import { Button } from "@/components/ui/Button";
 import { Plus } from "lucide-react";
 
-const LIMIT = 10;
 
 const HEADERS_KEYS = [
   "tableDateCol",
@@ -42,6 +43,9 @@ const ActivitiesPage = () => {
   const t = useTranslations("activities");
   const [deleteTarget, setDeleteTarget] = useState<Appointment | null>(null);
   const { params, setFilters } = useUrlFilters();
+  const [savedLimit, saveLimit] = usePageSize('activities');
+  const requestedLimit = Number(params.get("limit"));
+  const limit = PAGE_SIZES.includes(requestedLimit) ? requestedLimit : savedLimit;
 
   const search = params.get("search") ?? "";
   const setSearch = (value: string) => setFilters({ search: value, page: 1 });
@@ -116,14 +120,14 @@ const ActivitiesPage = () => {
     year,
     paymentStatus,
     page,
-    limit: LIMIT,
+    limit,
   });
 
   const appointments = data?.data ?? [];
   const total = data?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / LIMIT));
+  const totalPages = Math.max(1, Math.ceil(total / limit));
   const pendingCount = data?.totalPending ?? 0;
-  const hasFilters = [...params.keys()].some((key) => key !== "page");
+  const hasFilters = [...params.keys()].some((key) => key !== "page" && key !== "limit");
 
   const resetFilters = () => {
     setFilters({
@@ -426,10 +430,16 @@ const ActivitiesPage = () => {
         )}
       </div>
 
-      <div className="px-5 py-3 flex items-center sm:justify-between border border-border bg-bg2 rounded-xl flex-col sm:flex-row items gap-2">
-        <span className="text-xs text-text-light">
-          {t("showing")} {appointments.length} {t("of")} {total}
-        </span>
+      <div className="px-5 py-3 flex items-center justify-between border border-border bg-bg2 rounded-xl flex-wrap gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-xs text-text-light">
+            {t("showing")} {appointments.length} {t("of")} {total}
+          </span>
+          <PageSizeSelect value={limit} disabled={isFetching} onChange={value => {
+            saveLimit(value);
+            setFilters({ limit: value, page: 1 });
+          }} />
+        </div>
         {pagination}
       </div>
 

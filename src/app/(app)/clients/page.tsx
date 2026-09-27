@@ -2,6 +2,8 @@
 import { ConfirmDelete } from '@/components/ui/ConfirmDelete'
 import { QueryError } from '@/components/ui/QueryError'
 import { useUrlFilters } from '@/hooks/useUrlFilters'
+import { usePageSize, PAGE_SIZES } from '@/hooks/usePageSize'
+import { PageSizeSelect } from '@/components/ui/PageSizeSelect'
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
@@ -27,12 +29,14 @@ import { useDebounce } from "@/hooks/useDebounce";
 import type { CustomerInput } from "@/features/customers/schemas/customer.schemas";
 import type { Customer, CustomerStatus } from "@/features/customers/api/customers.api";
 
-const LIMIT = 10;
 
 const CustomersPage = () => {
   const t = useTranslations("clients");
   const [deleteTarget, setDeleteTarget] = useState<Customer | null>(null)
   const { params, setFilters } = useUrlFilters()
+  const [savedLimit, saveLimit] = usePageSize('clients')
+  const requestedLimit = Number(params.get('limit'))
+  const limit = PAGE_SIZES.includes(requestedLimit) ? requestedLimit : savedLimit
 
   const statusParam = params.get('status')
   const status: CustomerStatus | undefined = statusParam === 'ACTIVE' || statusParam === 'INACTIVE' || statusParam === 'OCCASIONAL' ? statusParam : undefined
@@ -52,7 +56,7 @@ const CustomersPage = () => {
     search: debounced,
     status,
     page,
-    limit: LIMIT,
+    limit,
   });
 
   const { data: dashData } = useCustomersDashboard();
@@ -171,10 +175,14 @@ const CustomersPage = () => {
         )}
       </div>
 
-      <div className="px-5 py-3 flex items-center sm:justify-between border border-border bg-bg2 rounded-xl flex-col sm:flex-row items gap-2">
+      <div className="px-5 py-3 flex flex-wrap items-center justify-between border border-border bg-bg2 rounded-xl gap-3">
         <span className="text-xs text-text-light">
           {t("showing")} {customers.length} {t("of")} {total}
         </span>
+        <PageSizeSelect value={limit} disabled={isFetching} onChange={value => {
+          saveLimit(value)
+          setFilters({ limit: value, page: 1 })
+        }} />
         {pagination}
       </div>
 
