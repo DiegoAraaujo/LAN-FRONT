@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import { usePageSize } from '@/hooks/usePageSize'
+import { PageSizeSelect } from '@/components/ui/PageSizeSelect'
 import { useLocale, useTranslations } from 'next-intl'
 import { Plus } from 'lucide-react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -46,6 +48,7 @@ function EntryForm({ mode, onClose }: { mode: EntryMode; onClose:()=>void }) {
   </div></Modal>
 }
 export default function CashFlowPage() {
+  const [limit, saveLimit] = usePageSize('cash-flow', 25)
   const t=useTranslations('finance')
   const locale=useLocale()
   const today=localDateTime().slice(0,10)
@@ -59,7 +62,7 @@ export default function CashFlowPage() {
   const [kind,setKind]=useState(''),[method,setMethod]=useState(''),[status,setStatus]=useState(''),[page,setPage]=useState(1)
   const [entryMode,setEntryMode]=useState<EntryMode|null>(null)
   const valid=!!from&&!!to&&from<=to
-  const query=useQuery({queryKey:['finance','cash',{from,to,kind,method,status,page}],queryFn:()=>financeApi.list({from,to,page,kind:kind||undefined,method:method||undefined,status:status||undefined}),enabled:valid,placeholderData:keepPreviousData,meta:{backgroundWhenCached:'finance-list'}})
+  const query=useQuery({queryKey:['finance','cash',{from,to,kind,method,status,page,limit}],queryFn:()=>financeApi.list({from,to,page,limit,kind:kind||undefined,method:method||undefined,status:status||undefined}),enabled:valid,placeholderData:keepPreviousData,meta:{backgroundWhenCached:'finance-list'}})
   const summary=query.data?.summary
   const cards=[[t('openingPeriod'),summary?.opening],[t('incomingPeriod'),summary?.incoming],[t('outgoingPeriod'),summary?.outgoing],[t('closingBalance'),summary?.balance],[t('totalReceivable'),summary?.receivable],[t('totalPayable'),summary?.payable]] as const
   return <div className="mx-auto w-full max-w-[1600px] space-y-6 p-4 sm:p-8"><PageHeader title={t('title')} subtitle={t('subtitle')} actions={
@@ -91,7 +94,12 @@ export default function CashFlowPage() {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 2xl:grid-cols-6">{cards.map(([label,value],i)=><Card key={label} className={`min-w-0 px-3 py-3 sm:px-4 ${i===3?'border-emerald-300 bg-emerald-50':''}`}><p className="text-xs font-medium text-text-muted">{label}</p><p className="mt-1 text-lg sm:text-xl break-words font-semibold tracking-tight tabular-nums">{value===undefined?'—':money(value)}</p></Card>)}</div>
     </CollapsibleStats>
     <p className="text-xs text-text-muted">{t('summaryHint')}</p>
-    <div id="cash-flow-results" className="scroll-mt-4"><Card className="relative p-5"><h2 className="text-base font-semibold">{t('movements')} · {query.data?.total??0}</h2>{query.isLoading?<div className="min-h-40"/>:<div className={`transition-opacity ${query.isFetching?'opacity-45 pointer-events-none':''}`} aria-busy={query.isFetching}><FinanceHistory entries={query.data?.data??[]} from={from} to={to}/></div>}<Pagination current={page} total={Math.max(1,Math.ceil((query.data?.total??0)/25))} onPageChange={setPage} loading={query.isFetching} scrollTargetId="cash-flow-results"/></Card></div>
+    <div id="cash-flow-results" className="scroll-mt-4"><Card className="relative p-5"><h2 className="text-base font-semibold">{t('movements')} · {query.data?.total??0}</h2>{query.isLoading?<div className="min-h-40"/>:<div className={`transition-opacity ${query.isFetching?'opacity-45 pointer-events-none':''}`} aria-busy={query.isFetching}><FinanceHistory entries={query.data?.data??[]} from={from} to={to}/></div>}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <PageSizeSelect value={limit} disabled={query.isFetching} onChange={value => { saveLimit(value); setPage(1) }} />
+        <Pagination current={page} total={Math.max(1,Math.ceil((query.data?.total??0)/limit))} onPageChange={setPage} loading={query.isFetching} scrollTargetId="cash-flow-results"/>
+      </div>
+    </Card></div>
     {entryMode&&<EntryForm key={entryMode} mode={entryMode} onClose={()=>setEntryMode(null)}/>}
   </div>
 }
