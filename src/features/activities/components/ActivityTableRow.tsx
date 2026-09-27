@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Avatar } from "@/components/ui/Display";
 import { formatCurrency, getAvatarColor, cn } from "@/lib/utils";
 import type { Appointment } from "@/features/appointments/api/appointments.api";
+import { AppointmentPaymentMethods } from './AppointmentPaymentMethods';
 
 const DOT = ["bg-success", "bg-gold", "bg-warning"];
 
@@ -89,6 +90,7 @@ export const ActivityTableRow = ({
         <Badge variant={isPending ? "yellow" : "green"}>
           {a.paymentStatus === "PARTIAL" ? "Parcialmente pago" : isPending ? t("pendingBadge") : t("paidBadge")}
         </Badge>
+        <AppointmentPaymentMethods appointment={a} />
       </td>
 
       <td className="px-5 py-4">

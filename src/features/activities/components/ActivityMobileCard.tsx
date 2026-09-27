@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Pencil, Trash2, CheckCircle } from "lucide-react";
 import { formatCurrency, getAvatarColor } from "@/lib/utils";
 import type { Appointment } from "@/features/appointments/api/appointments.api";
+import { AppointmentPaymentMethods } from './AppointmentPaymentMethods';
 
 const fmt = (iso: string, locale: string) =>
   new Intl.DateTimeFormat(locale, {
@@ -63,6 +64,7 @@ export const ActivityMobileCard = ({
           {a.paymentStatus === "PARTIAL" ? "Parcialmente pago" : isPending ? t("pendingBadge") : t("paidBadge")}
         </Badge>
       </button>
+      <AppointmentPaymentMethods appointment={a} />
 
       <div className="flex justify-between mt-2 pt-2 border-t border-border mb-3">
         <span className="text-xs text-text-light">{t("tableValueCol")}</span>

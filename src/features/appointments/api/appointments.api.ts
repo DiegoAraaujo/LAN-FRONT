@@ -23,6 +23,8 @@ export interface Appointment {
   paidAt?: string | null;
   paymentStatus: PaymentStatus;
   paymentMethod: PaymentMethod | null;
+  paymentMethods?: PaymentMethod[];
+  usesCredit?: boolean;
   notes?: string;
   items: AppointmentItem[];
 }

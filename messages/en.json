@@ -247,7 +247,8 @@
     "pendingBadge": "Pending",
     "markAsPaid": "Record payment",
     "editAppointment": "Edit",
-    "deleteAppointment": "Delete"
+    "deleteAppointment": "Delete",
+    "deleteWithPaymentsDescription": "Permanently delete this appointment and all linked payments and reversals? Financial totals and the customer's balance will be updated. This action cannot be undone."
   },
   "finance": {
     "title": "Cash flow", "subtitle": "Payments, expenses, and outstanding amounts.",

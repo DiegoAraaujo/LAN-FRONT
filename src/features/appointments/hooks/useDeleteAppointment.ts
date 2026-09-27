@@ -8,6 +8,6 @@ export const useDeleteAppointment = () => {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => appointmentsApi.remove(id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: appointmentsKeys.all }); qc.invalidateQueries({ queryKey: ['dashboard'] }); qc.invalidateQueries({ queryKey: ['customers'] }); toast.success(clientMessage('Atendimento removido.')) },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: appointmentsKeys.all }); qc.invalidateQueries({ queryKey: ['dashboard'] }); qc.invalidateQueries({ queryKey: ['customers'] }); qc.invalidateQueries({ queryKey: ['finance'] }); toast.success(clientMessage('Atendimento removido.')) },
   })
 }
