@@ -175,6 +175,7 @@ const ActivitiesPage = () => {
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 p-4 sm:p-8">
       <ConfirmDelete
+        description={t('deleteWithPaymentsDescription')}
         open={!!deleteTarget}
         detail={
           deleteTarget

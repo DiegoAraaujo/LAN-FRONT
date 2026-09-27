@@ -247,7 +247,8 @@
     "pendingBadge": "Pendente",
     "markAsPaid": "Registrar pagamento",
     "editAppointment": "Editar",
-    "deleteAppointment": "Excluir"
+    "deleteAppointment": "Excluir",
+    "deleteWithPaymentsDescription": "Excluir definitivamente este atendimento e todos os pagamentos e estornos vinculados? Os totais financeiros e o saldo do cliente serão atualizados. Esta ação não pode ser desfeita."
   },
   "finance": {
     "title": "Fluxo de caixa", "subtitle": "Recebimentos, despesas e valores em aberto.",
