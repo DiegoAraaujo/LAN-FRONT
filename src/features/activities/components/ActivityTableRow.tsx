@@ -1,22 +1,22 @@
-"use client";
-import { Trash2, Pencil, CheckCircle } from "lucide-react";
-import { useTranslations, useLocale } from "next-intl";
-import { Badge } from "@/components/ui/Badge";
-import { Avatar } from "@/components/ui/Display";
-import { formatCurrency, getAvatarColor, cn } from "@/lib/utils";
-import type { Appointment } from "@/features/appointments/api/appointments.api";
+'use client';
+import { Trash2, Pencil, CheckCircle } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
+import { Badge } from '@/components/ui/Badge';
+import { Avatar } from '@/components/ui/Display';
+import { formatCurrency, getAvatarColor, cn } from '@/lib/utils';
+import type { Appointment } from '@/features/appointments/api/appointments.api';
 import { AppointmentPaymentMethods } from './AppointmentPaymentMethods';
 
-const DOT = ["bg-success", "bg-gold", "bg-warning"];
+const DOT = ['bg-success', 'bg-gold', 'bg-warning'];
 
 const fmt = (iso: string, locale: string) =>
   new Intl.DateTimeFormat(locale, {
-    timeZone: "America/Sao_Paulo",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   }).format(new Date(iso));
 
 interface Props {
@@ -36,25 +36,22 @@ export const ActivityTableRow = ({
   onMarkPaid,
   onViewDetail,
 }: Props) => {
-  const t = useTranslations("activities");
-  const common = useTranslations('common')
+  const t = useTranslations('activities');
+  const common = useTranslations('common');
   const locale = useLocale();
-  const isPending = a.paymentStatus !== "PAID";
+  const isPending = a.paymentStatus !== 'PAID';
 
   return (
-    <tr className={index > 0 ? "border-t border-border" : ""}>
-      <td
-        className="px-5 py-4 text-sm text-text cursor-pointer hover:text-gold transition-colors underline-offset-2 hover:underline"
-      >
-        <button type="button" onClick={onViewDetail} className="text-left hover:underline">{fmt(a.appointmentDate, locale)}</button>
+    <tr className={index > 0 ? 'border-t border-border' : ''}>
+      <td className="px-5 py-4 text-sm text-text cursor-pointer hover:text-gold transition-colors underline-offset-2 hover:underline">
+        <button type="button" onClick={onViewDetail} className="text-left hover:underline">
+          {fmt(a.appointmentDate, locale)}
+        </button>
       </td>
 
       <td className="px-5 py-4">
         <div className="flex items-center gap-2 cursor-pointer">
-          <Avatar
-            initials={a.customerName.charAt(0)}
-            color={getAvatarColor(a.customerName)}
-          />
+          <Avatar initials={a.customerName.charAt(0)} color={getAvatarColor(a.customerName)} />
           <span className="text-sm font-medium hover:text-gold transition-colors underline-offset-2 hover:underline">
             {a.customerName}
           </span>
@@ -65,30 +62,30 @@ export const ActivityTableRow = ({
         {a.items.map((item, j) => (
           <div key={j} className="mb-1.5">
             <div className="flex items-center gap-1.5 text-sm font-medium">
-              <span
-                className={cn("w-2 h-2 rounded-full shrink-0", DOT[j % 3])}
-              />
+              <span className={cn('w-2 h-2 rounded-full shrink-0', DOT[j % 3])} />
               {item.serviceName} · {formatCurrency(item.value)}
             </div>
-            <div className="text-xs text-text-light pl-3.5">
-              {item.professionalName}
-            </div>
+            <div className="text-xs text-text-light pl-3.5">{item.professionalName}</div>
           </div>
         ))}
       </td>
 
       <td className="px-5 py-4">
         {a.discount > 0 && (
-          <div className="text-xs text-text-muted line-through">
-            {formatCurrency(a.subtotal)}
-          </div>
+          <div className="text-xs text-text-muted line-through">{formatCurrency(a.subtotal)}</div>
         )}
-        <div className="text-sm font-bold">{formatCurrency(a.total)}</div><div className="text-xs text-emerald-700">Pago: {formatCurrency(a.paidAmount)}</div><div className="text-xs text-amber-800">Falta: {formatCurrency(a.remaining)}</div>
+        <div className="text-sm font-bold">{formatCurrency(a.total)}</div>
+        <div className="text-xs text-emerald-700">Pago: {formatCurrency(a.paidAmount)}</div>
+        <div className="text-xs text-amber-800">Falta: {formatCurrency(a.remaining)}</div>
       </td>
 
       <td className="px-5 py-4">
-        <Badge variant={isPending ? "yellow" : "green"}>
-          {a.paymentStatus === "PARTIAL" ? "Parcialmente pago" : isPending ? t("pendingBadge") : t("paidBadge")}
+        <Badge variant={isPending ? 'yellow' : 'green'}>
+          {a.paymentStatus === 'PARTIAL'
+            ? 'Parcialmente pago'
+            : isPending
+              ? t('pendingBadge')
+              : t('paidBadge')}
         </Badge>
         <AppointmentPaymentMethods appointment={a} />
       </td>
@@ -98,7 +95,7 @@ export const ActivityTableRow = ({
           {isPending && (
             <button
               onClick={onMarkPaid}
-              title={t("markAsPaid")}
+              title={t('markAsPaid')}
               className="w-9 h-9 flex items-center justify-center rounded text-green-600 hover:bg-green-50 transition-colors"
             >
               <CheckCircle size={15} />
@@ -106,16 +103,18 @@ export const ActivityTableRow = ({
           )}
 
           <button
-            aria-label={common('edit')} onClick={onEdit}
-            title={t("editAppointment")}
+            aria-label={common('edit')}
+            onClick={onEdit}
+            title={t('editAppointment')}
             className="w-9 h-9 flex items-center justify-center rounded text-gold hover:bg-amber-50 transition-colors"
           >
             <Pencil size={14} />
           </button>
 
           <button
-            aria-label={common('delete')} onClick={onDelete}
-            title={t("deleteAppointment")}
+            aria-label={common('delete')}
+            onClick={onDelete}
+            title={t('deleteAppointment')}
             className="w-9 h-9 flex items-center justify-center rounded text-red-400 hover:bg-red-50 transition-colors"
           >
             <Trash2 size={14} />

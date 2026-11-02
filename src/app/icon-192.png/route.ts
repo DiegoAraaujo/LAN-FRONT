@@ -1,7 +1,7 @@
-import { createAppIcon } from '@/lib/app-icon'
+import { createAppIcon } from '@/lib/app-icon';
 
-export const dynamic = 'force-static'
+export const dynamic = 'force-static';
 
 export function GET() {
-  return createAppIcon(192)
+  return createAppIcon(192);
 }

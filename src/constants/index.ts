@@ -1,19 +1,19 @@
-export const APP_NAME    = 'LAN' as const
-export const APP_TAGLINE = 'Launched, Noted, Never Forgotten' as const
+export const APP_NAME = 'LAN' as const;
+export const APP_TAGLINE = 'Launched, Noted, Never Forgotten' as const;
 
 export const ROUTES = {
-  home:          '/',
-  login:         '/login',
-  signup:        '/signup',
-  dashboard:     '/dashboard',
-  clients:       '/clients',
+  home: '/',
+  login: '/login',
+  signup: '/signup',
+  dashboard: '/dashboard',
+  clients: '/clients',
   professionals: '/professionals',
-  services:      '/services',
-  appointments:  '/appointments',
-  activities:    '/activities',
-  cashFlow:      '/cash-flow',
-  settings:      '/settings',
-} as const
+  services: '/services',
+  appointments: '/appointments',
+  activities: '/activities',
+  cashFlow: '/cash-flow',
+  settings: '/settings',
+} as const;
 
 export const AVATAR_COLORS = [
   'bg-amber-500',
@@ -24,4 +24,4 @@ export const AVATAR_COLORS = [
   'bg-sky-500',
   'bg-emerald-600',
   'bg-orange-500',
-] as const
+] as const;

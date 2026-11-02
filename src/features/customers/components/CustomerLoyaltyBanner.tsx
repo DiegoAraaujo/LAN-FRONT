@@ -1,14 +1,19 @@
-'use client'
-import { useTranslations } from 'next-intl'
+'use client';
+import { useTranslations } from 'next-intl';
 
-interface Props { onClick: () => void }
+interface Props {
+  onClick: () => void;
+}
 
 export const CustomerLoyaltyBanner = ({ onClick }: Props) => {
-  const t = useTranslations('clients')
+  const t = useTranslations('clients');
   return (
     <div
       className="rounded-xl p-6 sm:p-8 cursor-pointer"
-      style={{ background: 'linear-gradient(135deg, var(--color-banner-from) 0%, var(--color-banner-to) 100%)' }}
+      style={{
+        background:
+          'linear-gradient(135deg, var(--color-banner-from) 0%, var(--color-banner-to) 100%)',
+      }}
       onClick={onClick}
     >
       <div className="max-w-md">
@@ -19,5 +24,5 @@ export const CustomerLoyaltyBanner = ({ onClick }: Props) => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};

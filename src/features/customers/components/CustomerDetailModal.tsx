@@ -1,19 +1,14 @@
-"use client";
+'use client';
 
-import { CustomerFinance } from "@/features/finance/CustomerFinance";
-import { useTranslations } from "next-intl";
-import { MessageCircle, MapPin, Calendar } from "lucide-react";
-import { Modal } from "@/components/ui/Modal";
-import { Button } from "@/components/ui/Button";
-import { Avatar } from "@/components/ui/Display";
-import {
-  getInitials,
-  getAvatarColor,
-  formatCurrency,
-  formatBRPhone,
-} from "@/lib/utils";
-import { CustomerStatusBadge } from "./CustomerStatus";
-import type { Customer } from "../api/customers.api";
+import { CustomerFinance } from '@/features/finance/CustomerFinance';
+import { useTranslations } from 'next-intl';
+import { MessageCircle, MapPin, Calendar } from 'lucide-react';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
+import { Avatar } from '@/components/ui/Display';
+import { getInitials, getAvatarColor, formatCurrency, formatBRPhone } from '@/lib/utils';
+import { CustomerStatusBadge } from './CustomerStatus';
+import type { Customer } from '../api/customers.api';
 
 const InstagramIcon = ({ size = 14 }: { size?: number }) => (
   <svg
@@ -33,14 +28,14 @@ const InstagramIcon = ({ size = 14 }: { size?: number }) => (
 );
 
 const formatDate = (iso: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
+  new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
   }).format(new Date(iso));
 
 const formatWhatsappDisplay = (raw: string): string => {
-  if (raw.startsWith("+55")) {
+  if (raw.startsWith('+55')) {
     const local = raw.slice(3);
     return `+55 ${formatBRPhone(local)}`;
   }
@@ -74,14 +69,9 @@ interface Props {
   onEdit: () => void;
 }
 
-export const CustomerDetailModal = ({
-  open,
-  customer,
-  onClose,
-  onEdit,
-}: Props) => {
-  const t = useTranslations("clients");
-  const tc = useTranslations("common");
+export const CustomerDetailModal = ({ open, customer, onClose, onEdit }: Props) => {
+  const t = useTranslations('clients');
+  const tc = useTranslations('common');
 
   if (!customer) return null;
 
@@ -89,23 +79,15 @@ export const CustomerDetailModal = ({
     <Modal
       open={open}
       onClose={onClose}
-      title={t("clientDetails")}
+      title={t('clientDetails')}
       size="md"
       footer={
         <div className="flex gap-2 w-full">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="flex-1 justify-center"
-          >
-            {tc("close")}
+          <Button variant="outline" onClick={onClose} className="flex-1 justify-center">
+            {tc('close')}
           </Button>
-          <Button
-            variant="primary"
-            onClick={onEdit}
-            className="flex-1 justify-center"
-          >
-            {tc("edit")}
+          <Button variant="primary" onClick={onEdit} className="flex-1 justify-center">
+            {tc('edit')}
           </Button>
         </div>
       }
@@ -128,34 +110,24 @@ export const CustomerDetailModal = ({
           <div className="text-xl font-bold text-gold">
             {formatCurrency(customer.totalSpent ?? 0)}
           </div>
-          <div className="text-[11px] text-text-light mt-0.5">
-            {t("tableTotalSpentCol")}
-          </div>
+          <div className="text-[11px] text-text-light mt-0.5">{t('tableTotalSpentCol')}</div>
         </div>
 
         <div className="bg-bg rounded-xl p-3 text-center">
-          <div className="text-xl font-bold text-text">
-            {customer.totalAppointments ?? 0}
-          </div>
-          <div className="text-[11px] text-text-light mt-0.5">
-            {t("tableAppointmentsCol")}
-          </div>
+          <div className="text-xl font-bold text-text">{customer.totalAppointments ?? 0}</div>
+          <div className="text-[11px] text-text-light mt-0.5">{t('tableAppointmentsCol')}</div>
         </div>
       </div>
 
       <div>
         <InfoRow
           icon={<Calendar size={14} />}
-          label={t("registeredSince")}
+          label={t('registeredSince')}
           value={formatDate(customer.createdAt)}
         />
 
         {customer.address && (
-          <InfoRow
-            icon={<MapPin size={14} />}
-            label={tc("address")}
-            value={customer.address}
-          />
+          <InfoRow icon={<MapPin size={14} />} label={tc('address')} value={customer.address} />
         )}
 
         {customer.whatsapp && (
@@ -174,21 +146,19 @@ export const CustomerDetailModal = ({
               </span>
             }
             label="Instagram"
-            value={`@${customer.instagram.replace(/^@/, "")}`}
+            value={`@${customer.instagram.replace(/^@/, '')}`}
           />
         )}
 
         {!customer.whatsapp && !customer.instagram && (
           <InfoRow
             icon={<MessageCircle size={14} />}
-            label={t("contacts")}
-            value={
-              <span className="italic text-text-light">{t("noContacts")}</span>
-            }
+            label={t('contacts')}
+            value={<span className="italic text-text-light">{t('noContacts')}</span>}
           />
         )}
       </div>
-      {open && <CustomerFinance customerId={customer.id} customerName={customer.name}/>}
+      {open && <CustomerFinance customerId={customer.id} customerName={customer.name} />}
     </Modal>
   );
 };

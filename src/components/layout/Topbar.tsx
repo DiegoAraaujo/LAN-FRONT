@@ -1,14 +1,53 @@
-'use client'
-import Link from 'next/link'
-import { Settings, ArrowUpRight } from 'lucide-react'
-import { useLocale, useTranslations } from 'next-intl'
-import { useAuthStore } from '@/stores/auth.store'
+'use client';
+import Link from 'next/link';
+import { Settings, ArrowUpRight } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useAuthStore } from '@/stores/auth.store';
 export const Topbar = () => {
-  const { user } = useAuthStore()
-  const locale = useLocale()
-  const t = useTranslations('nav')
-  return <header className="h-[72px] bg-surface/90 border-b border-border flex items-center justify-between pl-16 lg:pl-8 pr-4 sm:pr-8 gap-3 shrink-0">
-    <span className="text-sm text-text-muted capitalize hidden sm:block">{new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Sao_Paulo' }).format(new Date())}</span>
-    <div className="ml-auto flex items-center gap-3"><Link href="/activities" className="hidden md:flex text-xs items-center gap-1 text-text-muted">{t('appointments')}<ArrowUpRight size={13}/></Link><div className="hidden h-6 w-px bg-border md:block"/><span className="hidden max-w-48 truncate text-sm font-medium sm:block">{user?.name}</span><span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-emerald-50 text-sm font-semibold text-emerald-800">{user?.profileImage?<img src={user.profileImage} alt={user.name} className="size-full object-cover"/>:user?.name?.charAt(0) ?? 'L'}</span><Link href="/settings" aria-label={locale === 'en' ? 'Settings' : 'Configurações'} className="rounded-xl p-2.5 text-text-muted hover:bg-bg"><Settings size={18}/></Link></div>
-  </header>
-}
+  const { user } = useAuthStore();
+  const locale = useLocale();
+  const t = useTranslations('nav');
+  return (
+    <header className="h-[72px] bg-surface/90 border-b border-border flex items-center justify-between pl-4 lg:pl-8 pr-4 sm:pr-8 gap-3 shrink-0">
+      <Link
+        href="/dashboard"
+        className="text-lg font-extrabold tracking-tight text-sidebar sm:hidden"
+      >
+        LAN
+      </Link>
+      <span className="text-sm text-text-muted capitalize hidden sm:block">
+        {new Intl.DateTimeFormat(locale, {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          timeZone: 'America/Sao_Paulo',
+        }).format(new Date())}
+      </span>
+      <div className="ml-auto flex items-center gap-3">
+        <Link
+          href="/activities"
+          className="hidden md:flex text-xs items-center gap-1 text-text-muted"
+        >
+          {t('appointments')}
+          <ArrowUpRight size={13} />
+        </Link>
+        <div className="hidden h-6 w-px bg-border md:block" />
+        <span className="hidden max-w-48 truncate text-sm font-medium sm:block">{user?.name}</span>
+        <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-emerald-50 text-sm font-semibold text-emerald-800">
+          {user?.profileImage ? (
+            <img src={user.profileImage} alt={user.name} className="size-full object-cover" />
+          ) : (
+            (user?.name?.charAt(0) ?? 'L')
+          )}
+        </span>
+        <Link
+          href="/settings"
+          aria-label={locale === 'en' ? 'Settings' : 'Configurações'}
+          className="rounded-xl p-2.5 text-text-muted hover:bg-bg"
+        >
+          <Settings size={18} />
+        </Link>
+      </div>
+    </header>
+  );
+};

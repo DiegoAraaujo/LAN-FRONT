@@ -1,22 +1,22 @@
-'use client'
-import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { Modal } from '@/components/ui/Modal'
-import { Button } from '@/components/ui/Button'
-import { PaymentMethodSelector } from './PaymentMethodSelector'
-import type { PaymentMethod } from '../api/appointments.api'
+'use client';
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
+import { PaymentMethodSelector } from './PaymentMethodSelector';
+import type { PaymentMethod } from '../api/appointments.api';
 
 interface Props {
-  open:      boolean
-  onClose:   () => void
-  onConfirm: (method: PaymentMethod) => void
-  isLoading: boolean
+  open: boolean;
+  onClose: () => void;
+  onConfirm: (method: PaymentMethod) => void;
+  isLoading: boolean;
 }
 
 export const MarkAsPaidModal = ({ open, onClose, onConfirm, isLoading }: Props) => {
-  const t = useTranslations('appointments')
-  const tc = useTranslations('common')
-  const [method, setMethod] = useState<PaymentMethod>('PIX')
+  const t = useTranslations('appointments');
+  const tc = useTranslations('common');
+  const [method, setMethod] = useState<PaymentMethod>('PIX');
 
   return (
     <Modal
@@ -26,7 +26,9 @@ export const MarkAsPaidModal = ({ open, onClose, onConfirm, isLoading }: Props) 
       title={t('markAsPaid')}
       footer={
         <>
-          <Button variant="outline" onClick={onClose} disabled={isLoading}>{tc('cancel')}</Button>
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+            {tc('cancel')}
+          </Button>
           <Button variant="primary" onClick={() => onConfirm(method)} disabled={isLoading}>
             {isLoading ? tc('saving') : tc('save')}
           </Button>
@@ -38,5 +40,5 @@ export const MarkAsPaidModal = ({ open, onClose, onConfirm, isLoading }: Props) 
         <PaymentMethodSelector value={method} onChange={setMethod} />
       </div>
     </Modal>
-  )
-}
+  );
+};

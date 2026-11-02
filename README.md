@@ -33,3 +33,15 @@ npm run dev
 ```
 
 Acesse `http://localhost:3000`.
+
+## Formatação
+
+Execute no frontend para formatar frontend e backend de uma vez (o backend deve estar em `../lan-back`):
+
+```bash
+npm run format:all
+```
+
+Para verificar sem modificar arquivos, use `npm run format:check:all`.
+Cada projeto também tem `npm run format` e `npm run format:check`.
+Os dois usam a mesma versão e configuração do Prettier. O comando conjunto também formata o schema Prisma com o formatador do Prisma; não altera o banco.

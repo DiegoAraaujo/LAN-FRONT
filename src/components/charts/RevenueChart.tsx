@@ -1,33 +1,120 @@
-'use client'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts'
-import { useLocale, useTranslations } from 'next-intl'
-type LabelMode = 'day' | 'month' | 'monthYear'
-export const RevenueChart = ({ data = [], labelMode = 'month' }: { data?: { month: string; revenue: number; pending?: number }[]; labelMode?: LabelMode }) => {
-  const locale = useLocale()
-  const t = useTranslations('overview')
-  const currency = (n: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'BRL', maximumFractionDigits: 2 }).format(n)
+'use client';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+  Legend,
+} from 'recharts';
+import { useLocale, useTranslations } from 'next-intl';
+type LabelMode = 'day' | 'month' | 'monthYear';
+export const RevenueChart = ({
+  data = [],
+  labelMode = 'month',
+}: {
+  data?: { month: string; revenue: number; pending?: number }[];
+  labelMode?: LabelMode;
+}) => {
+  const locale = useLocale();
+  const t = useTranslations('overview');
+  const currency = (n: number) =>
+    new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'BRL',
+      maximumFractionDigits: 2,
+    }).format(n);
   const label = (value: string) => {
-    if (labelMode === 'day') return String(Number(value.includes('-') ? value.slice(-2) : value))
-    const parts = value.split('-').map(Number)
-    const year = parts.length > 1 ? parts[0] : 2026
-    const month = parts.length > 1 ? parts[1] : parts[0]
-    return new Intl.DateTimeFormat(locale, { month: 'short', ...(labelMode === 'monthYear' ? { year: '2-digit' as const } : {}), timeZone: 'UTC' }).format(new Date(Date.UTC(year, month - 1, 1)))
-  }
-  const chartData = data.map(b => ({ ...b, label: label(b.month) }))
-  const minimumWidth = labelMode === 'day' ? Math.max(640, chartData.length * 46) : Math.max(600, chartData.length * 58)
-  return <div className="w-full min-w-0 overflow-x-auto overscroll-x-contain pb-2 touch-pan-x">
-    <div role="img" aria-label={t('chartDescription')} className="h-72" style={{ minWidth: minimumWidth }}>
-    <ResponsiveContainer width="100%" height="100%" minWidth={0} initialDimension={{ width: minimumWidth, height: 288 }}>
-      <BarChart data={chartData} margin={{ top: 10, right: 8, bottom: 0, left: 0 }} barCategoryGap="28%" barGap={3} accessibilityLayer>
-        <CartesianGrid strokeDasharray="3 5" stroke="var(--color-border)" vertical={false} />
-        <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} minTickGap={12} />
-        <YAxis width={64} tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} tickFormatter={v => new Intl.NumberFormat(locale, { notation: 'compact' }).format(v)} />
-        <Tooltip cursor={{ fill: 'var(--color-bg)' }} formatter={v => currency(Number(v ?? 0))} contentStyle={{ borderRadius: 14, border: '1px solid var(--color-border)', fontSize: 13 }} />
-        <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12, paddingTop: 16 }} />
-        <Bar isAnimationActive={false} name={t('received')} dataKey="revenue" fill="#16856a" radius={[4,4,0,0]} minPointSize={3} maxBarSize={22} />
-        <Bar isAnimationActive={false} name={t('pending')} dataKey="pending" fill="#d3a348" radius={[4,4,0,0]} minPointSize={3} maxBarSize={22} />
-      </BarChart>
-    </ResponsiveContainer>
+    if (labelMode === 'day') return String(Number(value.includes('-') ? value.slice(-2) : value));
+    const parts = value.split('-').map(Number);
+    const year = parts.length > 1 ? parts[0] : 2026;
+    const month = parts.length > 1 ? parts[1] : parts[0];
+    return new Intl.DateTimeFormat(locale, {
+      month: 'short',
+      ...(labelMode === 'monthYear' ? { year: '2-digit' as const } : {}),
+      timeZone: 'UTC',
+    }).format(new Date(Date.UTC(year, month - 1, 1)));
+  };
+  const chartData = data.map((b) => ({ ...b, label: label(b.month) }));
+  const minimumWidth =
+    labelMode === 'day'
+      ? Math.max(640, chartData.length * 46)
+      : Math.max(600, chartData.length * 58);
+  return (
+    <div className="w-full min-w-0 overflow-x-auto overscroll-x-contain pb-2 touch-pan-x">
+      <div
+        role="img"
+        aria-label={t('chartDescription')}
+        className="h-72"
+        style={{ minWidth: minimumWidth }}
+      >
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
+          minWidth={0}
+          initialDimension={{ width: minimumWidth, height: 288 }}
+        >
+          <BarChart
+            data={chartData}
+            margin={{ top: 10, right: 8, bottom: 0, left: 0 }}
+            barCategoryGap="28%"
+            barGap={3}
+            accessibilityLayer
+          >
+            <CartesianGrid strokeDasharray="3 5" stroke="var(--color-border)" vertical={false} />
+            <XAxis
+              dataKey="label"
+              tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }}
+              axisLine={false}
+              tickLine={false}
+              minTickGap={12}
+            />
+            <YAxis
+              width={64}
+              tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(v) =>
+                new Intl.NumberFormat(locale, { notation: 'compact' }).format(v)
+              }
+            />
+            <Tooltip
+              cursor={{ fill: 'var(--color-bg)' }}
+              formatter={(v) => currency(Number(v ?? 0))}
+              contentStyle={{
+                borderRadius: 14,
+                border: '1px solid var(--color-border)',
+                fontSize: 13,
+              }}
+            />
+            <Legend
+              iconType="circle"
+              iconSize={8}
+              wrapperStyle={{ fontSize: 12, paddingTop: 16 }}
+            />
+            <Bar
+              isAnimationActive={false}
+              name={t('received')}
+              dataKey="revenue"
+              fill="#16856a"
+              radius={[4, 4, 0, 0]}
+              minPointSize={3}
+              maxBarSize={22}
+            />
+            <Bar
+              isAnimationActive={false}
+              name={t('pending')}
+              dataKey="pending"
+              fill="#d3a348"
+              radius={[4, 4, 0, 0]}
+              minPointSize={3}
+              maxBarSize={22}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
-  </div>
-}
+  );
+};

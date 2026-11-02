@@ -1,20 +1,22 @@
-'use client'
-import { useTranslations } from 'next-intl'
-import { PageHeader } from '@/components/ui/Display'
-import { ProfileForm } from './ProfileForm'
-import { PreferencesForm } from './PreferencesForm'
-import { SecuritySessions } from './SecuritySessions'
+'use client';
+import { useTranslations } from 'next-intl';
+import { PageHeader } from '@/components/ui/Display';
+import { ChangePasswordForm } from './ChangePasswordForm';
+import { ProfileForm } from './ProfileForm';
+import { PreferencesForm } from './PreferencesForm';
+import { SecuritySessions } from './SecuritySessions';
 
 export const SettingsClient = () => {
-  const t = useTranslations('settings')
+  const t = useTranslations('settings');
   return (
     <div className="mx-auto w-full max-w-[1600px] space-y-6 p-4 sm:p-8">
       <PageHeader title={t('title')} subtitle={t('subtitle')} />
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         <ProfileForm />
         <PreferencesForm />
+        <ChangePasswordForm />
         <SecuritySessions />
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,3 +1,3 @@
-'use client'
+'use client';
 
-export { useTranslations } from 'next-intl'
+export { useTranslations } from 'next-intl';

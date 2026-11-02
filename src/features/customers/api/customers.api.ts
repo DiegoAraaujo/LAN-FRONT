@@ -1,65 +1,85 @@
-import { api } from '@/lib/api'
+import { recordIdSchema, customerQuerySchema } from '@/lib/query-validation';
+import { validatePayload } from '@/lib/validate-payload';
+import { createCustomerSchema, updateCustomerSchema } from '../schemas/customer-payload.schemas';
+import { api } from '@/lib/api';
 
-export type ContactType = 'WHATSAPP' | 'INSTAGRAM'
-export type CustomerStatus = 'ACTIVE' | 'INACTIVE' | 'OCCASIONAL'
+export type ContactType = 'WHATSAPP' | 'INSTAGRAM';
+export type CustomerStatus = 'ACTIVE' | 'INACTIVE' | 'OCCASIONAL';
 
 export interface CustomerContact {
-  type:  ContactType
-  value: string
+  type: ContactType;
+  value: string;
 }
 
 export interface Customer {
-  id:                 string
-  name:               string
-  phone:              string
-  address?:           string | null
-  status:             CustomerStatus
-  createdAt:          string
-  whatsapp?:          string | null
-  instagram?:         string | null
-  totalAppointments?: number
-  totalSpent?:        number
+  id: string;
+  name: string;
+  phone: string;
+  address?: string | null;
+  status: CustomerStatus;
+  createdAt: string;
+  whatsapp?: string | null;
+  instagram?: string | null;
+  totalAppointments?: number;
+  totalSpent?: number;
 }
 
 export interface CustomersDashboard {
-  total: number; active: number; inactive: number; occasional: number; newThisMonth: number
+  total: number;
+  active: number;
+  inactive: number;
+  occasional: number;
+  newThisMonth: number;
 }
 
 export interface LoyaltyCustomer extends Customer {
-  totalAppointments: number
-  totalSpent: number
-  lastVisit: string
-  tier: 'VIP_GOLD' | 'FREQUENT' | 'ACTIVE'
+  totalAppointments: number;
+  totalSpent: number;
+  lastVisit: string;
+  tier: 'VIP_GOLD' | 'FREQUENT' | 'ACTIVE';
 }
 
 export interface CustomersListResponse {
-  data: Customer[]
-  meta: { total: number; page: number; limit: number; totalPages: number }
+  data: Customer[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
 }
 
 export interface CreateCustomerPayload {
-  status?: CustomerStatus
-  name:      string
-  phone:     string
-  address?:  string
-  contacts?: CustomerContact[]
+  status?: CustomerStatus;
+  name: string;
+  phone: string;
+  address?: string;
+  contacts?: CustomerContact[];
 }
 
 export interface UpdateCustomerPayload {
-  name?:     string
-  phone?:    string
-  address?:  string
-  status?:   CustomerStatus
-  contacts?: CustomerContact[]
+  name?: string;
+  phone?: string;
+  address?: string;
+  status?: CustomerStatus;
+  contacts?: CustomerContact[];
 }
 
-export interface CustomersParams { search?: string; status?: CustomerStatus; limit?: number; page?: number }
+export interface CustomersParams {
+  search?: string;
+  status?: CustomerStatus;
+  limit?: number;
+  page?: number;
+}
 
 export const customersApi = {
-  list:      (p?: CustomersParams)                     => api.get<CustomersListResponse>('/customers/', { params: p }),
-  dashboard: ()                                        => api.get<CustomersDashboard>('/customers/dashboard'),
-  loyalty:   ()                                        => api.get<{ data: LoyaltyCustomer[] }>('/customers/loyalty'),
-  create:    (data: CreateCustomerPayload)             => api.post<Customer>('/customers/', data),
-  update:    (id: string, data: UpdateCustomerPayload) => api.patch<Customer>(`/customers/${id}`, data),
-  remove:    (id: string)                              => api.delete(`/customers/${id}`),
-}
+  list: (p?: CustomersParams) =>
+    api.get<CustomersListResponse>('/customers/', {
+      params: validatePayload(customerQuerySchema, p ?? {}),
+    }),
+  dashboard: () => api.get<CustomersDashboard>('/customers/dashboard'),
+  loyalty: () => api.get<{ data: LoyaltyCustomer[] }>('/customers/loyalty'),
+  create: (data: CreateCustomerPayload) =>
+    api.post<Customer>('/customers/', validatePayload(createCustomerSchema, data)),
+  update: (id: string, data: UpdateCustomerPayload) =>
+    api.patch<Customer>(
+      `/customers/${validatePayload(recordIdSchema, id)}`,
+      validatePayload(updateCustomerSchema, data),
+    ),
+  remove: (id: string) => api.delete(`/customers/${validatePayload(recordIdSchema, id)}`),
+};

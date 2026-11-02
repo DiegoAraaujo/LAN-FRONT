@@ -1,20 +1,26 @@
-import { z } from 'zod'
-
+import { z } from 'zod';
+import {
+  nameSchema,
+  emailSchema,
+  passwordSchema,
+  currentPasswordSchema,
+} from '../../../lib/validation';
 export const loginSchema = z.object({
-  email:    z.string().email('E-mail inválido'),
-  password: z.string().min(6, 'Mínimo 6 caracteres'),
+  email: emailSchema,
+  password: currentPasswordSchema,
   remember: z.boolean().optional(),
-})
-
-export const signupSchema = z.object({
-  name:            z.string().min(2, 'Mínimo 2 caracteres'),
-  email:           z.string().email('E-mail inválido'),
-  password:        z.string().min(6, 'Mínimo 6 caracteres'),
-  confirmPassword: z.string(),
-  terms:           z.boolean().refine((v) => v, 'Aceite os termos'),
-}).refine((d) => d.password === d.confirmPassword, {
-  message: 'As senhas não coincidem', path: ['confirmPassword'],
-})
-
-export type LoginInput  = z.infer<typeof loginSchema>
-export type SignupInput = z.infer<typeof signupSchema>
+});
+export const signupSchema = z
+  .object({
+    name: nameSchema,
+    email: emailSchema,
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
+    terms: z.literal(true, { error: 'Aceite os termos.' }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ['confirmPassword'],
+    message: 'As senhas nao coincidem.',
+  });
+export type LoginInput = z.infer<typeof loginSchema>;
+export type SignupInput = z.infer<typeof signupSchema>;

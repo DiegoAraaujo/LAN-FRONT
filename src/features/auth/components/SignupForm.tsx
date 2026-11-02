@@ -1,49 +1,83 @@
-'use client'
-import Link from 'next/link'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { User } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { Button } from '@/components/ui/Button'
-import { Input } from '@/components/ui/Input'
-import { EmailField } from './EmailField'
-import { PasswordField } from './PasswordField'
-import { useSignup } from '../hooks/useSignup'
-import { extractValidationErrors } from '@/lib/api'
-import { signupSchema, type SignupInput } from '../schemas/auth.schemas'
-import { ROUTES } from '@/constants'
-import { TermsOfServiceModal } from './TermsOfServiceModal'
+'use client';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { User } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { EmailField } from './EmailField';
+import { PasswordField } from './PasswordField';
+import { useSignup } from '../hooks/useSignup';
+import { extractValidationErrors } from '@/lib/api';
+import { signupSchema, type SignupInput } from '../schemas/auth.schemas';
+import { ROUTES } from '@/constants';
+import { TermsOfServiceModal } from './TermsOfServiceModal';
 
 export const SignupForm = () => {
-  const t    = useTranslations('auth')
-  const signup = useSignup()
-  const [termsOpen, setTermsOpen] = useState(false)
-  const { register, handleSubmit, setError, setValue, formState: { errors } } =
-    useForm<SignupInput>({ resolver: zodResolver(signupSchema) })
+  const t = useTranslations('auth');
+  const signup = useSignup();
+  const [termsOpen, setTermsOpen] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    setValue,
+    formState: { errors },
+  } = useForm<SignupInput>({ resolver: zodResolver(signupSchema) });
 
-  const onSubmit = ({ name, email, password }: SignupInput) => {
-    signup.mutate({ name, email, password }, {
+  const onSubmit = (data: SignupInput) => {
+    signup.mutate(data, {
       onError: (err) => {
-        const fe = extractValidationErrors(err)
-        Object.entries(fe).forEach(([f, m]) => setError(f as keyof SignupInput, { message: m }))
+        const fe = extractValidationErrors(err);
+        Object.entries(fe).forEach(([f, m]) => setError(f as keyof SignupInput, { message: m }));
       },
-    })
-  }
+    });
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      <Input label={t('fullName')} placeholder={t('fullNamePlaceholder')} icon={<User size={15} />}
-        error={errors.name?.message} {...register('name')} />
+      <Input
+        required
+        label={t('fullName')}
+        placeholder={t('fullNamePlaceholder')}
+        icon={<User size={15} />}
+        error={errors.name?.message}
+        {...register('name')}
+      />
       <EmailField register={register} error={errors.email} />
-      <PasswordField register={register} error={errors.password} label={t('passwordLabel')} placeholder={t('passwordPlaceholder')} />
-      <PasswordField register={register} error={errors.confirmPassword}
-        name="confirmPassword" label={t('confirmPassword')} placeholder={t('passwordPlaceholder')} />
+      <PasswordField
+        register={register}
+        error={errors.password}
+        label={t('passwordLabel')}
+        placeholder={t('passwordPlaceholder')}
+      />
+      <PasswordField
+        register={register}
+        error={errors.confirmPassword}
+        name="confirmPassword"
+        label={t('confirmPassword')}
+        placeholder={t('passwordPlaceholder')}
+      />
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 text-sm text-text-muted">
-          <input id="terms" type="checkbox" className="h-4 w-4 shrink-0 accent-gold-btn" {...register('terms')} />
-          <label htmlFor="terms" className="cursor-pointer">Li e aceito os</label>
-          <button type="button" onClick={() => setTermsOpen(true)} className="font-semibold text-gold underline-offset-2 hover:underline">Termos de Serviço</button>
+          <input
+            id="terms"
+            type="checkbox"
+            className="h-4 w-4 shrink-0 accent-gold-btn"
+            {...register('terms')}
+          />
+          <label htmlFor="terms" className="cursor-pointer">
+            Li e aceito os
+          </label>
+          <button
+            type="button"
+            onClick={() => setTermsOpen(true)}
+            className="font-semibold text-gold underline-offset-2 hover:underline"
+          >
+            Termos de Serviço
+          </button>
         </div>
         {errors.terms && <p className="text-xs text-danger">{errors.terms.message}</p>}
       </div>
@@ -53,16 +87,18 @@ export const SignupForm = () => {
       <hr className="border-border" />
       <p className="text-sm text-center text-text-muted">
         {t('alreadyHaveAccount')}{' '}
-        <Link href={ROUTES.login} className="text-gold font-semibold hover:underline">{t('signInLink')}</Link>
+        <Link href={ROUTES.login} className="text-gold font-semibold hover:underline">
+          {t('signInLink')}
+        </Link>
       </p>
       <TermsOfServiceModal
         open={termsOpen}
         onClose={() => setTermsOpen(false)}
         onAccept={() => {
-          setValue('terms', true, { shouldValidate: true, shouldDirty: true })
-          setTermsOpen(false)
+          setValue('terms', true, { shouldValidate: true, shouldDirty: true });
+          setTermsOpen(false);
         }}
       />
     </form>
-  )
-}
+  );
+};
