@@ -25,8 +25,8 @@ import { useSignOut } from './useSignOut';
 
 const SHORTCUTS = [
   { key: 'dashboard', href: ROUTES.dashboard, icon: LayoutDashboard },
-  { key: 'clients', href: ROUTES.clients, icon: ContactRound },
   { key: 'appointments', href: ROUTES.activities, icon: CalendarDays },
+  { key: 'clients', href: ROUTES.clients, icon: ContactRound },
   { key: 'cashFlow', href: ROUTES.cashFlow, icon: Wallet },
 ] as const;
 

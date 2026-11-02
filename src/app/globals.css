@@ -86,6 +86,19 @@ main > div {
 #main-content select {
   min-height: 2.75rem;
 }
+
+/* A 16px field font avoids automatic focus zoom in mobile Safari. */
+@media (max-width: 1023px) {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea,
+  #main-content input:not([type='checkbox']):not([type='radio']),
+  #main-content select,
+  #main-content textarea {
+    font-size: 16px;
+  }
+}
+
 #main-content table th {
   font-size: 0.6875rem;
   font-weight: 600;
