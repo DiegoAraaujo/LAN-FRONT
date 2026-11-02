@@ -1,48 +1,59 @@
-import { cn } from '@/lib/utils'
-import { forwardRef, useId } from 'react'
+import { cn } from '@/lib/utils';
+import { forwardRef, useId } from 'react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label?:     string
-  icon?:      React.ReactNode
-  rightIcon?: React.ReactNode
-  error?:     string
+  label?: string;
+  icon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  error?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, icon, rightIcon, error, className, id, ...props }, ref) => {
-    const generatedId = useId()
-    const fieldId = id ?? generatedId
+    const generatedId = useId();
+    const fieldId = id ?? generatedId;
     return (
-    <div className="flex flex-col gap-1.5">
-      {label && (
-        <label htmlFor={fieldId} className="text-xs font-medium text-text-light uppercase tracking-wide">
-          {label}
-        </label>
-      )}
-      <div className="relative">
-        {icon && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light">{icon}</span>}
-        <input
-          ref={ref}
-          id={fieldId}
-          aria-invalid={!!error}
-          aria-describedby={error ? fieldId + '-error' : props['aria-describedby']}
-          className={cn(
-            'min-h-11 w-full rounded-xl border py-2.5 text-sm text-text bg-surface placeholder:text-text-light transition-colors',
-            error ? 'border-danger' : 'border-border',
-            icon      ? 'pl-9 pr-3' : 'px-3',
-            rightIcon ? 'pr-9'      : '',
-            className,
+      <div className="flex min-w-0 flex-col gap-1.5">
+        {label && (
+          <label
+            htmlFor={fieldId}
+            className="text-xs font-medium text-text-light uppercase tracking-wide"
+          >
+            {label}
+            {props.required && <span aria-hidden="true"> *</span>}
+          </label>
+        )}
+        <div className="relative min-w-0">
+          {icon && (
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light">{icon}</span>
           )}
-          {...props}
-        />
-        {rightIcon && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light cursor-pointer">
-            {rightIcon}
-          </span>
+          <input
+            ref={ref}
+            id={fieldId}
+            aria-invalid={!!error}
+            aria-describedby={error ? fieldId + '-error' : props['aria-describedby']}
+            className={cn(
+              'min-h-11 w-full min-w-0 max-w-full rounded-xl border py-2.5 text-sm text-text bg-surface placeholder:text-text-light transition-colors',
+              error ? 'border-danger' : 'border-border',
+              icon ? 'pl-9 pr-3' : 'px-3',
+              rightIcon ? 'pr-9' : '',
+              className,
+            )}
+            {...props}
+          />
+          {rightIcon && (
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light cursor-pointer">
+              {rightIcon}
+            </span>
+          )}
+        </div>
+        {error && (
+          <p id={fieldId + '-error'} role="alert" className="text-xs text-danger">
+            {error}
+          </p>
         )}
       </div>
-      {error && <p id={fieldId + '-error'} role="alert" className="text-xs text-danger">{error}</p>}
-    </div>
-  )},
-)
-Input.displayName = 'Input'
+    );
+  },
+);
+Input.displayName = 'Input';

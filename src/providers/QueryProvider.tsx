@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Toaster } from 'react-hot-toast'
-import { useAuthStore } from '@/stores/auth.store'
-import { useEffect, useState } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'react-hot-toast';
+import { useAuthStore } from '@/stores/auth.store';
+import { useEffect, useState } from 'react';
 
 export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
   const [queryClient] = useState(
@@ -11,27 +11,33 @@ export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime:            60 * 1000,
-            retry:                1,
+            staleTime: 60 * 1000,
+            retry: 1,
             refetchOnWindowFocus: false,
           },
         },
       }),
-  )
+  );
 
   useEffect(() => {
     const unsubscribe = useAuthStore.subscribe((state, previous) => {
-      if (!state.authenticated && previous.authenticated) { void queryClient.cancelQueries(); queryClient.clear() }
-    })
+      if (!state.authenticated && previous.authenticated) {
+        void queryClient.cancelQueries();
+        queryClient.clear();
+      }
+    });
     const onStorage = (event: StorageEvent) => {
       if (event.key === 'lan-session-event' && event.newValue) {
-        useAuthStore.getState().clearSession()
-        window.location.reload()
+        useAuthStore.getState().clearSession();
+        window.location.reload();
       }
-    }
-    window.addEventListener('storage', onStorage)
-    return () => { unsubscribe(); window.removeEventListener('storage', onStorage) }
-  }, [queryClient])
+    };
+    window.addEventListener('storage', onStorage);
+    return () => {
+      unsubscribe();
+      window.removeEventListener('storage', onStorage);
+    };
+  }, [queryClient]);
   return (
     <QueryClientProvider client={queryClient}>
       {children}
@@ -41,14 +47,14 @@ export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
           duration: 4000,
           style: {
             background: '#FFFFFF',
-            color:      '#1C1C1C',
-            border:     '1px solid #E2E0DA',
-            fontSize:   '14px',
+            color: '#1C1C1C',
+            border: '1px solid #E2E0DA',
+            fontSize: '14px',
           },
           success: { iconTheme: { primary: '#22C55E', secondary: '#fff' } },
-          error:   { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
+          error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
         }}
       />
     </QueryClientProvider>
-  )
-}
+  );
+};

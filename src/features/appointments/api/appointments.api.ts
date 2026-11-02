@@ -1,7 +1,14 @@
-import { api } from "@/lib/api";
+import { recordIdSchema, searchSchema } from '@/lib/query-validation';
+import { validatePayload } from '@/lib/validate-payload';
+import {
+  createAppointmentBodySchema,
+  updateAppointmentBodySchema,
+} from '../schemas/appointment.schemas';
+import type { PaymentInput } from '@/features/finance/finance.api';
+import { api } from '@/lib/api';
 
-export type PaymentStatus = "PAID" | "PENDING" | "PARTIAL";
-export type PaymentMethod = "PIX" | "DEBIT_CARD" | "CREDIT_CARD" | "CASH" | "OTHER";
+export type PaymentStatus = 'PAID' | 'PENDING' | 'PARTIAL';
+export type PaymentMethod = 'PIX' | 'DEBIT_CARD' | 'CREDIT_CARD' | 'CASH' | 'OTHER';
 
 export interface AppointmentItem {
   serviceId: string;
@@ -35,9 +42,15 @@ export interface AppointmentsListResponse {
   summary: { totalValue: number; paidValue: number; pendingValue: number; serviceValue: number };
 }
 export interface AppointmentsParams {
-  openOnly?: "true";
-  serviceId?: string; serviceIds?: string; professionalId?: string; customerId?: string; paymentMethod?: PaymentMethod;
-  dateFrom?: string; dateTo?: string; dateType?: "appointment" | "payment";
+  openOnly?: 'true';
+  serviceId?: string;
+  serviceIds?: string;
+  professionalId?: string;
+  customerId?: string;
+  paymentMethod?: PaymentMethod;
+  dateFrom?: string;
+  dateTo?: string;
+  dateType?: 'appointment' | 'payment';
   search?: string;
   paymentStatus?: PaymentStatus;
   year?: number;
@@ -49,6 +62,7 @@ export interface CreateAppointmentPayload {
   customerId: string;
   appointmentDate: string;
   discount?: number;
+  initialPayment?: PaymentInput;
   paymentStatus: PaymentStatus;
   paymentMethod: PaymentMethod | null;
   notes?: string;
@@ -56,15 +70,20 @@ export interface CreateAppointmentPayload {
 }
 export type UpdateAppointmentPayload = Omit<
   Partial<CreateAppointmentPayload>,
-  "customerId" | "paymentStatus" | "paymentMethod"
+  'customerId' | 'paymentStatus' | 'paymentMethod' | 'initialPayment'
 >;
 
 export const appointmentsApi = {
   list: (params?: AppointmentsParams) =>
-    api.get<AppointmentsListResponse>("/appointments", { params }),
+    api.get<AppointmentsListResponse>('/appointments', {
+      params: validatePayload(searchSchema, params ?? {}),
+    }),
   create: (data: CreateAppointmentPayload) =>
-    api.post<Appointment>("/appointments", data),
+    api.post<Appointment>('/appointments', validatePayload(createAppointmentBodySchema, data)),
   update: (id: string, data: UpdateAppointmentPayload) =>
-    api.patch<Appointment>(`/appointments/${id}`, data),
-  remove: (id: string) => api.delete(`/appointments/${id}`),
+    api.patch<Appointment>(
+      `/appointments/${validatePayload(recordIdSchema, id)}`,
+      validatePayload(updateAppointmentBodySchema, data),
+    ),
+  remove: (id: string) => api.delete(`/appointments/${validatePayload(recordIdSchema, id)}`),
 };

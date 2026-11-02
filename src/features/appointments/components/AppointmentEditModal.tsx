@@ -1,51 +1,70 @@
-'use client'
-import { useState } from 'react'
-import { useTranslations } from 'next-intl'
-import { Modal } from '@/components/ui/Modal'
-import { Button } from '@/components/ui/Button'
-import { Textarea } from '@/components/ui/Textarea'
-import { formatCurrency } from '@/lib/utils'
-import type { Appointment } from '../api/appointments.api'
+'use client';
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { Modal } from '@/components/ui/Modal';
+import { Button } from '@/components/ui/Button';
+import { Textarea } from '@/components/ui/Textarea';
+import { moneySchema, notesSchema } from '@/lib/validation';
+import { MoneyInput } from '@/components/ui/MoneyInput';
+import { formatCurrency } from '@/lib/utils';
+import type { Appointment } from '../api/appointments.api';
 
 interface Props {
-  open:        boolean
-  appointment: Appointment | null
-  isLoading:   boolean
-  onClose:     () => void
-  onSave:      (id: string, data: {
-    discount:       number
-    notes?:         string
-    appointmentDate: string
-  }) => void
+  open: boolean;
+  appointment: Appointment | null;
+  isLoading: boolean;
+  onClose: () => void;
+  onSave: (
+    id: string,
+    data: {
+      discount: number;
+      notes?: string;
+      appointmentDate: string;
+    },
+  ) => void;
 }
 
-export const AppointmentEditModal = (props: Props) => props.open && props.appointment
-  ? <AppointmentEditForm key={props.appointment.id} {...props} appointment={props.appointment}/> : null
-const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave }: Props & { appointment: Appointment }) => {
-  const t = useTranslations('appointments')
-  const tc = useTranslations('common')
+export const AppointmentEditModal = (props: Props) =>
+  props.open && props.appointment ? (
+    <AppointmentEditForm key={props.appointment.id} {...props} appointment={props.appointment} />
+  ) : null;
+const AppointmentEditForm = ({
+  open,
+  appointment: a,
+  isLoading,
+  onClose,
+  onSave,
+}: Props & { appointment: Appointment }) => {
+  const t = useTranslations('appointments');
+  const tc = useTranslations('common');
 
-  const e = useTranslations('experience')
+  const e = useTranslations('experience');
 
-  const [discount, setDiscount] = useState(a.discount)
-  const [notes, setNotes] = useState(a.notes ?? '')
+  const [discount, setDiscount] = useState(a.discount);
+  const [notes, setNotes] = useState(a.notes ?? '');
   const [date, setDate] = useState(() => {
-    const local = new Date(a.appointmentDate)
-    const pad = (n: number) => String(n).padStart(2, '0')
-    return `${local.getFullYear()}-${pad(local.getMonth()+1)}-${pad(local.getDate())}T${pad(local.getHours())}:${pad(local.getMinutes())}`
-  })
-  const valid = !!date && Number.isFinite(new Date(date).getTime()) && Number.isFinite(discount) && discount >= 0 && discount <= a.subtotal
+    const local = new Date(a.appointmentDate);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${local.getFullYear()}-${pad(local.getMonth() + 1)}-${pad(local.getDate())}T${pad(local.getHours())}:${pad(local.getMinutes())}`;
+  });
+  const valid =
+    !!date &&
+    Number.isFinite(new Date(date).getTime()) &&
+    moneySchema.safeParse(discount).success &&
+    notesSchema.safeParse(notes).success &&
+    discount >= 0 &&
+    discount <= a.subtotal;
 
-  const total     = Math.max(0, a.subtotal - discount)
+  const total = Math.max(0, a.subtotal - discount);
 
   const handleSave = () => {
-    if (!valid || isLoading) return
+    if (!valid || isLoading) return;
     onSave(a.id, {
       discount,
-      notes:         notes,
+      notes: notes,
       appointmentDate: new Date(date).toISOString(),
-    })
-  }
+    });
+  };
 
   return (
     <Modal
@@ -56,7 +75,9 @@ const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave 
       size="md"
       footer={
         <>
-          <Button variant="outline" onClick={onClose} disabled={isLoading}>{tc('cancel')}</Button>
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+            {tc('cancel')}
+          </Button>
           <Button variant="primary" onClick={handleSave} disabled={isLoading || !valid}>
             {isLoading ? tc('saving') : tc('save')}
           </Button>
@@ -64,7 +85,11 @@ const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave 
       }
     >
       <div className="flex flex-col gap-4">
-        {!valid && <p role="alert" className="text-sm text-danger">{e( discount < 0 || discount > a.subtotal ? 'invalidDiscount' : 'formErrors')}</p>}
+        {!valid && (
+          <p role="alert" className="text-sm text-danger">
+            {e(discount < 0 || discount > a.subtotal ? 'invalidDiscount' : 'formErrors')}
+          </p>
+        )}
         <div className="bg-bg rounded-xl p-4">
           <div className="text-xs text-text-light uppercase tracking-wide font-medium mb-2">
             {t('clientSelection')}
@@ -73,7 +98,9 @@ const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave 
           <div className="flex flex-col gap-1">
             {a.items.map((item, i) => (
               <div key={i} className="flex justify-between text-xs text-text-muted">
-                <span>{item.serviceName} · {item.professionalName}</span>
+                <span>
+                  {item.serviceName} · {item.professionalName}
+                </span>
                 <span className="font-medium">{formatCurrency(item.value)}</span>
               </div>
             ))}
@@ -89,9 +116,11 @@ const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave 
             {t('appointmentDate')}
           </label>
           <input
-            aria-label={e('date')} type="datetime-local"
+            required
+            aria-label={e('date')}
+            type="datetime-local"
             value={date}
-            onChange={e => setDate(e.target.value)}
+            onChange={(e) => setDate(e.target.value)}
             className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface text-text"
           />
         </div>
@@ -100,17 +129,14 @@ const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave 
           <label className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5">
             {t('discount')} (R$)
           </label>
-          <div className="flex items-center gap-3">
-            <div className="relative w-32">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-text-light">R$</span>
-              <input
-                aria-label={e('discount')} type="number"
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="w-32 min-w-0">
+              <MoneyInput
+                aria-label={e('discount')}
                 min={0}
                 max={a.subtotal}
-                step={0.01}
                 value={discount}
-                onChange={e => setDiscount(Number(e.target.value))}
-                className="w-full border border-border rounded-lg pl-7 pr-3 py-2.5 text-sm bg-surface text-text"
+                onValueChange={(value) => setDiscount(Number(value))}
               />
             </div>
             <div className="text-sm text-text-muted">
@@ -119,16 +145,20 @@ const AppointmentEditForm = ({ open, appointment: a, isLoading, onClose, onSave 
           </div>
         </div>
 
-        <p className="text-sm text-text-muted">Para receber valores ou usar crédito, escolha Registrar pagamento. O desconto altera o preço do serviço.</p>
+        <p className="text-sm text-text-muted">
+          Para receber valores ou usar crédito, escolha Registrar pagamento. O desconto altera o
+          preço do serviço.
+        </p>
 
         <Textarea
+          maxLength={2000}
           label={`${t('notes')} (${tc('optional')})`}
           placeholder={t('notesPlaceholder')}
           className="min-h-20"
           value={notes}
-          onChange={e => setNotes(e.target.value)}
+          onChange={(e) => setNotes(e.target.value)}
         />
       </div>
     </Modal>
-  )
-}
+  );
+};

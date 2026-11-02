@@ -1,35 +1,44 @@
-"use client";
-import { ConfirmDelete } from '@/components/ui/ConfirmDelete'
-import { QueryError } from '@/components/ui/QueryError'
-import { useUrlFilters } from '@/hooks/useUrlFilters'
-import { useState } from "react";
-import { Plus, Search } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { PageHeader } from "@/components/ui/Display";
-import { Button } from "@/components/ui/Button";
-import { ProfessionalFormModal } from "@/features/professionals/components/ProfessionalFormModal";
-import { ProfessionalMobileCard } from "@/features/professionals/components/ProfessionalMobileCard";
-import { useProfessionals } from "@/features/professionals/hooks/useProfessionals";
-import { useCreateProfessional } from "@/features/professionals/hooks/useCreateProfessional";
-import { useUpdateProfessional } from "@/features/professionals/hooks/useUpdateProfessional";
-import { useDeleteProfessional } from "@/features/professionals/hooks/useDeleteProfessional";
-import { useDebounce } from "@/hooks/useDebounce";
-import type { ProfessionalInput } from "@/features/professionals/schemas/professional.schemas";
-import type { Professional } from "@/features/professionals/api/professionals.api";
+'use client';
+import { ConfirmDelete } from '@/components/ui/ConfirmDelete';
+import { QueryError } from '@/components/ui/QueryError';
+import { useUrlFilters } from '@/hooks/useUrlFilters';
+import { useState } from 'react';
+import { Plus, Search } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { PageHeader } from '@/components/ui/Display';
+import { Button } from '@/components/ui/Button';
+import { ProfessionalFormModal } from '@/features/professionals/components/ProfessionalFormModal';
+import { ProfessionalMobileCard } from '@/features/professionals/components/ProfessionalMobileCard';
+import { useProfessionals } from '@/features/professionals/hooks/useProfessionals';
+import { useCreateProfessional } from '@/features/professionals/hooks/useCreateProfessional';
+import { useUpdateProfessional } from '@/features/professionals/hooks/useUpdateProfessional';
+import { useDeleteProfessional } from '@/features/professionals/hooks/useDeleteProfessional';
+import { useDebounce } from '@/hooks/useDebounce';
+import type { ProfessionalInput } from '@/features/professionals/schemas/professional.schemas';
+import type { Professional } from '@/features/professionals/api/professionals.api';
 
 const ProfessionalsPage = () => {
-  const t = useTranslations("professionals");
-  const [deleteTarget, setDeleteTarget] = useState<Professional | null>(null)
-  const { params, setFilters } = useUrlFilters()
-  const search = params.get('search') ?? ''
-  const setSearch = (value: string) => setFilters({ search: value, page: 1 })
+  const t = useTranslations('professionals');
+  const [deleteTarget, setDeleteTarget] = useState<Professional | null>(null);
+  const { params, setFilters } = useUrlFilters();
+  const search = params.get('search') ?? '';
+  const setSearch = (value: string) => setFilters({ search: value, page: 1 });
   const [modalOpen, setModalOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Professional | null>(null);
   const debounced = useDebounce(search, 300);
 
-  const { data: professionals = [], isLoading, isFetching, isError, refetch } = useProfessionals(debounced);
+  const {
+    data: professionals = [],
+    isLoading,
+    isFetching,
+    isError,
+    refetch,
+  } = useProfessionals(debounced);
   const createMutation = useCreateProfessional(() => setModalOpen(false));
-  const updateMutation = useUpdateProfessional(() => { setEditTarget(null); setModalOpen(false) });
+  const updateMutation = useUpdateProfessional(() => {
+    setEditTarget(null);
+    setModalOpen(false);
+  });
   const deleteMutation = useDeleteProfessional();
 
   const handleOpen = (p?: Professional) => {
@@ -41,56 +50,69 @@ const ProfessionalsPage = () => {
     setModalOpen(false);
   };
   const handleSave = (data: ProfessionalInput) =>
-    editTarget
-      ? updateMutation.mutate({ id: editTarget.id, data })
-      : createMutation.mutate(data);
+    editTarget ? updateMutation.mutate({ id: editTarget.id, data }) : createMutation.mutate(data);
 
   return (
     <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-6 p-4 sm:p-8">
-      <ConfirmDelete open={!!deleteTarget} detail={deleteTarget?.name} busy={deleteMutation.isPending} onClose={() => setDeleteTarget(null)} onConfirm={() => {
-        if (deleteTarget && !deleteMutation.isPending) deleteMutation.mutate(deleteTarget.id, { onSuccess: () => { setDeleteTarget(null);  } })
-      }}/>
-      {isError && <QueryError onRetry={() => refetch()}/>}
+      <ConfirmDelete
+        open={!!deleteTarget}
+        detail={deleteTarget?.name}
+        busy={deleteMutation.isPending}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => {
+          if (deleteTarget && !deleteMutation.isPending)
+            deleteMutation.mutate(deleteTarget.id, {
+              onSuccess: () => {
+                setDeleteTarget(null);
+              },
+            });
+        }}
+      />
+      {isError && <QueryError onRetry={() => refetch()} />}
 
       <PageHeader
-        title={t("title")}
-        subtitle={t("subtitle")}
+        title={t('title')}
+        subtitle={t('subtitle')}
         actions={
           <Button variant="primary" onClick={() => handleOpen()}>
-            <Plus size={16} /> {t("newProfessional")}
+            <Plus size={16} /> {t('newProfessional')}
           </Button>
         }
       />
 
       <div className="relative w-full sm:max-w-sm">
-        <Search
-          size={14}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light"
-        />
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light" />
 
         <input
           type="text"
-          placeholder={`${t("tableNameCol")}…`}
+          placeholder={`${t('tableNameCol')}…`}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="min-h-11 w-full rounded-xl border border-border bg-surface pl-9 pr-3 py-2.5 text-sm"
         />
       </div>
 
-      <div className={`relative transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`} aria-busy={isFetching}>
+      <div
+        className={`relative transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}
+        aria-busy={isFetching}
+      >
         {isError ? null : isLoading ? (
           <div className="min-h-40" />
         ) : professionals.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-text-light">{t('noProfessionalsFound')}</div>
+          <div className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-text-light">
+            {t('noProfessionalsFound')}
+          </div>
         ) : (
-          <div className="grid gap-5 lg:grid-cols-2">{professionals.map((p) => (
-            <ProfessionalMobileCard
-              key={p.id}
-              professional={p}
-              onEdit={() => handleOpen(p)}
-              onDelete={() => setDeleteTarget(p)}
-            />
-          ))}</div>
+          <div className="grid gap-5 lg:grid-cols-2">
+            {professionals.map((p) => (
+              <ProfessionalMobileCard
+                key={p.id}
+                professional={p}
+                onEdit={() => handleOpen(p)}
+                onDelete={() => setDeleteTarget(p)}
+              />
+            ))}
+          </div>
         )}
       </div>
 

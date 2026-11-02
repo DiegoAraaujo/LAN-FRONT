@@ -1,12 +1,12 @@
-import { ImageResponse } from 'next/og'
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { ImageResponse } from 'next/og';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 export async function createAppIcon(
   size: number,
   asset: 'home-screen-icon-source' | 'browser-favicon-source' = 'home-screen-icon-source',
 ) {
-  const logo = await readFile(join(process.cwd(), `public/assets/${asset}.png`))
+  const logo = await readFile(join(process.cwd(), `public/assets/${asset}.png`));
 
   return new ImageResponse(
     <div
@@ -29,5 +29,5 @@ export async function createAppIcon(
       />
     </div>,
     { width: size, height: size },
-  )
+  );
 }

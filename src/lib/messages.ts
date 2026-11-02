@@ -1,7 +1,24 @@
 const messages: Record<string, [string, string]> = {
-  REQUEST_TIMEOUT: ['O servidor demorou demais para responder. Atualize a tela para conferir os dados.', 'The server took too long to respond. Refresh the page to check your data.'],
-  PAYMENT_CONFLICT: ["Confira o saldo e o histórico. Estorne os pagamentos ou créditos vinculados antes dessa alteração.", "Check the balance and history. Reverse related payments or credit before this change."],
-  'Conta criada! Faça login para continuar.': ['Conta criada! Faça login para continuar.', 'Account created! Sign in to continue.'],
+  CURRENT_PASSWORD_INVALID: [
+    'A senha atual est\u00e1 incorreta.',
+    'The current password is incorrect.',
+  ],
+  PASSWORD_CHANGE_CONFLICT: [
+    'A conta foi alterada. Entre novamente e tente outra vez.',
+    'Your account changed. Sign in again and retry.',
+  ],
+  REQUEST_TIMEOUT: [
+    'O servidor demorou demais para responder. Atualize a tela para conferir os dados.',
+    'The server took too long to respond. Refresh the page to check your data.',
+  ],
+  PAYMENT_CONFLICT: [
+    'Confira o saldo e o histórico. Estorne os pagamentos ou créditos vinculados antes dessa alteração.',
+    'Check the balance and history. Reverse related payments or credit before this change.',
+  ],
+  'Conta criada! Faça login para continuar.': [
+    'Conta criada! Faça login para continuar.',
+    'Account created! Sign in to continue.',
+  ],
   VALIDATION_ERROR: ['Confira os campos antes de salvar.', 'Check the fields before saving.'],
   WELCOME: ['Bem-vindo', 'Welcome'],
   INVALID_CREDENTIALS: ['E-mail ou senha incorretos.', 'Incorrect email or password.'],
@@ -15,14 +32,29 @@ const messages: Record<string, [string, string]> = {
   SERVICE_NOT_FOUND: ['Serviço não encontrado.', 'Service not found.'],
   APPOINTMENT_NOT_FOUND: ['Atendimento não encontrado.', 'Appointment not found.'],
   USER_NOT_FOUND: ['Usuário não encontrado.', 'User not found.'],
-  TOO_MANY_REQUESTS: ['Muitas solicitações. Aguarde e tente novamente.', 'Too many requests. Please wait and try again.'],
-  PROFESSIONAL_SERVICE_MISMATCH: ['Este profissional não realiza o serviço selecionado.', 'This professional does not provide the selected service.'],
+  TOO_MANY_REQUESTS: [
+    'Muitas solicitações. Aguarde e tente novamente.',
+    'Too many requests. Please wait and try again.',
+  ],
+  PROFESSIONAL_SERVICE_MISMATCH: [
+    'Este profissional não realiza o serviço selecionado.',
+    'This professional does not provide the selected service.',
+  ],
   MIN_ITEMS_REQUIRED: ['Adicione ao menos um serviço.', 'Add at least one service.'],
-  INVALID_DISCOUNT: ['O desconto deve estar entre zero e o subtotal.', 'Discount must be between zero and the subtotal.'],
+  INVALID_DISCOUNT: [
+    'O desconto deve estar entre zero e o subtotal.',
+    'Discount must be between zero and the subtotal.',
+  ],
   NETWORK_ERROR: ['Não foi possível conectar ao servidor.', 'Unable to connect to the server.'],
-  FORBIDDEN: ['Sem permissão para realizar esta ação.', 'You do not have permission for this action.'],
+  FORBIDDEN: [
+    'Sem permissão para realizar esta ação.',
+    'You do not have permission for this action.',
+  ],
   NOT_FOUND: ['Registro não encontrado.', 'Record not found.'],
-  UNKNOWN_ERROR: ['Não foi possível concluir. Tente novamente.', 'Unable to complete. Please try again.'],
+  UNKNOWN_ERROR: [
+    'Não foi possível concluir. Tente novamente.',
+    'Unable to complete. Please try again.',
+  ],
   'Atendimento registrado!': ['Atendimento registrado!', 'Appointment created!'],
   'Atendimento atualizado!': ['Atendimento atualizado!', 'Appointment updated!'],
   'Atendimento removido.': ['Atendimento removido.', 'Appointment removed.'],
@@ -36,8 +68,10 @@ const messages: Record<string, [string, string]> = {
   'Serviço atualizado!': ['Serviço atualizado!', 'Service updated!'],
   'Serviço removido.': ['Serviço removido.', 'Service removed.'],
   'Perfil atualizado!': ['Perfil atualizado!', 'Profile updated!'],
-}
+};
 export function clientMessage(key: string) {
-  const english = typeof document !== 'undefined' && document.cookie.split(';').some(c => c.trim() === 'locale=en')
-  return (messages[key] ?? messages.UNKNOWN_ERROR)[english ? 1 : 0]
+  const english =
+    typeof document !== 'undefined' &&
+    document.cookie.split(';').some((c) => c.trim() === 'locale=en');
+  return (messages[key] ?? messages.UNKNOWN_ERROR)[english ? 1 : 0];
 }

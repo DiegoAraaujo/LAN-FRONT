@@ -1,8 +1,8 @@
-"use client";
-import { useTranslations } from "next-intl";
-import { Card } from "@/components/ui/Card";
-import { CustomerTableRow } from "./CustomerTableRow";
-import type { Customer, CustomerStatus } from "../api/customers.api";
+'use client';
+import { useTranslations } from 'next-intl';
+import { Card } from '@/components/ui/Card';
+import { CustomerTableRow } from './CustomerTableRow';
+import type { Customer, CustomerStatus } from '../api/customers.api';
 
 interface Props {
   customers: Customer[];
@@ -27,16 +27,16 @@ export const CustomerTable = ({
   onDelete,
   onViewDetail,
 }: Props) => {
-  const t = useTranslations("clients");
+  const t = useTranslations('clients');
 
   const HEADERS = [
-    t("tableNameCol"),
-    t("tableAddressCol"),
-    t("tableContactsCol"),
-    t("tableAppointmentsCol"),
-    t("tableTotalSpentCol"),
-    t("tableStatusCol"),
-    t("tableActionsCol"),
+    t('tableNameCol'),
+    t('tableAddressCol'),
+    t('tableContactsCol'),
+    t('tableAppointmentsCol'),
+    t('tableTotalSpentCol'),
+    t('tableStatusCol'),
+    t('tableActionsCol'),
   ];
 
   return (
@@ -61,11 +61,8 @@ export const CustomerTable = ({
             <tbody>
               {customers.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={7}
-                    className="px-5 py-10 text-center text-sm text-text-light"
-                  >
-                    {t("noClientsFound")}
+                  <td colSpan={7} className="px-5 py-10 text-center text-sm text-text-light">
+                    {t('noClientsFound')}
                   </td>
                 </tr>
               ) : (
@@ -74,7 +71,7 @@ export const CustomerTable = ({
                     key={c.id}
                     customer={c}
                     index={i}
-                    onStatusChange={status => onStatusChange(c, status)}
+                    onStatusChange={(status) => onStatusChange(c, status)}
                     statusBusy={statusBusy}
                     onEdit={() => onEdit(c)}
                     onDelete={() => onDelete(c.id)}

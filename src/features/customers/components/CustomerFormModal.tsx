@@ -1,111 +1,147 @@
-'use client'
-import { useEffect } from 'react'
-import { useForm, Controller, useWatch } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useTranslations } from 'next-intl'
-import { MessageCircle } from 'lucide-react'
-import { Modal } from '@/components/ui/Modal'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
-import { customerSchema, type CustomerInput, WHATSAPP_DDI_OPTIONS } from '../schemas/customer.schemas'
-import { digitsOnly, normalizeInstagram } from '@/lib/utils'
-import type { Customer } from '../api/customers.api'
-import { statusKeys } from './CustomerStatus'
+'use client';
+import { useEffect } from 'react';
+import { useForm, Controller, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { MessageCircle } from 'lucide-react';
+import { Modal } from '@/components/ui/Modal';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import {
+  customerSchema,
+  type CustomerInput,
+  WHATSAPP_DDI_OPTIONS,
+} from '../schemas/customer.schemas';
+import { digitsOnly, normalizeInstagram } from '@/lib/utils';
+import type { Customer } from '../api/customers.api';
+import { statusKeys } from './CustomerStatus';
 
 const InstagramIcon = ({ size = 14 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-    <circle cx="12" cy="12" r="4"/>
-    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+    <circle cx="12" cy="12" r="4" />
+    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
   </svg>
-)
+);
 
 const applyBRMask = (digits: string): string => {
-  const d = digits.slice(0, 11)
-  if (d.length === 0) return ''
-  if (d.length <= 2)  return `(${d}`
+  const d = digits.slice(0, 11);
+  if (d.length === 0) return '';
+  if (d.length <= 2) return `(${d}`;
   if (d.slice(2, 3) === '9') {
-    if (d.length <= 3) return `(${d.slice(0,2)}) ${d.slice(2)}`
-    if (d.length <= 7) return `(${d.slice(0,2)}) ${d.slice(2,3)} ${d.slice(3)}`
-    return `(${d.slice(0,2)}) ${d.slice(2,3)} ${d.slice(3,7)}-${d.slice(7)}`
+    if (d.length <= 3) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+    if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2, 3)} ${d.slice(3)}`;
+    return `(${d.slice(0, 2)}) ${d.slice(2, 3)} ${d.slice(3, 7)}-${d.slice(7)}`;
   }
-  if (d.length <= 6)  return `(${d.slice(0,2)}) ${d.slice(2)}`
-  if (d.length <= 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`
-  return `(${d.slice(0,2)}) ${d.slice(2,3)} ${d.slice(3,7)}-${d.slice(7)}`
-}
+  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+  return `(${d.slice(0, 2)}) ${d.slice(2, 3)} ${d.slice(3, 7)}-${d.slice(7)}`;
+};
 
 const detectDdi = (whatsapp?: string | null): string => {
-  if (!whatsapp) return '+55'
+  if (!whatsapp) return '+55';
   for (const opt of WHATSAPP_DDI_OPTIONS) {
-    if (whatsapp.startsWith(opt.value)) return opt.value
+    if (whatsapp.startsWith(opt.value)) return opt.value;
   }
-  return '+55'
-}
+  return '+55';
+};
 
 const extractLocalFormatted = (whatsapp?: string | null): string => {
-  if (!whatsapp) return ''
+  if (!whatsapp) return '';
   for (const opt of WHATSAPP_DDI_OPTIONS) {
     if (whatsapp.startsWith(opt.value)) {
-      const local = whatsapp.slice(opt.value.length)
-      return opt.value === '+55' ? applyBRMask(digitsOnly(local)) : local
+      const local = whatsapp.slice(opt.value.length);
+      return opt.value === '+55' ? applyBRMask(digitsOnly(local)) : local;
     }
   }
-  return whatsapp
-}
+  return whatsapp;
+};
 
 interface Props {
-  open:           boolean
-  onClose:        () => void
-  onSubmit:       (data: CustomerInput) => void
-  isLoading:      boolean
-  defaultValues?: Customer | null
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (data: CustomerInput) => void;
+  isLoading: boolean;
+  defaultValues?: Customer | null;
 }
 
 export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultValues }: Props) => {
-  const t  = useTranslations('clients')
-  const tc = useTranslations('common')
+  const t = useTranslations('clients');
+  const tc = useTranslations('common');
 
-  const { register, handleSubmit, reset, setValue, control, formState: { errors } } =
-    useForm<CustomerInput>({ resolver: zodResolver(customerSchema), defaultValues: { whatsappDdi: '+55' } })
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    control,
+    formState: { errors },
+  } = useForm<CustomerInput>({
+    resolver: zodResolver(customerSchema),
+    defaultValues: { whatsappDdi: '+55' },
+  });
 
-  const selectedDdi = useWatch({ control, name: 'whatsappDdi' })
+  const selectedDdi = useWatch({ control, name: 'whatsappDdi' });
 
   useEffect(() => {
     if (defaultValues) {
-      const ddi = detectDdi(defaultValues.whatsapp)
+      const ddi = detectDdi(defaultValues.whatsapp);
       reset({
-        status:      defaultValues.status,
-        name:        defaultValues.name,
-        address:     defaultValues.address   ?? '',
+        status: defaultValues.status,
+        name: defaultValues.name,
+        address: defaultValues.address ?? '',
         whatsappDdi: ddi,
-        whatsapp:    extractLocalFormatted(defaultValues.whatsapp),
-        instagram:   defaultValues.instagram ? normalizeInstagram(defaultValues.instagram) : '',
-      })
+        whatsapp: extractLocalFormatted(defaultValues.whatsapp),
+        instagram: defaultValues.instagram ? normalizeInstagram(defaultValues.instagram) : '',
+      });
     } else {
-      reset({ name: '', status: 'ACTIVE', address: '', whatsappDdi: '+55', whatsapp: '', instagram: '' })
+      reset({
+        name: '',
+        status: 'ACTIVE',
+        address: '',
+        whatsappDdi: '+55',
+        whatsapp: '',
+        instagram: '',
+      });
     }
-  }, [defaultValues, reset, open])
+  }, [defaultValues, reset, open]);
 
-  const handleWhatsappInput = (e: React.ChangeEvent<HTMLInputElement>, onChange: (v: string) => void) => {
+  const handleWhatsappInput = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    onChange: (v: string) => void,
+  ) => {
     if (selectedDdi === '+55') {
-      const digits = digitsOnly(e.target.value)
-      onChange(applyBRMask(digits))
+      const digits = digitsOnly(e.target.value);
+      onChange(applyBRMask(digits));
     } else {
-      onChange(e.target.value)
+      onChange(e.target.value);
     }
-  }
+  };
 
   const handleInstagramBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    setValue('instagram', normalizeInstagram(e.target.value))
-  }
+    setValue('instagram', normalizeInstagram(e.target.value));
+  };
 
   return (
-    <Modal busy={isLoading} open={open} onClose={onClose}
+    <Modal
+      busy={isLoading}
+      open={open}
+      onClose={onClose}
       title={defaultValues ? t('editClient') : t('addClient')}
       footer={
         <>
-          <Button variant="outline" onClick={onClose} disabled={isLoading}>{tc('cancel')}</Button>
+          <Button variant="outline" onClick={onClose} disabled={isLoading}>
+            {tc('cancel')}
+          </Button>
           <Button variant="primary" onClick={handleSubmit(onSubmit)} disabled={isLoading}>
             {isLoading ? tc('saving') : tc('save')}
           </Button>
@@ -115,12 +151,21 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
       <div className="flex flex-col gap-4">
         <label className="flex flex-col gap-1.5 text-sm">
           {t('tableStatusCol')}
-          <select {...register('status')} disabled={isLoading} className="min-h-11 rounded-xl border border-border bg-surface px-3 py-2.5">
-            {Object.entries(statusKeys).map(([value, key]) => <option key={value} value={value}>{t(key)}</option>)}
+          <select
+            {...register('status')}
+            disabled={isLoading}
+            className="min-h-11 rounded-xl border border-border bg-surface px-3 py-2.5"
+          >
+            {Object.entries(statusKeys).map(([value, key]) => (
+              <option key={value} value={value}>
+                {t(key)}
+              </option>
+            ))}
           </select>
         </label>
 
         <Input
+          required
           label={tc('name')}
           placeholder="Ex: João da Silva"
           error={errors.name?.message}
@@ -150,8 +195,10 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
               {...register('whatsappDdi')}
               className="border border-border rounded-lg px-2 py-2.5 text-sm bg-surface text-text cursor-pointer shrink-0"
             >
-              {WHATSAPP_DDI_OPTIONS.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              {WHATSAPP_DDI_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </select>
 
@@ -159,13 +206,16 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
               name="whatsapp"
               control={control}
               render={({ field }) => (
-                <div className="relative flex-1">
-                  <MessageCircle size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-green-500 pointer-events-none" />
+                <div className="relative min-w-0 flex-1">
+                  <MessageCircle
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-green-500 pointer-events-none"
+                  />
                   <input
                     type="tel"
                     placeholder={selectedDdi === '+55' ? '(11) 99999-9999' : '999999999'}
                     value={field.value ?? ''}
-                    onChange={e => handleWhatsappInput(e, field.onChange)}
+                    onChange={(e) => handleWhatsappInput(e, field.onChange)}
                     onBlur={field.onBlur}
                     className="w-full border border-border rounded-lg pl-8 pr-3 py-2.5 text-sm bg-surface text-text"
                   />
@@ -194,8 +244,7 @@ export const CustomerFormModal = ({ open, onClose, onSubmit, isLoading, defaultV
           </div>
           {errors.instagram && <p className="text-xs text-danger">{errors.instagram.message}</p>}
         </div>
-
       </div>
     </Modal>
-  )
-}
+  );
+};

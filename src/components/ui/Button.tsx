@@ -1,31 +1,31 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
-type ButtonVariant = 'primary' | 'outline' | 'danger' | 'ghost'
-type ButtonSize    = 'sm' | 'md' | 'lg'
+type ButtonVariant = 'primary' | 'outline' | 'danger' | 'ghost';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?:   ButtonVariant
-  size?:      ButtonSize
-  fullWidth?: boolean
-  children:   React.ReactNode
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+  children: React.ReactNode;
 }
 
 const variants: Record<ButtonVariant, string> = {
   primary: 'bg-sidebar text-white font-medium shadow-sm hover:bg-[#213d39]',
   outline: 'border border-border bg-surface text-text hover:border-gold-btn hover:bg-bg2',
-  danger:  'border border-red-200 bg-transparent text-danger hover:bg-red-50',
-  ghost:   'bg-transparent text-text-muted hover:bg-bg border border-transparent',
-}
+  danger: 'border border-red-200 bg-transparent text-danger hover:bg-red-50',
+  ghost: 'bg-transparent text-text-muted hover:bg-bg border border-transparent',
+};
 
 const sizes: Record<ButtonSize, string> = {
   sm: 'min-h-9 px-3 py-1.5 text-xs gap-1.5',
   md: 'min-h-11 px-4 py-2.5 text-sm gap-2',
   lg: 'min-h-12 px-5 py-3 text-sm gap-2',
-}
+};
 
 export const Button = ({
-  variant   = 'outline',
-  size      = 'md',
+  variant = 'outline',
+  size = 'md',
   fullWidth = false,
   children,
   className,
@@ -43,4 +43,4 @@ export const Button = ({
   >
     {children}
   </button>
-)
+);

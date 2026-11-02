@@ -1,76 +1,68 @@
-"use client";
-import { ConfirmDelete } from "@/components/ui/ConfirmDelete";
-import { QueryError } from "@/components/ui/QueryError";
-import { useUrlFilters } from "@/hooks/useUrlFilters";
+'use client';
+import { ConfirmDelete } from '@/components/ui/ConfirmDelete';
+import { QueryError } from '@/components/ui/QueryError';
+import { useUrlFilters } from '@/hooks/useUrlFilters';
 import { usePageSize, PAGE_SIZES } from '@/hooks/usePageSize';
 import { PageSizeSelect } from '@/components/ui/PageSizeSelect';
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { PageHeader, Pagination } from "@/components/ui/Display";
-import { Card } from "@/components/ui/Card";
-import { CollapsibleStats } from "@/components/ui/CollapsibleStats";
-import { ActivitiesFilterBar } from "@/features/activities/components/ActivitiesFilterBar";
-import { ActivityTableRow } from "@/features/activities/components/ActivityTableRow";
-import { ActivityMobileCard } from "@/features/activities/components/ActivityMobileCard";
-import { AppointmentEditModal } from "@/features/appointments/components/AppointmentEditModal";
-import { AppointmentCreateModal } from "@/features/appointments/components/AppointmentCreateModal";
-import { PaymentModal } from "@/features/finance/PaymentModal";
-import { formatCurrency } from "@/lib/utils";
-import { useAppointments } from "@/features/appointments/hooks/useAppointments";
-import { useDeleteAppointment } from "@/features/appointments/hooks/useDeleteAppointment";
-import { useUpdateAppointment } from "@/features/appointments/hooks/useUpdateAppointment";
-import { useDebounce } from "@/hooks/useDebounce";
+import { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { PageHeader, Pagination } from '@/components/ui/Display';
+import { Card } from '@/components/ui/Card';
+import { CollapsibleStats } from '@/components/ui/CollapsibleStats';
+import { ActivitiesFilterBar } from '@/features/activities/components/ActivitiesFilterBar';
+import { ActivityTableRow } from '@/features/activities/components/ActivityTableRow';
+import { ActivityMobileCard } from '@/features/activities/components/ActivityMobileCard';
+import { AppointmentEditModal } from '@/features/appointments/components/AppointmentEditModal';
+import { AppointmentCreateModal } from '@/features/appointments/components/AppointmentCreateModal';
+import { PaymentModal } from '@/features/finance/PaymentModal';
+import { formatCurrency } from '@/lib/utils';
+import { useAppointments } from '@/features/appointments/hooks/useAppointments';
+import { useDeleteAppointment } from '@/features/appointments/hooks/useDeleteAppointment';
+import { useUpdateAppointment } from '@/features/appointments/hooks/useUpdateAppointment';
+import { useDebounce } from '@/hooks/useDebounce';
 import type {
   Appointment,
   PaymentMethod,
   PaymentStatus,
-} from "@/features/appointments/api/appointments.api";
-import { ActivityDetailModal } from "@/features/activities/components/ActivityDetailModal";
-import { Button } from "@/components/ui/Button";
-import { Plus } from "lucide-react";
-
+} from '@/features/appointments/api/appointments.api';
+import { ActivityDetailModal } from '@/features/activities/components/ActivityDetailModal';
+import { Button } from '@/components/ui/Button';
+import { Plus } from 'lucide-react';
 
 const HEADERS_KEYS = [
-  "tableDateCol",
-  "tableClientCol",
-  "tableServicesCol",
-  "tableValueCol",
-  "tablePaymentCol",
-  "tableActionsCol",
+  'tableDateCol',
+  'tableClientCol',
+  'tableServicesCol',
+  'tableValueCol',
+  'tablePaymentCol',
+  'tableActionsCol',
 ] as const;
 
 const ActivitiesPage = () => {
-  const t = useTranslations("activities");
+  const t = useTranslations('activities');
   const [deleteTarget, setDeleteTarget] = useState<Appointment | null>(null);
   const { params, setFilters } = useUrlFilters();
   const [savedLimit, saveLimit] = usePageSize('activities');
-  const requestedLimit = Number(params.get("limit"));
+  const requestedLimit = Number(params.get('limit'));
   const limit = PAGE_SIZES.includes(requestedLimit) ? requestedLimit : savedLimit;
 
-  const search = params.get("search") ?? "";
+  const search = params.get('search') ?? '';
   const setSearch = (value: string) => setFilters({ search: value, page: 1 });
   const customPeriod =
-    params.get("dateMode") === "custom" ||
-    !!(params.get("dateFrom") || params.get("dateTo"));
-  const monthValue = Number(params.get("month"));
-  const yearValue = Number(params.get("year"));
-  const month =
-    !customPeriod && monthValue >= 1 && monthValue <= 12
-      ? monthValue
-      : undefined;
-  const year =
-    !customPeriod && yearValue >= 2000 && yearValue <= 2100
-      ? yearValue
-      : undefined;
+    params.get('dateMode') === 'custom' || !!(params.get('dateFrom') || params.get('dateTo'));
+  const monthValue = Number(params.get('month'));
+  const yearValue = Number(params.get('year'));
+  const month = !customPeriod && monthValue >= 1 && monthValue <= 12 ? monthValue : undefined;
+  const year = !customPeriod && yearValue >= 2000 && yearValue <= 2100 ? yearValue : undefined;
   const paymentStatus: PaymentStatus | undefined =
-    params.get("paymentStatus") === "PARTIAL"
-      ? "PARTIAL"
-      : params.get("paymentStatus") === "PAID"
-        ? "PAID"
-        : params.get("paymentStatus") === "PENDING"
-          ? "PENDING"
+    params.get('paymentStatus') === 'PARTIAL'
+      ? 'PARTIAL'
+      : params.get('paymentStatus') === 'PAID'
+        ? 'PAID'
+        : params.get('paymentStatus') === 'PENDING'
+          ? 'PENDING'
           : undefined;
-  const serviceIds = params.get("serviceIds") || params.get("serviceId") || undefined;
+  const serviceIds = params.get('serviceIds') || params.get('serviceId') || undefined;
   const setMonth = (value: number | undefined) =>
     setFilters({
       month: value,
@@ -89,12 +81,10 @@ const ActivitiesPage = () => {
     });
   const setPaymentStatus = (value: PaymentStatus | undefined) =>
     setFilters({ paymentStatus: value, openOnly: undefined, page: 1 });
-  const page = Math.max(1, Number(params.get("page")) || 1);
+  const page = Math.max(1, Number(params.get('page')) || 1);
   const setPage = (value: number) => setFilters({ page: value });
   const [editTarget, setEditTarget] = useState<Appointment | null>(null);
-  const [markPaidTarget, setMarkPaidTarget] = useState<Appointment | null>(
-    null,
-  );
+  const [markPaidTarget, setMarkPaidTarget] = useState<Appointment | null>(null);
   const [detailTarget, setDetailTarget] = useState<Appointment | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
 
@@ -107,15 +97,13 @@ const ActivitiesPage = () => {
 
   const { data, isLoading, isFetching, isError, refetch } = useAppointments({
     search: debounced || undefined,
-    openOnly: params.get("openOnly") === "true" ? "true" : undefined,
+    openOnly: params.get('openOnly') === 'true' ? 'true' : undefined,
     serviceIds,
-    professionalId: params.get("professionalId") || undefined,
-    paymentMethod: (params.get("paymentMethod") || undefined) as
-      | PaymentMethod
-      | undefined,
-    dateFrom: params.get("dateFrom") || undefined,
-    dateTo: params.get("dateTo") || undefined,
-    dateType: params.get("dateType") === "payment" ? "payment" : "appointment",
+    professionalId: params.get('professionalId') || undefined,
+    paymentMethod: (params.get('paymentMethod') || undefined) as PaymentMethod | undefined,
+    dateFrom: params.get('dateFrom') || undefined,
+    dateTo: params.get('dateTo') || undefined,
+    dateType: params.get('dateType') === 'payment' ? 'payment' : 'appointment',
     month,
     year,
     paymentStatus,
@@ -127,7 +115,7 @@ const ActivitiesPage = () => {
   const total = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const pendingCount = data?.totalPending ?? 0;
-  const hasFilters = [...params.keys()].some((key) => key !== "page" && key !== "limit");
+  const hasFilters = [...params.keys()].some((key) => key !== 'page' && key !== 'limit');
 
   const resetFilters = () => {
     setFilters({
@@ -184,9 +172,9 @@ const ActivitiesPage = () => {
         detail={
           deleteTarget
             ? deleteTarget.customerName +
-              " · " +
+              ' · ' +
               new Date(deleteTarget.appointmentDate).toLocaleString() +
-              " · R$ " +
+              ' · R$ ' +
               deleteTarget.total.toFixed(2)
             : undefined
         }
@@ -197,18 +185,23 @@ const ActivitiesPage = () => {
             deleteMutation.mutate(deleteTarget.id, {
               onSuccess: () => {
                 setDeleteTarget(null);
-                setPage(
-                  Math.max(1, page - (appointments.length === 1 ? 1 : 0)),
-                );
+                setPage(Math.max(1, page - (appointments.length === 1 ? 1 : 0)));
               },
             });
         }}
       />
       {isError && <QueryError onRetry={() => refetch()} />}
 
-      <PageHeader title={t("title")} subtitle={t("subtitle")} actions={
-        <Button variant="primary" onClick={() => setCreateOpen(true)}><Plus size={16}/>Novo atendimento</Button>
-      } />
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        actions={
+          <Button variant="primary" onClick={() => setCreateOpen(true)}>
+            <Plus size={16} />
+            Novo atendimento
+          </Button>
+        }
+      />
       <ActivitiesFilterBar
         search={search}
         month={month}
@@ -233,9 +226,9 @@ const ActivitiesPage = () => {
         onReset={resetFilters}
         hasFilters={hasFilters}
       />
-      {params.get("openOnly") === "true" && (
+      {params.get('openOnly') === 'true' && (
         <p className="text-sm text-amber-800">
-          Exibindo atendimentos pendentes e parcialmente pagos.{" "}
+          Exibindo atendimentos pendentes e parcialmente pagos.{' '}
           <button type="button" className="underline" onClick={resetFilters}>
             Mostrar todos
           </button>
@@ -244,59 +237,55 @@ const ActivitiesPage = () => {
       <CollapsibleStats
         items={[
           {
-            label: "Valor total",
+            label: 'Valor total',
             value: formatCurrency(data?.summary?.totalValue ?? 0),
           },
           {
-            label: "Pago / crédito aplicado",
+            label: 'Pago / crédito aplicado',
             value: formatCurrency(data?.summary?.paidValue ?? 0),
           },
           {
-            label: "Em aberto",
+            label: 'Em aberto',
             value: formatCurrency(data?.summary?.pendingValue ?? 0),
           },
-          { label: t("totalAppointments"), value: total },
+          { label: t('totalAppointments'), value: total },
           {
-            label: t("pendingCount"),
+            label: t('pendingCount'),
             value: pendingCount,
-            className: "text-warning",
+            className: 'text-warning',
           },
         ]}
         mobileItems={[
           {
-            label: t("totalAppointments"),
+            label: t('totalAppointments'),
             value: `${total} · ${formatCurrency(data?.summary?.totalValue ?? 0)}`,
           },
           {
-            label: t("pendingCount"),
+            label: t('pendingCount'),
             value: `${pendingCount} · ${formatCurrency(data?.summary?.pendingValue ?? 0)}`,
-            className: "text-warning",
+            className: 'text-warning',
           },
         ]}
       >
         <div className="grid grid-cols-1 gap-3 min-[440px]:grid-cols-2 sm:hidden">
           {[
             {
-              label: t("totalAppointments"),
+              label: t('totalAppointments'),
               count: total,
               value: data?.summary?.totalValue,
-              tone: "text-text",
+              tone: 'text-text',
             },
             {
-              label: t("pendingCount"),
+              label: t('pendingCount'),
               count: pendingCount,
               value: data?.summary?.pendingValue,
-              tone: "text-warning",
+              tone: 'text-warning',
             },
           ].map((stat) => (
             <Card key={stat.label} className="min-w-0 px-4 py-3">
-              <h2 className="mb-2 text-xs font-medium text-text-muted">
-                {stat.label}
-              </h2>
+              <h2 className="mb-2 text-xs font-medium text-text-muted">{stat.label}</h2>
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <span
-                  className={`text-xl font-semibold tabular-nums ${stat.tone}`}
-                >
+                <span className={`text-xl font-semibold tabular-nums ${stat.tone}`}>
                   {stat.count}
                 </span>
                 <strong
@@ -311,30 +300,28 @@ const ActivitiesPage = () => {
         <div className="hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
           {[
             {
-              label: "Valor total",
+              label: 'Valor total',
               value: formatCurrency(data?.summary?.totalValue ?? 0),
             },
             {
-              label: "Pago / crédito aplicado",
+              label: 'Pago / crédito aplicado',
               value: formatCurrency(data?.summary?.paidValue ?? 0),
             },
             {
-              label: "Em aberto",
+              label: 'Em aberto',
               value: formatCurrency(data?.summary?.pendingValue ?? 0),
             },
-            { label: t("totalAppointments"), value: total },
+            { label: t('totalAppointments'), value: total },
             {
-              label: t("pendingCount"),
+              label: t('pendingCount'),
               value: pendingCount,
-              tone: "text-warning",
+              tone: 'text-warning',
             },
           ].map((stat) => (
             <Card key={stat.label} className="min-w-0 px-4 py-3">
-              <h2 className="mb-1 text-xs font-medium text-text-muted">
-                {stat.label}
-              </h2>
+              <h2 className="mb-1 text-xs font-medium text-text-muted">{stat.label}</h2>
               <strong
-                className={`break-words text-xl font-semibold tracking-tight tabular-nums ${stat.tone ?? "text-text"}`}
+                className={`break-words text-xl font-semibold tracking-tight tabular-nums ${stat.tone ?? 'text-text'}`}
               >
                 {stat.value}
               </strong>
@@ -342,21 +329,21 @@ const ActivitiesPage = () => {
           ))}
         </div>
       </CollapsibleStats>
-      {(serviceIds || params.get("professionalId")) && (
+      {(serviceIds || params.get('professionalId')) && (
         <p className="rounded-xl bg-amber-50 p-4 text-sm">
-          Somente os itens filtrados, após descontos:{" "}
-          <strong>{formatCurrency(data?.summary?.serviceValue ?? 0)}</strong>.
-          As estatísticas incluem o valor completo dos atendimentos encontrados.
+          Somente os itens filtrados, após descontos:{' '}
+          <strong>{formatCurrency(data?.summary?.serviceValue ?? 0)}</strong>. As estatísticas
+          incluem o valor completo dos atendimentos encontrados.
         </p>
       )}
       <div id="activities-results" className="scroll-mt-4" />
       <Card
-        className={`relative hidden sm:block transition-opacity ${isFetching && !isLoading ? "opacity-45 pointer-events-none" : ""}`}
+        className={`relative hidden sm:block transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <h2 className="text-base font-semibold">{t("appointmentList")}</h2>
+          <h2 className="text-base font-semibold">{t('appointmentList')}</h2>
           <span className="bg-gold-btn text-text text-[11px] font-bold px-3 py-1 rounded">
-            {t("pendingCount")}: {pendingCount}
+            {t('pendingCount')}: {pendingCount}
           </span>
         </div>
 
@@ -381,11 +368,8 @@ const ActivitiesPage = () => {
               <tbody>
                 {appointments.length === 0 ? (
                   <tr>
-                    <td
-                      colSpan={6}
-                      className="px-5 py-10 text-center text-sm text-text-light"
-                    >
-                      {t("noResults")}
+                    <td colSpan={6} className="px-5 py-10 text-center text-sm text-text-light">
+                      {t('noResults')}
                     </td>
                   </tr>
                 ) : (
@@ -407,15 +391,13 @@ const ActivitiesPage = () => {
         )}
       </Card>
       <div
-        className={`relative sm:hidden flex flex-col gap-3 transition-opacity ${isFetching && !isLoading ? "opacity-45 pointer-events-none" : ""}`}
+        className={`relative sm:hidden flex flex-col gap-3 transition-opacity ${isFetching && !isLoading ? 'opacity-45 pointer-events-none' : ''}`}
         aria-busy={isFetching}
       >
         {isError ? null : isLoading ? (
           <div className="min-h-40" />
         ) : appointments.length === 0 ? (
-          <div className="text-center py-10 text-sm text-text-light">
-            {t("noResults")}
-          </div>
+          <div className="text-center py-10 text-sm text-text-light">{t('noResults')}</div>
         ) : (
           appointments.map((a) => (
             <ActivityMobileCard
@@ -433,12 +415,16 @@ const ActivitiesPage = () => {
       <div className="px-5 py-3 flex items-center justify-between border border-border bg-bg2 rounded-xl flex-wrap gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-xs text-text-light">
-            {t("showing")} {appointments.length} {t("of")} {total}
+            {t('showing')} {appointments.length} {t('of')} {total}
           </span>
-          <PageSizeSelect value={limit} disabled={isFetching} onChange={value => {
-            saveLimit(value);
-            setFilters({ limit: value, page: 1 });
-          }} />
+          <PageSizeSelect
+            value={limit}
+            disabled={isFetching}
+            onChange={(value) => {
+              saveLimit(value);
+              setFilters({ limit: value, page: 1 });
+            }}
+          />
         </div>
         {pagination}
       </div>
@@ -457,10 +443,7 @@ const ActivitiesPage = () => {
         }}
       />
 
-      <AppointmentCreateModal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-      />
+      <AppointmentCreateModal open={createOpen} onClose={() => setCreateOpen(false)} />
 
       {markPaidTarget && (
         <PaymentModal
