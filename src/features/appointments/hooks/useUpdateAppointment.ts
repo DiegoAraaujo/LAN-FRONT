@@ -13,6 +13,7 @@ export const useUpdateAppointment = (onSuccess?: () => void) => {
       qc.invalidateQueries({ queryKey: appointmentsKeys.all });
       qc.invalidateQueries({ queryKey: ['dashboard'] });
       qc.invalidateQueries({ queryKey: ['customers'] });
+      qc.invalidateQueries({ queryKey: ['finance'] });
       toast.success(clientMessage('Atendimento atualizado!'));
       onSuccess?.();
     },

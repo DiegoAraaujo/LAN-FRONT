@@ -75,14 +75,18 @@ export const ActivityTableRow = ({
           <div className="text-xs text-text-muted line-through">{formatCurrency(a.subtotal)}</div>
         )}
         <div className="text-sm font-bold">{formatCurrency(a.total)}</div>
-        <div className="text-xs text-emerald-700">Pago: {formatCurrency(a.paidAmount)}</div>
-        <div className="text-xs text-amber-800">Falta: {formatCurrency(a.remaining)}</div>
+        <div className="text-xs text-emerald-700">
+          {t('paidAmount', { value: formatCurrency(a.paidAmount) })}
+        </div>
+        <div className="text-xs text-amber-800">
+          {t('remainingAmount', { value: formatCurrency(a.remaining) })}
+        </div>
       </td>
 
       <td className="px-5 py-4">
         <Badge variant={isPending ? 'yellow' : 'green'}>
           {a.paymentStatus === 'PARTIAL'
-            ? 'Parcialmente pago'
+            ? t('partialBadge')
             : isPending
               ? t('pendingBadge')
               : t('paidBadge')}

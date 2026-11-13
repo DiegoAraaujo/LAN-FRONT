@@ -5,7 +5,7 @@ import { useUrlFilters } from '@/hooks/useUrlFilters';
 import { usePageSize, PAGE_SIZES } from '@/hooks/usePageSize';
 import { PageSizeSelect } from '@/components/ui/PageSizeSelect';
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { PageHeader, Pagination } from '@/components/ui/Display';
 import { Card } from '@/components/ui/Card';
 import { CollapsibleStats } from '@/components/ui/CollapsibleStats';
@@ -40,6 +40,9 @@ const HEADERS_KEYS = [
 
 const ActivitiesPage = () => {
   const t = useTranslations('activities');
+  const tf = useTranslations('finance');
+  const to = useTranslations('overview');
+  const locale = useLocale();
   const [deleteTarget, setDeleteTarget] = useState<Appointment | null>(null);
   const { params, setFilters } = useUrlFilters();
   const [savedLimit, saveLimit] = usePageSize('activities');
@@ -171,11 +174,11 @@ const ActivitiesPage = () => {
         open={!!deleteTarget}
         detail={
           deleteTarget
-            ? deleteTarget.customerName +
-              ' · ' +
-              new Date(deleteTarget.appointmentDate).toLocaleString() +
-              ' · R$ ' +
-              deleteTarget.total.toFixed(2)
+            ? [
+                deleteTarget.customerName,
+                new Date(deleteTarget.appointmentDate).toLocaleString(locale),
+                formatCurrency(deleteTarget.total),
+              ].join(' · ')
             : undefined
         }
         busy={deleteMutation.isPending}
@@ -198,7 +201,7 @@ const ActivitiesPage = () => {
         actions={
           <Button variant="primary" onClick={() => setCreateOpen(true)}>
             <Plus size={16} />
-            Novo atendimento
+            {to('newAppointment')}
           </Button>
         }
       />
@@ -228,24 +231,24 @@ const ActivitiesPage = () => {
       />
       {params.get('openOnly') === 'true' && (
         <p className="text-sm text-amber-800">
-          Exibindo atendimentos pendentes e parcialmente pagos.{' '}
+          {t('openOnlyNotice')}{' '}
           <button type="button" className="underline" onClick={resetFilters}>
-            Mostrar todos
+            {t('showAll')}
           </button>
         </p>
       )}
       <CollapsibleStats
         items={[
           {
-            label: 'Valor total',
+            label: t('totalValue'),
             value: formatCurrency(data?.summary?.totalValue ?? 0),
           },
           {
-            label: 'Pago / crédito aplicado',
+            label: t('paidOrCreditApplied'),
             value: formatCurrency(data?.summary?.paidValue ?? 0),
           },
           {
-            label: 'Em aberto',
+            label: tf('outstanding'),
             value: formatCurrency(data?.summary?.pendingValue ?? 0),
           },
           { label: t('totalAppointments'), value: total },
@@ -300,15 +303,15 @@ const ActivitiesPage = () => {
         <div className="hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
           {[
             {
-              label: 'Valor total',
+              label: t('totalValue'),
               value: formatCurrency(data?.summary?.totalValue ?? 0),
             },
             {
-              label: 'Pago / crédito aplicado',
+              label: t('paidOrCreditApplied'),
               value: formatCurrency(data?.summary?.paidValue ?? 0),
             },
             {
-              label: 'Em aberto',
+              label: tf('outstanding'),
               value: formatCurrency(data?.summary?.pendingValue ?? 0),
             },
             { label: t('totalAppointments'), value: total },
@@ -331,9 +334,10 @@ const ActivitiesPage = () => {
       </CollapsibleStats>
       {(serviceIds || params.get('professionalId')) && (
         <p className="rounded-xl bg-amber-50 p-4 text-sm">
-          Somente os itens filtrados, após descontos:{' '}
-          <strong>{formatCurrency(data?.summary?.serviceValue ?? 0)}</strong>. As estatísticas
-          incluem o valor completo dos atendimentos encontrados.
+          {t.rich('filteredItemsValue', {
+            value: formatCurrency(data?.summary?.serviceValue ?? 0),
+            strong: (chunks) => <strong>{chunks}</strong>,
+          })}
         </p>
       )}
       <div id="activities-results" className="scroll-mt-4" />

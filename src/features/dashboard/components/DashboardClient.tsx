@@ -25,9 +25,14 @@ const RevenueChart = dynamic(
   () => import('@/components/charts/RevenueChart').then((m) => m.RevenueChart),
   {
     ssr: false,
-    loading: () => <LoadingState label="Carregando gráfico…" className="h-72" />,
+    loading: () => <ChartLoading />,
   },
 );
+
+function ChartLoading() {
+  const t = useTranslations('overview');
+  return <LoadingState label={t('chartLoading')} className="h-72" />;
+}
 
 export function DashboardClient() {
   const t = useTranslations('overview');
@@ -229,9 +234,7 @@ export function DashboardClient() {
       </p>
       {!validPeriod && (
         <p role="alert" className="text-sm text-danger">
-          {locale === 'en'
-            ? 'Enter a valid start and end date.'
-            : 'Informe uma data inicial e final válidas.'}
+          {t('invalidDateRange')}
         </p>
       )}
       {validPeriod && query.isError && <QueryError onRetry={() => query.refetch()} />}
@@ -240,10 +243,8 @@ export function DashboardClient() {
           <DashboardStatCards data={data} />
           <Card className="p-5 sm:p-6">
             <div className="mb-5">
-              <h2 className="font-semibold text-lg">Comparativo mensal até hoje</h2>
-              <p className="text-xs text-text-muted mt-1">
-                Uma visão fixa dos últimos 12 meses, independente do período selecionado.
-              </p>
+              <h2 className="font-semibold text-lg">{t('monthComparison')}</h2>
+              <p className="text-xs text-text-muted mt-1">{t('monthComparisonHint')}</p>
             </div>
             <div
               ref={monthComparisonRef}
@@ -360,16 +361,11 @@ export function DashboardClient() {
                 );
               })}
               {visibleMonthToDate.length === 0 && (
-                <p className="py-6 text-sm text-text-muted">
-                  Ainda não há dados mensais para comparar.
-                </p>
+                <p className="py-6 text-sm text-text-muted">{t('noMonthlyData')}</p>
               )}
             </div>
           </Card>
-          <p className="text-xs text-text-muted mb-4">
-            Valores por data do atendimento, incluindo pagamentos parciais e crédito aplicado.
-            Consulte o Fluxo de caixa para entradas por data de recebimento.
-          </p>
+          <p className="text-xs text-text-muted mb-4">{t('appointmentDateValuesHint')}</p>
           <div className="grid xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)] gap-5">
             <Card className="p-5 sm:p-6 min-w-0">
               <div className="mb-6">
@@ -529,7 +525,7 @@ export function DashboardClient() {
                           }
                         >
                           {a.paymentStatus === 'PARTIAL'
-                            ? 'Parcialmente pago'
+                            ? t('partial')
                             : t(a.paymentStatus === 'PAID' ? 'paid' : 'pending')}
                         </span>
                       </div>

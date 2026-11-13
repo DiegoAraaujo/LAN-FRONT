@@ -79,6 +79,12 @@ export const AppointmentCreateModal = ({ open, onClose }: Props) => {
   const simpleCash = Math.max(0, Math.round((total - appliedCredit) * 100) / 100);
   const surplus = Math.max(0, Math.round((received + appliedCredit - total) * 100) / 100);
   const remaining = Math.max(0, Math.round((total - received - appliedCredit) * 100) / 100);
+  // In custom mode credit may only cover what the payments leave open (no "change" made of credit).
+  const creditRoom = Math.max(0, Math.round((total - received) * 100) / 100);
+  const creditTooHigh =
+    paymentMode === 'CUSTOM' &&
+    appliedCredit > 0 &&
+    Math.round(appliedCredit * 100) > Math.round(creditRoom * 100);
   const usedMethods = new Set(parts.map((part) => part.method));
   const selectedServiceIds = items.map((item) => item.serviceId).filter(Boolean);
   const dateValid = !!date && Number.isFinite(new Date(date).getTime());
@@ -97,6 +103,7 @@ export const AppointmentCreateModal = ({ open, onClose }: Props) => {
       credit >= 0 &&
       appliedCredit <= availableCredit &&
       appliedCredit <= total &&
+      !creditTooHigh &&
       received + appliedCredit > 0 &&
       !!paymentDate &&
       Number.isFinite(new Date(paymentDate).getTime()));
@@ -370,6 +377,11 @@ export const AppointmentCreateModal = ({ open, onClose }: Props) => {
                         min="0"
                         max={Math.min(total, availableCredit)}
                         value={appliedCredit}
+                        error={
+                          creditTooHigh
+                            ? tf('creditTooHigh', { value: formatCurrency(creditRoom) })
+                            : undefined
+                        }
                         onValueChange={(value) =>
                           setCredit(Math.min(Number(value), total, availableCredit))
                         }

@@ -12,6 +12,7 @@ export const useDeleteCustomer = () => {
       qc.invalidateQueries({ queryKey: customersKeys.all });
       qc.invalidateQueries({ queryKey: ['dashboard'] });
       qc.invalidateQueries({ queryKey: ['customers', 'dashboard'] });
+      qc.invalidateQueries({ queryKey: ['finance'] });
       toast.success(clientMessage('Cliente removido.'));
     },
   });

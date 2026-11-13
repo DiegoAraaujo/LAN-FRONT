@@ -60,7 +60,7 @@ export const ActivityMobileCard = ({
         </div>
         <Badge variant={isPending ? 'yellow' : 'green'}>
           {a.paymentStatus === 'PARTIAL'
-            ? 'Parcialmente pago'
+            ? t('partialBadge')
             : isPending
               ? t('pendingBadge')
               : t('paidBadge')}
@@ -78,7 +78,8 @@ export const ActivityMobileCard = ({
           )}
           <span className="text-sm font-bold">{formatCurrency(a.total)}</span>
           <p className="text-xs">
-            Pago: {formatCurrency(a.paidAmount)} · Falta: {formatCurrency(a.remaining)}
+            {t('paidAmount', { value: formatCurrency(a.paidAmount) })} ·{' '}
+            {t('remainingAmount', { value: formatCurrency(a.remaining) })}
           </p>
         </div>
       </div>

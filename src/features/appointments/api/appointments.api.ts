@@ -76,7 +76,12 @@ export type UpdateAppointmentPayload = Omit<
 export const appointmentsApi = {
   list: (params?: AppointmentsParams) =>
     api.get<AppointmentsListResponse>('/appointments', {
-      params: validatePayload(searchSchema, params ?? {}),
+      params: (() => {
+        const parsed = validatePayload(searchSchema, params ?? {});
+        // The schema turns serviceIds into an array, which axios would send as
+        // `serviceIds[]=...` and the backend ignores. Send it as the comma list it expects.
+        return { ...parsed, serviceIds: parsed.serviceIds?.join(',') || undefined };
+      })(),
     }),
   create: (data: CreateAppointmentPayload) =>
     api.post<Appointment>('/appointments', validatePayload(createAppointmentBodySchema, data)),

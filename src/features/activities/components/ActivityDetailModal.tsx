@@ -85,7 +85,7 @@ export const ActivityDetailModal = ({
           <div className="ml-auto">
             <Badge variant={isPending ? 'yellow' : 'green'}>
               {a.paymentStatus === 'PARTIAL'
-                ? 'Parcialmente pago'
+                ? t('partialBadge')
                 : isPending
                   ? t('pendingBadge')
                   : t('paidBadge')}

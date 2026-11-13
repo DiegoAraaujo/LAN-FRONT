@@ -71,7 +71,10 @@ export function FinanceHistory({
             !!to &&
             (appointmentDay < from || appointmentDay > to);
           const creditUsed =
-            entry.kind === 'PAYMENT' ? Math.max(0, entry.appliedCents - entry.cashCents) : 0;
+            entry.kind === 'PAYMENT' && entry.creditCents < 0 ? -entry.creditCents : 0;
+          // A payment whose excess was kept as credit also generates credit.
+          const creditGenerated =
+            entry.kind === 'PAYMENT' ? Math.max(0, entry.creditCents) : entry.creditCents;
           return (
             <div key={entry.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
               <div className="min-w-0 space-y-1">
@@ -110,8 +113,8 @@ export function FinanceHistory({
                     ? ` · ${t('realEntry')}: ${money(entry.cashCents / 100)} · ${t('applied')}: ${money(entry.appliedCents / 100)}`
                     : ''}
                   {creditUsed > 0 ? ` · ${t('creditUsed')}: ${money(creditUsed / 100)}` : ''}
-                  {entry.kind !== 'PAYMENT' && entry.creditCents !== 0
-                    ? ` · ${t('creditGenerated')}: ${money(entry.creditCents / 100)}`
+                  {creditGenerated !== 0
+                    ? ` · ${t('creditGenerated')}: ${money(creditGenerated / 100)}`
                     : ''}
                 </p>
                 {outsidePeriod && (
