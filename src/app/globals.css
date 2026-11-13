@@ -16,6 +16,7 @@
   --color-success: #15805e;
   --color-warning: #a86810;
   --color-danger: #ef4444;
+  --color-focus: #16856a;
   --color-loyalty-bg: #eef5ee;
   --color-banner-from: #2d3b45;
   --color-banner-to: #1e2d38;
@@ -40,12 +41,30 @@ body {
   border-radius: 3px;
 }
 
+/* One focus style for fields: brand-green border plus a soft ring (no double outline). */
 input:focus,
 select:focus,
-textarea:focus {
+textarea:focus,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
   outline: none;
-  border-color: var(--color-gold-btn) !important;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-gold-btn) 15%, transparent);
+  border-color: var(--color-focus) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus) 18%, transparent);
+}
+
+/* Same chevron on every single-value select, regardless of browser/OS. */
+select:not([multiple]) {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7b75' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.25rem;
+}
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 button,
 a,
@@ -59,14 +78,8 @@ select {
   cursor: pointer;
 }
 :focus-visible {
-  outline: 3px solid #16856a;
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
-}
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid #16856a;
-  outline-offset: 2px;
 }
 body:has(dialog[open]) {
   overflow: hidden;
