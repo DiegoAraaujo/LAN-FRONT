@@ -88,23 +88,26 @@ const ServicesPage = () => {
             <table className="w-full">
               <thead>
                 <tr className="bg-bg">
-                  {[t('tableNameCol'), 'Descrição', t('tablePriceCol'), t('tableActionsCol')].map(
-                    (h) => (
-                      <th
-                        key={h}
-                        className="text-left px-5 py-3 text-[11px] font-semibold text-text-light uppercase tracking-wide"
-                      >
-                        {h}
-                      </th>
-                    ),
-                  )}
+                  {[
+                    t('tableNameCol'),
+                    t('tableDescriptionCol'),
+                    t('tablePriceCol'),
+                    t('tableActionsCol'),
+                  ].map((h) => (
+                    <th
+                      key={h}
+                      className="text-left px-5 py-3 text-[11px] font-semibold text-text-light uppercase tracking-wide"
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
                 {services.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-5 py-10 text-center text-sm text-text-light">
-                      Nenhum serviço encontrado.
+                      {t('noServicesFound')}
                     </td>
                   </tr>
                 ) : (
@@ -123,7 +126,9 @@ const ServicesPage = () => {
           </div>
         )}
         <div className="px-5 py-3 border-t border-border bg-bg2">
-          <span className="text-xs text-text-light">Exibindo {services.length} serviços</span>
+          <span className="text-xs text-text-light">
+            {t('showingCount', { count: services.length })}
+          </span>
         </div>
       </Card>
 

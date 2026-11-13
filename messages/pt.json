@@ -160,6 +160,7 @@
     "photoError": "Não foi possível preparar a imagem."
   },
   "services": {
+    "showingCount": "Exibindo {count} serviços",
     "title": "Serviços",
     "subtitle": "Gerencie todos os serviços oferecidos e seus preços.",
     "newService": "Novo Serviço",
@@ -183,6 +184,7 @@
     "noDescription": "Sem descrição"
   },
   "appointments": {
+    "editPaymentHint": "Para receber valores ou usar crédito, escolha Registrar pagamento. O desconto altera o preço do serviço.",
     "title": "Novo Atendimento",
     "subtitle": "Preencha os dados do cliente e os serviços realizados.",
     "clientSelection": "Seleção de Cliente",
@@ -239,6 +241,17 @@
     "leavePendingHint": "Registre agora e receba depois."
   },
   "activities": {
+    "partialBadge": "Parcialmente pago",
+    "paidAmount": "Pago: {value}",
+    "remainingAmount": "Falta: {value}",
+    "dateTypeLabel": "Filtrar pela data",
+    "dateTypeAppointment": "Do atendimento",
+    "dateTypePayment": "Do pagamento",
+    "openOnlyNotice": "Exibindo atendimentos pendentes e parcialmente pagos.",
+    "showAll": "Mostrar todos",
+    "totalValue": "Valor total",
+    "paidOrCreditApplied": "Pago / crédito aplicado",
+    "filteredItemsValue": "Somente os itens filtrados, após descontos: <strong>{value}</strong>. As estatísticas incluem o valor completo dos atendimentos encontrados.",
     "title": "Atendimentos",
     "subtitle": "Acompanhe e gerencie todos os atendimentos realizados.",
     "searchPlaceholder": "Buscar por cliente…",
@@ -274,6 +287,10 @@
     "deleteWithPaymentsDescription": "Excluir definitivamente este atendimento e todos os pagamentos e estornos vinculados? Os totais financeiros e o saldo do cliente serão atualizados. Esta ação não pode ser desfeita."
   },
   "finance": {
+    "customerAccount": "Conta do cliente",
+    "remainingValue": "Falta {value}",
+    "receive": "Receber",
+    "lastMovements": "Últimas 100 movimentações",
     "title": "Fluxo de caixa",
     "subtitle": "Recebimentos, despesas e valores em aberto.",
     "newExpense": "Nova despesa",
@@ -375,6 +392,7 @@
     "remainingOpen": "Restará em aberto",
     "creditAfter": "Crédito após pagamento",
     "creditHint": "O crédito é aplicado separadamente e não gera uma nova entrada no caixa.",
+    "creditTooHigh": "O crédito não pode ultrapassar o que falta após os pagamentos ({value}). Reduza o crédito ou os valores das formas de pagamento.",
     "appointmentValue": "Valor do atendimento",
     "methods": {
       "PIX": "Pix",
@@ -416,6 +434,13 @@
     "sessionsRevoked": "Todas as sessões foram encerradas."
   },
   "overview": {
+    "partial": "Parcialmente pago",
+    "chartLoading": "Carregando gráfico…",
+    "invalidDateRange": "Informe uma data inicial e final válidas.",
+    "monthComparison": "Comparativo mensal até hoje",
+    "monthComparisonHint": "Uma visão fixa dos últimos 12 meses, independente do período selecionado.",
+    "noMonthlyData": "Ainda não há dados mensais para comparar.",
+    "appointmentDateValuesHint": "Valores por data do atendimento, incluindo pagamentos parciais e crédito aplicado. Consulte o Fluxo de caixa para entradas por data de recebimento.",
     "appointmentsLabel": "Atendimentos",
     "totalValueLabel": "Total (recebido + pendente)",
     "noComparisonBase": "Sem base",

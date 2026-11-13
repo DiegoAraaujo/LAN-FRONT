@@ -160,6 +160,7 @@
     "photoError": "Unable to prepare the image."
   },
   "services": {
+    "showingCount": "Showing {count} services",
     "title": "Services",
     "subtitle": "Manage all services offered and their pricing.",
     "newService": "New Service",
@@ -183,6 +184,7 @@
     "noDescription": "No description"
   },
   "appointments": {
+    "editPaymentHint": "To receive payments or use credit, choose Record payment. The discount changes the service price.",
     "title": "New Appointment",
     "subtitle": "Fill in the client and service details.",
     "clientSelection": "Client Selection",
@@ -239,6 +241,17 @@
     "leavePendingHint": "Record it now and receive payment later."
   },
   "activities": {
+    "partialBadge": "Partially paid",
+    "paidAmount": "Paid: {value}",
+    "remainingAmount": "Remaining: {value}",
+    "dateTypeLabel": "Date of",
+    "dateTypeAppointment": "Appointment",
+    "dateTypePayment": "Payment",
+    "openOnlyNotice": "Showing pending and partially paid appointments.",
+    "showAll": "Show all",
+    "totalValue": "Total value",
+    "paidOrCreditApplied": "Paid / credit applied",
+    "filteredItemsValue": "Filtered items only, after discounts: <strong>{value}</strong>. The statistics include the full value of the appointments found.",
     "title": "Appointments",
     "subtitle": "Track and manage all appointments.",
     "searchPlaceholder": "Search by client…",
@@ -274,6 +287,10 @@
     "deleteWithPaymentsDescription": "Permanently delete this appointment and all linked payments and reversals? Financial totals and the customer's balance will be updated. This action cannot be undone."
   },
   "finance": {
+    "customerAccount": "Customer account",
+    "remainingValue": "Remaining {value}",
+    "receive": "Receive",
+    "lastMovements": "Last 100 transactions",
     "title": "Cash flow",
     "subtitle": "Payments, expenses, and outstanding amounts.",
     "newExpense": "New expense",
@@ -369,6 +386,7 @@
     "paymentDate": "Payment date",
     "surplus": "{value} remaining",
     "returnChange": "Return as change",
+    "creditTooHigh": "Credit cannot exceed what is left after the payments ({value}). Lower the credit or the payment amounts.",
     "saveCredit": "Save as customer credit",
     "informedTotal": "Amount entered",
     "cashEntry": "Cash inflow",
@@ -416,6 +434,13 @@
     "sessionsRevoked": "All sessions have been signed out."
   },
   "overview": {
+    "partial": "Partially paid",
+    "chartLoading": "Loading chart…",
+    "invalidDateRange": "Enter a valid start and end date.",
+    "monthComparison": "Month-to-date comparison",
+    "monthComparisonHint": "A fixed view of the last 12 months, regardless of the selected period.",
+    "noMonthlyData": "There is no monthly data to compare yet.",
+    "appointmentDateValuesHint": "Values by appointment date, including partial payments and applied credit. See Cash flow for income by date received.",
     "appointmentsLabel": "Appointments",
     "totalValueLabel": "Total (received + pending)",
     "noComparisonBase": "No baseline",

@@ -30,6 +30,8 @@ export function PaymentModal({
   const account = useQuery({
     queryKey: ['finance', 'customer', appointment.customerId],
     queryFn: () => financeApi.customer(appointment.customerId),
+    // Money decisions must use the current open amount, never a cached one.
+    refetchOnMount: 'always',
   });
   const current = account.data?.appointments.find((a) => a.id === appointment.id);
   const remaining = current?.remaining ?? appointment.remaining ?? appointment.total;
@@ -37,6 +39,13 @@ export function PaymentModal({
     { id: crypto.randomUUID(), method: 'PIX', amount: remaining },
   ]);
   const [credit, setCredit] = useState(0);
+  // If the open amount changes after a refetch, re-prefill a single payment row with it.
+  const [prefilledFor, setPrefilledFor] = useState(remaining);
+  if (prefilledFor !== remaining) {
+    setPrefilledFor(remaining);
+    setCredit(0);
+    if (parts.length === 1) setParts((rows) => [{ ...rows[0]!, amount: remaining }]);
+  }
   const [excess, setExcess] = useState<'CHANGE' | 'CREDIT'>('CHANGE');
   const [date, setDate] = useState(localDateTime);
   const [requestId] = useState(() => crypto.randomUUID());
@@ -47,6 +56,18 @@ export function PaymentModal({
     ) / 100;
   const surplus = Math.max(0, Math.round((received + credit - remaining) * 100) / 100);
   const pending = Math.max(0, Math.round((remaining - received - credit) * 100) / 100);
+  // Credit may only cover what the payments leave open; otherwise the surplus is the credit itself.
+  const creditRoom = Math.max(0, Math.round((remaining - received) * 100) / 100);
+  const creditTooHigh = credit > 0 && Math.round(credit * 100) > Math.round(creditRoom * 100);
+  const changeCredit = (value: number) => {
+    const next = Math.max(0, Math.min(value, available, remaining));
+    setCredit(next);
+    // With a single payment method, keep it in sync so the total matches the open amount.
+    if (parts.length === 1)
+      setParts((rows) => [
+        { ...rows[0]!, amount: Math.max(0, Math.round((remaining - next) * 100) / 100) },
+      ]);
+  };
   const usedMethods = new Set(parts.map((part) => part.method));
   const updatePart = (id: string, patch: Partial<PaymentPart>) =>
     setParts((rows) => rows.map((row) => (row.id === id ? { ...row, ...patch } : row)));
@@ -76,6 +97,7 @@ export function PaymentModal({
     credit >= 0 &&
     credit <= available &&
     credit <= remaining &&
+    !creditTooHigh &&
     received + credit > 0 &&
     !!date &&
     Number.isFinite(new Date(date).getTime());
@@ -95,7 +117,7 @@ export function PaymentModal({
               ? save.mutate()
               : toast.error(t('checkPayment'))
           }
-          disabled={save.isPending || account.isLoading}
+          disabled={save.isPending || account.isFetching}
         >
           {t('confirmPayment')}
         </Button>
@@ -189,7 +211,8 @@ export function PaymentModal({
           min="0"
           max={Math.min(remaining, available)}
           value={credit}
-          onValueChange={(value) => setCredit(Number(value))}
+          error={creditTooHigh ? t('creditTooHigh', { value: money(creditRoom) }) : undefined}
+          onValueChange={(value) => changeCredit(Number(value) || 0)}
         />
         <Input
           required

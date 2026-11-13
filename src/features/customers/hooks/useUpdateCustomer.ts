@@ -40,6 +40,7 @@ export const useUpdateCustomer = (onSuccess?: () => void) => {
       qc.invalidateQueries({ queryKey: customersKeys.all });
       qc.invalidateQueries({ queryKey: ['dashboard'] });
       qc.invalidateQueries({ queryKey: ['customers', 'dashboard'] });
+      qc.invalidateQueries({ queryKey: ['finance'] });
       toast.success(clientMessage('Cliente atualizado!'));
       onSuccess?.();
     },

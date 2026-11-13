@@ -63,6 +63,7 @@ export const ActivitiesFilterBar = ({
   hasFilters,
 }: Props) => {
   const t = useTranslations('activities');
+  const tf = useTranslations('finance');
 
   const { params, setFilters } = useUrlFilters();
   const custom =
@@ -111,7 +112,7 @@ export const ActivitiesFilterBar = ({
             <option value="">{t('allStatuses')}</option>
             <option value="PAID">{t('paid')}</option>
             <option value="PENDING">{t('pending')}</option>
-            <option value="PARTIAL">Parcialmente pago</option>
+            <option value="PARTIAL">{t('partialBadge')}</option>
           </select>
         </div>
         <div className="grid grid-cols-1 items-end gap-4 border-t border-border pt-5 [&>*]:min-w-0">
@@ -120,7 +121,7 @@ export const ActivitiesFilterBar = ({
               className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5"
               htmlFor="appointment-period-mode"
             >
-              {locale === 'en' ? 'Period' : 'Período'}
+              {tf('period')}
             </label>
             <select
               id="appointment-period-mode"
@@ -128,14 +129,14 @@ export const ActivitiesFilterBar = ({
               onChange={(e) => changeMode(e.target.value)}
               className="w-full border border-border rounded-lg px-3 py-2.5 text-sm bg-surface"
             >
-              <option value="month">{locale === 'en' ? 'Month and year' : 'Mês e ano'}</option>
-              <option value="custom">{locale === 'en' ? 'Custom period' : 'Personalizado'}</option>
+              <option value="month">{tf('monthYear')}</option>
+              <option value="custom">{tf('custom')}</option>
             </select>
           </div>
           {custom ? (
             <>
               <Input
-                label={locale === 'en' ? 'From' : 'De'}
+                label={tf('from')}
                 type="date"
                 value={params.get('dateFrom') ?? ''}
                 max={params.get('dateTo') || undefined}
@@ -149,7 +150,7 @@ export const ActivitiesFilterBar = ({
                 }
               />
               <Input
-                label={locale === 'en' ? 'To' : 'Até'}
+                label={tf('to')}
                 type="date"
                 value={params.get('dateTo') ?? ''}
                 min={params.get('dateFrom') || undefined}
@@ -203,7 +204,7 @@ export const ActivitiesFilterBar = ({
               htmlFor="appointment-date-type"
               className="text-xs font-medium text-text-light uppercase tracking-wide block mb-1.5"
             >
-              {locale === 'en' ? 'Date of' : 'Filtrar pela data'}
+              {t('dateTypeLabel')}
             </label>
             <select
               id="appointment-date-type"
@@ -211,10 +212,8 @@ export const ActivitiesFilterBar = ({
               value={params.get('dateType') || 'appointment'}
               onChange={(e) => setFilters({ dateType: e.target.value, page: 1 })}
             >
-              <option value="appointment">
-                {locale === 'en' ? 'Appointment' : 'Do atendimento'}
-              </option>
-              <option value="payment">{locale === 'en' ? 'Payment' : 'Do pagamento'}</option>
+              <option value="appointment">{t('dateTypeAppointment')}</option>
+              <option value="payment">{t('dateTypePayment')}</option>
             </select>
           </div>
         </div>

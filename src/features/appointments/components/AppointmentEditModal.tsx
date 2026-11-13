@@ -145,10 +145,7 @@ const AppointmentEditForm = ({
           </div>
         </div>
 
-        <p className="text-sm text-text-muted">
-          Para receber valores ou usar crédito, escolha Registrar pagamento. O desconto altera o
-          preço do serviço.
-        </p>
+        <p className="text-sm text-text-muted">{t('editPaymentHint')}</p>
 
         <Textarea
           maxLength={2000}
