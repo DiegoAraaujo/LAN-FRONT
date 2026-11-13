@@ -62,11 +62,10 @@ export function PaymentModal({
   const changeCredit = (value: number) => {
     const next = Math.max(0, Math.min(value, available, remaining));
     setCredit(next);
-    // With a single payment method, keep it in sync so the total matches the open amount.
-    if (parts.length === 1)
-      setParts((rows) => [
-        { ...rows[0]!, amount: Math.max(0, Math.round((remaining - next) * 100) / 100) },
-      ]);
+    // Using credit only settles part of the debt; it does not assume the rest is paid now.
+    // Clear the single payment row (fill it only if the customer pays more), and restore
+    // the full prefill when credit goes back to zero.
+    if (parts.length === 1) setParts((rows) => [{ ...rows[0]!, amount: next > 0 ? 0 : remaining }]);
   };
   const usedMethods = new Set(parts.map((part) => part.method));
   const updatePart = (id: string, patch: Partial<PaymentPart>) =>
@@ -238,6 +237,11 @@ export function PaymentModal({
           <p>
             {t('informedTotal')}: <strong>{money(received)}</strong>
           </p>
+          {credit > 0 && (
+            <p>
+              {t('creditUsed')}: <strong>{money(credit)}</strong>
+            </p>
+          )}
           <p>
             {t('cashEntry')}:{' '}
             <strong>{money(received - (excess === 'CHANGE' ? surplus : 0))}</strong>
