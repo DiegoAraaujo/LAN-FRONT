@@ -435,8 +435,10 @@ export const AppointmentCreateModal = ({ open, onClose }: Props) => {
                     key={part.id}
                     className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2 sm:grid-cols-[minmax(0,1fr)_120px_auto]"
                   >
-                    <label className="col-span-2 min-w-0 text-xs text-text-muted sm:col-span-1">
-                      {tf('methodLabel')}
+                    <label className="col-span-2 min-w-0 sm:col-span-1">
+                      <span className="text-xs font-medium uppercase tracking-wide text-text-light">
+                        {tf('methodLabel')}
+                      </span>
                       <select
                         value={part.method}
                         onChange={(event) =>
@@ -448,7 +450,7 @@ export const AppointmentCreateModal = ({ open, onClose }: Props) => {
                             ),
                           )
                         }
-                        className="mt-1 min-h-11 w-full rounded-lg border border-border bg-surface px-3 text-sm"
+                        className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-text"
                       >
                         {methods.map((value) => (
                           <option
@@ -473,15 +475,19 @@ export const AppointmentCreateModal = ({ open, onClose }: Props) => {
                         )
                       }
                     />
-                    <button
-                      type="button"
-                      aria-label={tf('removeMethod')}
-                      disabled={parts.length === 1}
-                      onClick={() => setParts((rows) => rows.filter((row) => row.id !== part.id))}
-                      className="mb-1 grid size-10 place-items-center rounded-lg text-danger hover:bg-rose-50 disabled:opacity-30"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {parts.length > 1 ? (
+                      <button
+                        type="button"
+                        aria-label={tf('removeMethod')}
+                        onClick={() => setParts((rows) => rows.filter((row) => row.id !== part.id))}
+                        className="mb-0.5 grid size-10 place-items-center rounded-lg text-text-light transition-colors hover:bg-rose-50 hover:text-danger"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    ) : (
+                      // Keeps the columns aligned when the remove button is hidden.
+                      <span aria-hidden="true" className="size-10" />
+                    )}
                   </div>
                 ))}
                 <Input
@@ -492,12 +498,14 @@ export const AppointmentCreateModal = ({ open, onClose }: Props) => {
                   onChange={(event) => setPaymentDate(event.target.value)}
                 />
                 {surplus > 0 && (
-                  <label className="block text-sm">
-                    {tf('surplus', { value: formatCurrency(surplus) })}
+                  <label className="block">
+                    <span className="text-xs font-medium uppercase tracking-wide text-text-light">
+                      {tf('surplus', { value: formatCurrency(surplus) })}
+                    </span>
                     <select
                       value={excess}
                       onChange={(event) => setExcess(event.target.value as 'CHANGE' | 'CREDIT')}
-                      className="mt-1 w-full rounded-lg border border-border bg-surface p-3"
+                      className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-text"
                     >
                       <option value="CHANGE">{tf('returnChange')}</option>
                       <option value="CREDIT">{tf('saveCredit')}</option>

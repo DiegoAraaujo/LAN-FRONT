@@ -389,6 +389,7 @@
     "creditTooHigh": "Credit cannot exceed what is left after the payments ({value}). Lower the credit or the payment amounts.",
     "saveCredit": "Save as customer credit",
     "informedTotal": "Amount entered",
+    "receivedNow": "Received now",
     "cashEntry": "Cash inflow",
     "remainingOpen": "Outstanding after payment",
     "creditAfter": "Credit after payment",

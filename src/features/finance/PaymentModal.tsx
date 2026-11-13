@@ -16,6 +16,19 @@ import { financeApi, localDateTime, methodLabels } from './finance.api';
 
 type PaymentPart = { id: string; method: PaymentMethod; amount: number };
 const methods = Object.keys(methodLabels) as PaymentMethod[];
+// Match the label/field look of the shared Input component.
+const fieldLabel = 'text-xs font-medium uppercase tracking-wide text-text-light';
+const fieldSelect =
+  'mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface px-3 text-sm text-text';
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-3">
+      <dt className="text-text-muted">{label}</dt>
+      <dd className="font-semibold tabular-nums">{value}</dd>
+    </div>
+  );
+}
 
 export function PaymentModal({
   appointment,
@@ -159,10 +172,14 @@ export function PaymentModal({
           {parts.map((part, index) => (
             <div
               key={part.id}
-              className="grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_minmax(110px,1fr)_auto] items-end gap-2 rounded-xl border border-border p-3"
+              className={
+                parts.length > 1
+                  ? 'grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3 rounded-xl border border-border p-3 sm:grid-cols-[minmax(0,1fr)_minmax(110px,1fr)_auto]'
+                  : 'grid grid-cols-1 items-end gap-3 rounded-xl border border-border p-3 sm:grid-cols-2'
+              }
             >
-              <label className="col-span-2 min-w-0 text-xs text-text-muted sm:col-span-1">
-                {t('methodLabel')}
+              <label className="col-span-2 min-w-0 sm:col-span-1">
+                <span className={fieldLabel}>{t('methodLabel')}</span>
                 <select
                   value={part.method}
                   onChange={(event) =>
@@ -170,7 +187,7 @@ export function PaymentModal({
                       method: event.target.value as PaymentMethod,
                     })
                   }
-                  className="mt-1 min-h-11 w-full rounded-lg border border-border bg-surface px-3 text-sm"
+                  className={fieldSelect}
                 >
                   {methods.map((value) => (
                     <option
@@ -189,15 +206,17 @@ export function PaymentModal({
                 value={part.amount}
                 onValueChange={(value) => updatePart(part.id, { amount: Number(value) })}
               />
-              <button
-                type="button"
-                aria-label={t('removeMethod')}
-                disabled={parts.length === 1}
-                onClick={() => setParts((rows) => rows.filter((row) => row.id !== part.id))}
-                className="mb-1 grid size-10 place-items-center rounded-lg text-danger hover:bg-rose-50 disabled:opacity-30"
-              >
-                <Trash2 size={16} />
-              </button>
+              {/* Only removable when there is more than one method. */}
+              {parts.length > 1 && (
+                <button
+                  type="button"
+                  aria-label={t('removeMethod')}
+                  onClick={() => setParts((rows) => rows.filter((row) => row.id !== part.id))}
+                  className="mb-0.5 grid size-10 place-items-center rounded-lg text-text-light transition-colors hover:bg-rose-50 hover:text-danger"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
               {index === 0 && parts.length > 1 && (
                 <p className="col-span-full text-[11px] text-text-muted">{t('splitHint')}</p>
               )}
@@ -221,39 +240,39 @@ export function PaymentModal({
           onChange={(event) => setDate(event.target.value)}
         />
         {surplus > 0 && (
-          <label className="block text-sm">
-            {t('surplus', { value: money(surplus) })}
+          <label className="block">
+            <span className={fieldLabel}>{t('surplus', { value: money(surplus) })}</span>
             <select
               value={excess}
               onChange={(event) => setExcess(event.target.value as 'CHANGE' | 'CREDIT')}
-              className="mt-1 w-full rounded-lg border border-border bg-surface p-3"
+              className={fieldSelect}
             >
               <option value="CHANGE">{t('returnChange')}</option>
               <option value="CREDIT">{t('saveCredit')}</option>
             </select>
           </label>
         )}
-        <div className="space-y-2 rounded-xl bg-bg p-4 text-sm">
-          <p>
-            {t('informedTotal')}: <strong>{money(received)}</strong>
-          </p>
-          {credit > 0 && (
-            <p>
-              {t('creditUsed')}: <strong>{money(credit)}</strong>
-            </p>
-          )}
-          <p>
-            {t('cashEntry')}:{' '}
-            <strong>{money(received - (excess === 'CHANGE' ? surplus : 0))}</strong>
-          </p>
-          <p>
-            {t('remainingOpen')}: <strong>{money(pending)}</strong>
-          </p>
-          <p>
-            {t('creditAfter')}:{' '}
-            <strong>{money(available - credit + (excess === 'CREDIT' ? surplus : 0))}</strong>
-          </p>
-        </div>
+        <dl className="space-y-2 rounded-xl bg-bg p-4 text-sm">
+          <SummaryRow label={t('receivedNow')} value={money(received)} />
+          {credit > 0 && <SummaryRow label={t('creditUsed')} value={money(credit)} />}
+          <SummaryRow
+            label={t('cashEntry')}
+            value={money(received - (excess === 'CHANGE' ? surplus : 0))}
+          />
+          <SummaryRow
+            label={t('creditAfter')}
+            value={money(available - credit + (excess === 'CREDIT' ? surplus : 0))}
+          />
+          {/* The number that matters most: what is still owed after this payment. */}
+          <div
+            className={`mt-1 flex items-center justify-between gap-3 rounded-lg px-3 py-2.5 ${
+              pending > 0 ? 'bg-amber-50 text-amber-900' : 'bg-emerald-50 text-emerald-900'
+            }`}
+          >
+            <dt className="font-medium">{t('remainingOpen')}</dt>
+            <dd className="text-base font-bold tabular-nums">{money(pending)}</dd>
+          </div>
+        </dl>
         <p className="text-xs text-text-muted">{t('creditHint')}</p>
       </div>
     </Modal>
